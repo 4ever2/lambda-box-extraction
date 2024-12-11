@@ -1,0 +1,10 @@
+*                   text=auto
+
+*.rs                text linguist-language=rust
+*.toml              text linguist-language=toml
+
+*.v                 text linguist-language=coq
+*.ml*               text linguist-language=OCaml
+
+CoqMakefile.local   text linguist-language=Makefile
+*.elm               text linguist-language=elm

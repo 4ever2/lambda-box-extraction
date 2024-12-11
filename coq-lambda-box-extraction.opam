@@ -1,0 +1,39 @@
+opam-version: "2.0"
+name: "coq-lambda-box-extraction"
+version: "dev"
+synopsis: "Coq extraction"
+description: """
+A framework for extracting lambda box programs
+"""
+maintainer: "4ever2"
+authors: "The COBRA team"
+license: "MIT"
+homepage: "https://github.com/AU-COBRA/lambda-box-extraction"
+dev-repo: "git+https://github.com/AU-COBRA/lambda-box-extraction.git"
+bug-reports: "https://github.com/AU-COBRA/lambda-box-extraction/issues"
+
+depends: [
+  "coq" {>= "8.19" & < "8.20~"}
+  "coq-metacoq-utils" {>= "1.3.2" & < "1.4~"}
+  "coq-metacoq-common" {>= "1.3.2" & < "1.4~"}
+  "coq-metacoq-template" {>= "1.3.2" & < "1.4~"}
+  "coq-metacoq-template-pcuic" {>= "1.3.2" & < "1.4~"}
+  "coq-metacoq-pcuic" {>= "1.3.2" & < "1.4~"}
+  "coq-metacoq-safechecker" {>= "1.3.2" & < "1.4~"}
+  "coq-metacoq-erasure" {>= "1.3.2" & < "1.4~"}
+  "coq-rust-extraction"
+  "coq-elm-extraction"
+  "coq-certicoq"
+]
+
+build: [
+  [make "theory"]
+]
+install: [
+  [make "install"]
+]
+
+tags: [
+  "keyword:extraction"
+  "logpath:LambdaBox"
+]

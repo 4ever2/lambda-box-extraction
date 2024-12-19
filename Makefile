@@ -24,6 +24,7 @@ uninstall: CoqMakefile
 patch: theory
 	patch -p1 < patches/int.diff
 	patch -p1 < patches/misc.diff
+	patch -p1 < patches/sexp.diff
 .PHONY: patch
 
 mllib: patch

@@ -1,0 +1,251 @@
+diff --git a/src/BasicAst.ml b/src/BasicAst.ml
+index e50b782..3412c41 100644
+--- a/src/BasicAst.ml
++++ b/src/BasicAst.ml
+@@ -14,6 +14,7 @@ type __ = Obj.t
+ type name =
+ | Coq_nAnon
+ | Coq_nNamed of ident
++[@@deriving sexp]
+ 
+ type relevance =
+ | Relevant
+diff --git a/src/BasicAst.mli b/src/BasicAst.mli
+index edb705c..f97950b 100644
+--- a/src/BasicAst.mli
++++ b/src/BasicAst.mli
+@@ -14,6 +14,7 @@ type __ = Obj.t
+ type name =
+ | Coq_nAnon
+ | Coq_nNamed of ident
++[@@deriving sexp]
+ 
+ type relevance =
+ | Relevant
+diff --git a/src/Byte.ml b/src/Byte.ml
+index 396def1..b3444b3 100644
+--- a/src/Byte.ml
++++ b/src/Byte.ml
+@@ -256,6 +256,7 @@ type byte =
+ | Coq_xfd
+ | Coq_xfe
+ | Coq_xff
++[@@deriving sexp]
+ 
+ (** val byte_rect :
+     'a1 -> 'a1 -> 'a1 -> 'a1 -> 'a1 -> 'a1 -> 'a1 -> 'a1 -> 'a1 -> 'a1 -> 'a1
+diff --git a/src/Byte.mli b/src/Byte.mli
+index 444919b..b89acfa 100644
+--- a/src/Byte.mli
++++ b/src/Byte.mli
+@@ -256,6 +256,7 @@ type byte =
+ | Coq_xfd
+ | Coq_xfe
+ | Coq_xff
++[@@deriving sexp]
+ 
+ val byte_rect :
+   'a1 -> 'a1 -> 'a1 -> 'a1 -> 'a1 -> 'a1 -> 'a1 -> 'a1 -> 'a1 -> 'a1 -> 'a1
+diff --git a/src/Datatypes.ml b/src/Datatypes.ml
+index 4f1f630..87e7dde 100644
+--- a/src/Datatypes.ml
++++ b/src/Datatypes.ml
+@@ -75,6 +75,7 @@ let eq_true_rect_r _ h =
+ type nat =
+ | O
+ | S of nat
++[@@deriving sexp]
+ 
+ (** val nat_rect : 'a1 -> (nat -> 'a1 -> 'a1) -> nat -> 'a1 **)
+ 
+diff --git a/src/Datatypes.mli b/src/Datatypes.mli
+index bd7a064..cb1eede 100644
+--- a/src/Datatypes.mli
++++ b/src/Datatypes.mli
+@@ -32,6 +32,7 @@ val eq_true_rect_r : bool -> 'a1 -> 'a1
+ type nat =
+ | O
+ | S of nat
++[@@deriving sexp]
+ 
+ val nat_rect : 'a1 -> (nat -> 'a1 -> 'a1) -> nat -> 'a1
+ 
+diff --git a/src/Kernames.ml b/src/Kernames.ml
+index c1e8115..186716c 100644
+--- a/src/Kernames.ml
++++ b/src/Kernames.ml
+@@ -1,3 +1,4 @@
++open Sexplib.Conv
+ open Byte
+ open Classes1
+ open Datatypes
+@@ -16,8 +17,10 @@ open Bytestring
+ type __ = Obj.t
+ 
+ type ident = String.t
++[@@deriving sexp]
+ 
+ type dirpath = ident list
++[@@deriving sexp]
+ 
+ module IdentOT = StringOT
+ 
+@@ -32,6 +35,7 @@ type modpath =
+ | MPfile of dirpath
+ | MPbound of dirpath * ident * nat
+ | MPdot of modpath * ident
++[@@deriving sexp]
+ 
+ (** val string_of_modpath : modpath -> String.t **)
+ 
+@@ -48,6 +52,7 @@ let rec string_of_modpath = function
+     (String.append (String.String (Coq_x2e, String.EmptyString)) id)
+ 
+ type kername = modpath * ident
++[@@deriving sexp]
+ 
+ (** val string_of_kername : kername -> String.t **)
+ 
+@@ -147,6 +152,8 @@ module KernameMapFact = WProperties(KernameMap)
+ module KernameSet = Make(Kername)
+ 
+ type inductive = { inductive_mind : kername; inductive_ind : nat }
++[@@deriving sexp]
++
+ 
+ (** val string_of_inductive : inductive -> String.t **)
+ 
+@@ -168,3 +175,4 @@ let reflect_eq_inductive =
+   eq_inductive_def
+ 
+ type projection = { proj_ind : inductive; proj_npars : nat; proj_arg : nat }
++[@@deriving sexp]
+diff --git a/src/Kernames.mli b/src/Kernames.mli
+index c68a482..4ad3d80 100644
+--- a/src/Kernames.mli
++++ b/src/Kernames.mli
+@@ -16,8 +16,10 @@ open Bytestring
+ type __ = Obj.t
+ 
+ type ident = String.t
++[@@deriving sexp]
+ 
+ type dirpath = ident list
++[@@deriving sexp]
+ 
+ module IdentOT :
+  sig
+@@ -53,10 +55,12 @@ type modpath =
+ | MPfile of dirpath
+ | MPbound of dirpath * ident * nat
+ | MPdot of modpath * ident
++[@@deriving sexp]
+ 
+ val string_of_modpath : modpath -> String.t
+ 
+ type kername = modpath * ident
++[@@deriving sexp]
+ 
+ val string_of_kername : kername -> String.t
+ 
+@@ -1160,6 +1164,7 @@ module KernameSet :
+  end
+ 
+ type inductive = { inductive_mind : kername; inductive_ind : nat }
++[@@deriving sexp]
+ 
+ val string_of_inductive : inductive -> String.t
+ 
+@@ -1168,3 +1173,4 @@ val eq_inductive_def : inductive -> inductive -> bool
+ val reflect_eq_inductive : inductive coq_ReflectEq
+ 
+ type projection = { proj_ind : inductive; proj_npars : nat; proj_arg : nat }
++[@@deriving sexp]
+diff --git a/src/bytestring.ml b/src/bytestring.ml
+index a663a01..7ee787c 100644
+--- a/src/bytestring.ml
++++ b/src/bytestring.ml
+@@ -9,6 +9,7 @@ module String =
+   type t =
+   | EmptyString
+   | String of byte * t
++  [@@deriving sexp]
+ 
+   (** val print : t -> byte list **)
+ 
+diff --git a/src/bytestring.mli b/src/bytestring.mli
+index 7a227a1..ad39c1a 100644
+--- a/src/bytestring.mli
++++ b/src/bytestring.mli
+@@ -9,6 +9,7 @@ module String :
+   type t =
+   | EmptyString
+   | String of byte * t
++  [@@deriving sexp]
+ 
+   val print : t -> byte list
+ 
+diff --git a/src/eAst.ml b/src/eAst.ml
+index 607dd0a..82a7f1a 100644
+--- a/src/eAst.ml
++++ b/src/eAst.ml
+@@ -1,3 +1,4 @@
++open Sexplib.Conv
+ open BasicAst
+ open Classes1
+ open Datatypes
+@@ -11,6 +12,7 @@ type __ = Obj.t
+ let __ = let rec f _ = Obj.repr f in Obj.repr f
+ 
+ type 'term def = { dname : name; dbody : 'term; rarg : nat }
++[@@deriving sexp]
+ 
+ (** val dname : 'a1 def -> name **)
+ 
+@@ -43,6 +45,10 @@ let test_def f d =
+   f d.dbody
+ 
+ type 'term mfixpoint = 'term def list
++[@@deriving sexp]
++
++let prim_val_of_sexp s = failwith "unsupported"
++let sexp_of_prim_val s = failwith "unsupported"
+ 
+ type term =
+ | Coq_tBox
+@@ -61,6 +67,7 @@ type term =
+ | Coq_tPrim of term prim_val
+ | Coq_tLazy of term
+ | Coq_tForce of term
++[@@deriving sexp]
+ 
+ (** val term_rect :
+     'a1 -> (nat -> 'a1) -> (ident -> 'a1) -> (nat -> term list -> 'a1) ->
+diff --git a/src/eAst.mli b/src/eAst.mli
+index 84751cf..ddbe7bf 100644
+--- a/src/eAst.mli
++++ b/src/eAst.mli
+@@ -10,6 +10,7 @@ open Universes0
+ type __ = Obj.t
+ 
+ type 'term def = { dname : name; dbody : 'term; rarg : nat }
++[@@deriving sexp]
+ 
+ val dname : 'a1 def -> name
+ 
+@@ -24,6 +25,7 @@ val map_def : ('a1 -> 'a1) -> 'a1 def -> 'a1 def
+ val test_def : ('a1 -> bool) -> 'a1 def -> bool
+ 
+ type 'term mfixpoint = 'term def list
++[@@deriving sexp]
+ 
+ type term =
+ | Coq_tBox
+@@ -42,6 +44,7 @@ type term =
+ | Coq_tPrim of term prim_val
+ | Coq_tLazy of term
+ | Coq_tForce of term
++[@@deriving sexp]
+ 
+ val term_rect :
+   'a1 -> (nat -> 'a1) -> (ident -> 'a1) -> (nat -> term list -> 'a1) -> (name

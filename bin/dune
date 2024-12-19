@@ -1,0 +1,5 @@
+(executable
+ (public_name main)
+ (name main)
+ (libraries lib sexplib)
+ (preprocess (pps ppx_sexp_conv)))

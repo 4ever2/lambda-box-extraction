@@ -1,4 +1,4 @@
-all: theory
+all: theory patch mllib
 .PHONY: all
 
 CoqMakefile: _CoqProject
@@ -20,6 +20,15 @@ install: CoqMakefile
 uninstall: CoqMakefile
 	+@make -f CoqMakefile uninstall
 .PHONY: uninstall
+
+patch: theory
+	patch -p1 < patches/int.diff
+	patch -p1 < patches/misc.diff
+.PHONY: patch
+
+mllib: patch
+	dune build
+.PHONY: mllib
 
 # Forward most things to Coq makefile. Use 'force' to make this phony.
 %: CoqMakefile force

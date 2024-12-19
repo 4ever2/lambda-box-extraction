@@ -1,7 +1,6 @@
 From MetaCoq.Erasure Require EAst.
 From LambdaBox Require Translations.
-From Coq Require Import Ascii FSets ExtrOcamlBasic ExtrOCamlFloats ExtrOCamlInt63 Extraction.
-From Coq Require Import ZArith NArith.
+From Coq Require Import ExtrOcamlBasic ExtrOCamlFloats ExtrOCamlInt63 Extraction.
 
 Extract Inlined Constant Coqlib.proj_sumbool => "(fun x -> x)".
 
@@ -28,22 +27,8 @@ Extraction Blacklist config List String Nat Int Ast Universes UnivSubst Typing R
 
 Set Warnings "-extraction-reserved-identifier".
 Set Warnings "-extraction-opaque-accessed".
-
-
-
-
-(* Extraction Library Zeven.
-Extraction Library Zeven.
-Extraction Library ZArith_dec.
-Extraction Library Sumbool.
-Extraction Library Zbool.
-Extraction Library SpecFloat.
-Separate Extraction FloatOps.Prim2SF. *)
-
+Set Warnings "-extraction-logical-axiom".
 Set Extraction Output Directory "src/".
 
 Separate Extraction Translations.run_translation.
-
-Recursive Extraction Library Ascii.
 Recursive Extraction Library BinPos.
-Recursive Extraction Library OrdersTac.

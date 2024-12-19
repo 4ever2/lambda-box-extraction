@@ -5,22 +5,18 @@
 (generate_opam_files false)
 
 (source
- (github username/reponame))
+ (github AU-COBRA/lambda-box-extraction))
 
-(authors "Author Name <author@example.com>")
+(authors "The COBRA team")
 
-(maintainers "Maintainer Name <maintainer@example.com>")
+(maintainers "The COBRA team")
 
-(license LICENSE)
-
-(documentation https://url/to/documentation)
+(license MIT)
 
 (package
  (name coq-lambda-box-extraction)
- (synopsis "A short synopsis")
- (description "A longer description")
- (depends ocaml)
+ (synopsis "A framework for extracting lambda box programs")
+ (description "A framework for extracting lambda box programs")
+ (depends ocaml ppx_sexp_conv sexplib coq-primitive)
  (tags
-  ("add topics" "to describe" your project)))
-
-; See the complete stanza docs at https://dune.readthedocs.io/en/stable/reference/dune-project/index.html
+  ("keyword:extraction" "logpath:LambdaBox")))

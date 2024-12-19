@@ -38,7 +38,3 @@ Definition box_to_wasm (p : EAst.program) :=
 
 Definition run_translation (p : EAst.program) :=
     run_pipeline EAst.program string default_opts p box_to_wasm.
-
-
-
-(* Eval vm_compute in run_translation ([], tLambda (nNamed "x") (tRel 0)). *)

@@ -5,7 +5,7 @@ synopsis: "Coq extraction"
 description: """
 A framework for extracting lambda box programs
 """
-maintainer: "4ever2"
+maintainer: "The COBRA team"
 authors: "The COBRA team"
 license: "MIT"
 homepage: "https://github.com/AU-COBRA/lambda-box-extraction"

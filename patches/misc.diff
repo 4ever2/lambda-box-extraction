@@ -1,0 +1,13 @@
+diff --git a/src/Transform.ml b/src/Transform.ml
+index 565f605..43b6458 100644
+--- a/src/Transform.ml
++++ b/src/Transform.ml
+@@ -6,7 +6,7 @@ let __ = let rec f _ = Obj.repr f in Obj.repr f
+ 
+ (** val time : String.t -> ('a1 -> 'a2) -> 'a1 -> 'a2 **)
+ 
+-let time = (fun c f x -> let s = Caml_bytestring.caml_string_of_bytestring c in Tm_util.time (Pp.str s) f x)
++let time = (fun c f x -> f x)
+ 
+ module Transform =
+  struct

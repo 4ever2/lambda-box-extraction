@@ -1,6 +1,6 @@
 (library
  (name lib)
- (libraries stdlib-shims unix sexplib)
+ (libraries stdlib-shims unix sexplib coq-primitive.uint63 coq-primitive.float64)
  (preprocess (pps ppx_sexp_conv))
  )
  ;(libraries stdlib-shims coq-metacoq-template-ocaml.plugin))

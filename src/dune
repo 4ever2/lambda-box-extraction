@@ -1,0 +1,11 @@
+(library
+ (name lib)
+ (libraries stdlib-shims unix sexplib)
+ (preprocess (pps ppx_sexp_conv))
+ )
+ ;(libraries stdlib-shims coq-metacoq-template-ocaml.plugin))
+
+(env
+ (dev
+  (flags
+   (:standard -w -20 -w -27 -w -32 -w -33 -w -34 -w -39 -w -60 -w -67 -w -8))))

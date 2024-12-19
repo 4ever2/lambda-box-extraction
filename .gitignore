@@ -54,6 +54,8 @@ nra.cache
 ## extraction output
 *.out
 
+## Dune build directory
+_build/
 
 ## Editors
 

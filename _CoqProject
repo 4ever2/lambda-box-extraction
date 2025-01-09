@@ -1,3 +1,4 @@
 -Q theories LambdaBox
 theories/Translations.v
 theories/Extraction.v
+theories/CoqToLambdaBox.v

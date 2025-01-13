@@ -30,5 +30,7 @@ Set Warnings "-extraction-opaque-accessed".
 Set Warnings "-extraction-logical-axiom".
 Set Extraction Output Directory "src/".
 
-Separate Extraction Translations.run_translation.
+From LambdaBox Require SerializeEAst.
+Separate Extraction Translations.run_translation SerializeEAst.term_of_string.
+
 Recursive Extraction Library BinPos.

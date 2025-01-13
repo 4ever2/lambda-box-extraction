@@ -3,4 +3,3 @@ theories/Translations.v
 theories/Extraction.v
 theories/CoqToLambdaBox.v
 theories/SerializeEAst.v
-theories/ExtractSerializers.v

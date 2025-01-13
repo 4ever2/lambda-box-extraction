@@ -74,3 +74,96 @@ Instance Serialize_term : Serialize term :=
     | tLazy t => [ Atom "tLazy"; sz t ]
     | tForce t => [ Atom "tForce"; sz t ]
     end%sexp.
+
+
+
+
+
+
+
+Instance Deserialize_ident : Deserialize Kernames.ident :=
+  fun l e =>
+    match e with
+    | Atom_ (Str s) => inr (s_to_bs s)
+    | _ => inl (DeserError l "error")
+    end.
+
+Instance Deserialize_dirpath : Deserialize Kernames.dirpath :=
+ fun l e =>
+    _from_sexp l e.
+
+Instance Deserialize_modpath : Deserialize Kernames.modpath :=
+  fix ds (l : loc) (e : sexp) : error + Kernames.modpath :=
+    Deser.match_con "modpath" []
+      [ ("MPfile", Deser.con1_ Kernames.MPfile)
+      ; ("MPbound", Deser.con3_ Kernames.MPbound)
+      ; ("MPdot", Deser.con2 Kernames.MPdot ds _from_sexp )
+      ] l e.
+
+Instance Deserialize_kername : Deserialize Kernames.kername :=
+ fun l e =>
+    _from_sexp l e.
+
+Instance Deserialize_inductive : Deserialize Kernames.inductive :=
+  fun l e =>
+    Deser.match_con "inductive" []
+      [ ("inductive", Deser.con2_ Kernames.mkInd) ]
+      l e.
+
+Instance Deserialize_projection : Deserialize Kernames.projection :=
+  fun l e =>
+    Deser.match_con "projection" []
+      [ ("projection", Deser.con3_ Kernames.mkProjection) ]
+      l e.
+
+Instance Deserialize_name : Deserialize BasicAst.name :=
+  fun l e =>
+    Deser.match_con "name"
+      [ ("nAnon", BasicAst.nAnon) ]
+      [ ("nNamed", Deser.con1_ BasicAst.nNamed) ]
+      l e.
+
+Instance Deserialize_def {T : Set} `{Deserialize T} : Deserialize (def T) :=
+  fun l e =>
+    Deser.match_con "def" []
+      [ ("def", Deser.con3_ (@Build_def T)) ]
+      l e.
+
+Instance Deserialize_mfixpoint {T : Set} `{Deserialize T} : Deserialize (mfixpoint T) :=
+ fun l e =>
+    _from_sexp l e.
+
+Timeout 30
+#[bypass_check(guard)]
+Fixpoint deserialize_term (l : loc) (e : sexp) {struct e} : error + term :=
+    let ds := deserialize_term in
+    let ds_term_list : FromSexp (list term) := fun l e => @_from_sexp (list term) (@Deserialize_list term ds) l e in
+    let ds_mfixpoint : FromSexp (mfixpoint term) := @_from_sexp (mfixpoint term) (@Deserialize_mfixpoint term ds) in
+    let ds_cases : FromSexp (list (list BasicAst.name * term)) := @_from_sexp (list (list BasicAst.name * term))
+      (@Deserialize_list (list BasicAst.name * term) (@Deserialize_prod (list BasicAst.name) term _from_sexp ds)) in
+    Deser.match_con "term"
+      [ ("tBox", tBox) ]
+      [ ("tRel", Deser.con1_ tRel)
+      ; ("tVar", Deser.con1_ tVar)
+      ; ("tEvar", Deser.con2 tEvar _from_sexp ds_term_list)
+      ; ("tLambda", Deser.con2 tLambda _from_sexp ds)
+      ; ("tLetIn", Deser.con3 tLetIn _from_sexp ds ds)
+      ; ("tApp", Deser.con2 tApp ds ds)
+      ; ("tConst", Deser.con1_ tConst)
+      ; ("tConstruct", Deser.con3 tConstruct _from_sexp _from_sexp ds_term_list)
+      ; ("tCase", Deser.con3 tCase _from_sexp ds ds_cases)
+      ; ("tProj", Deser.con2 tProj _from_sexp ds)
+      ; ("tFix", Deser.con2 tFix ds_mfixpoint _from_sexp)
+      ; ("tCoFix", Deser.con2 tCoFix ds_mfixpoint _from_sexp)
+      (* ; ("tPrim", Deser.con? tPrim) *) (* Unsupported *)
+      ; ("tLazy", Deser.con1 tLazy ds)
+      ; ("tForce", Deser.con1 tForce ds)
+      ]
+      l e.
+
+Instance Deserialize_term : Deserialize term :=
+  deserialize_term.
+
+
+Definition term_of_string (s : string) : error + term :=
+  from_string s.

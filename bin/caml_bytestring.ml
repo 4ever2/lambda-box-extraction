@@ -11,7 +11,7 @@ let caml_string_of_bytestring (l : Lib.Bytestring.String.t) : string =
   let rec aux i = function
     | Lib.Bytestring.String.EmptyString -> ()
     | Lib.Bytestring.String.String (c, cs) ->
-      Bytes.set buf i (Caml_byte.char_of_byte c); aux (succ i) cs
+      Bytes.set buf i c; aux (succ i) cs
   in
   aux 0 l;
   Bytes.to_string buf
@@ -19,5 +19,5 @@ let caml_string_of_bytestring (l : Lib.Bytestring.String.t) : string =
 let bytestring_of_caml_string (s : string) : Lib.Bytestring.String.t =
   let rec aux acc i =
     if i < 0 then acc
-    else aux (Lib.Bytestring.String.String (Caml_byte.byte_of_char s.[i], acc)) (i - 1)
+    else aux (Lib.Bytestring.String.String (s.[i], acc)) (i - 1)
   in aux Lib.Bytestring.String.EmptyString (String.length s - 1)

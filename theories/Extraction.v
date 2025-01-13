@@ -30,6 +30,7 @@ Set Warnings "-extraction-opaque-accessed".
 Set Warnings "-extraction-logical-axiom".
 Set Extraction Output Directory "src/".
 
+From Coq Require Import  ExtrOcamlNativeString.
 From LambdaBox Require SerializeEAst.
 Separate Extraction Translations.run_translation SerializeEAst.term_of_string.
 

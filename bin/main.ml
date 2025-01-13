@@ -10,8 +10,7 @@ let read_ast f : term =
   close_in c;
   print_endline "Compiling:";
   print_endline s;
-  let s = s |> String.trim |> String.to_seq |> List.of_seq in
-  let t = term_of_string s in
+  let t = term_of_string (String.trim s) in
   match t with
   | Lib.Datatypes.Coq_inr t -> t
   | _ -> failwith "Could not parse s-expr"

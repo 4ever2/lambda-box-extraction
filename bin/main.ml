@@ -1,7 +1,11 @@
 open Lib.Translations
 open Lib.EAst
+open Lib2.SerializeEAst
 
 
+
+
+external convertTerm : Lib2.EAst.term -> term = "%identity"
 
 let read_ast f : term =
   let c = open_in f in
@@ -9,7 +13,12 @@ let read_ast f : term =
   close_in c;
   print_endline "Compiling:";
   print_endline s;
-  Lib.EAst.term_of_sexp (Sexplib.Sexp.of_string (String.trim s))
+  (* Lib.EAst.term_of_sexp (Sexplib.Sexp.of_string (String.trim s)) *)
+  let s = s |> String.trim |> String.to_seq |> List.of_seq in
+  let t = term_of_string s in
+  match t with
+  | Lib2.Datatypes.Coq_inr t -> convertTerm t
+  | _ -> failwith "Could not parse s-expr"
 
 let write_wasm f p =
   let f = open_out f in

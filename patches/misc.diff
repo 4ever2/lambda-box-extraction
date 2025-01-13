@@ -2,7 +2,7 @@ diff --git a/src/Transform.ml b/src/Transform.ml
 index 565f605..43b6458 100644
 --- a/src/Transform.ml
 +++ b/src/Transform.ml
-@@ -6,7 +6,7 @@ let __ = let rec f _ = Obj.repr f in Obj.repr f
+@@ -5,7 +5,7 @@ let __ = let rec f _ = Obj.repr f in Obj.repr f
  
  (** val time : String.t -> ('a1 -> 'a2) -> 'a1 -> 'a2 **)
  

@@ -11,6 +11,11 @@ theory: CoqMakefile
 clean: CoqMakefile
 	+@make -f CoqMakefile clean
 	rm -f CoqMakefile
+	dune clean
+	find src/. -type f -name "*.ml" -delete
+	find src/. -type f -name "*.mli" -delete
+	find src2/. -type f -name "*.ml" -delete
+	find src2/. -type f -name "*.mli" -delete
 .PHONY: clean
 
 install: CoqMakefile

@@ -1,5 +1,3 @@
-diff --git a/src/Decimal.ml b/src/Decimal.ml
-index ad2118b..817e553 100644
 --- a/src/Decimal.ml
 +++ b/src/Decimal.ml
 @@ -51,6 +51,10 @@ let rec uint_rec f f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 = function
@@ -13,8 +11,6 @@ index ad2118b..817e553 100644
  type decimal =
  | Decimal of decimal_int * uint
  | DecimalExp of decimal_int * uint * decimal_int
-diff --git a/src/decimal.mli b/src/decimal.mli
-index 647afe9..a3932cd 100644
 --- a/src/Decimal.mli
 +++ b/src/Decimal.mli
 @@ -25,6 +25,10 @@ val uint_rec :
@@ -28,8 +24,6 @@ index 647afe9..a3932cd 100644
  type decimal =
  | Decimal of decimal_int * uint
  | DecimalExp of decimal_int * uint * decimal_int
-diff --git a/src/hexadecimal.ml b/src/hexadecimal.ml
-index e03baf7..6e94744 100644
 --- a/src/hexadecimal.ml
 +++ b/src/hexadecimal.ml
 @@ -112,6 +112,10 @@ let rec uint_rec f f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 = funct
@@ -43,8 +37,6 @@ index e03baf7..6e94744 100644
  type hexadecimal =
  | Hexadecimal of hexadecimal_int * uint
  | HexadecimalExp of hexadecimal_int * uint * decimal_int
-diff --git a/src/hexadecimal.mli b/src/hexadecimal.mli
-index 191b286..e9d9ad4 100644
 --- a/src/hexadecimal.mli
 +++ b/src/hexadecimal.mli
 @@ -36,6 +36,10 @@ val uint_rec :
@@ -58,8 +50,6 @@ index 191b286..e9d9ad4 100644
  type hexadecimal =
  | Hexadecimal of hexadecimal_int * uint
  | HexadecimalExp of hexadecimal_int * uint * decimal_int
-diff --git a/src/number0.ml b/src/number0.ml
-index 3cedbf3..4eb1572 100644
 --- a/src/number0.ml
 +++ b/src/number0.ml
 @@ -9,6 +9,10 @@ type number =
@@ -73,8 +63,6 @@ index 3cedbf3..4eb1572 100644
  (** val uint_beq : uint -> uint -> bool **)
 
  let uint_beq x y =
-diff --git a/src/number0.mli b/src/number0.mli
-index 841d84e..3b2e5ca 100644
 --- a/src/number0.mli
 +++ b/src/number0.mli
 @@ -9,6 +9,10 @@ type number =

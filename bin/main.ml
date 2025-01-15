@@ -4,13 +4,13 @@ open Lib.SerializeEAst
 
 
 
-let read_ast f : term =
+let read_ast f : program =
   let c = open_in f in
   let s = really_input_string c (in_channel_length c) in
   close_in c;
   print_endline "Compiling:";
   print_endline s;
-  let t = term_of_string (String.trim s) in
+  let t = program_of_string (String.trim s) in
   match t with
   | Lib.Datatypes.Coq_inr t -> t
   | _ -> failwith "Could not parse s-expr"
@@ -22,7 +22,7 @@ let write_wasm f p =
   flush f;
   close_out f
 
-let p = run_translation ([], (read_ast "test.ast"))
+let p = run_translation (read_ast "test.ast")
 let () =
   match p with
   | (Lib.CompM.Ret prg, dbg) ->

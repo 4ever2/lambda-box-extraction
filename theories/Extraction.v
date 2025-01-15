@@ -32,6 +32,6 @@ Set Extraction Output Directory "src/".
 
 From Coq Require Import  ExtrOcamlNativeString.
 From LambdaBox Require SerializeEAst.
-Separate Extraction Translations.run_translation SerializeEAst.term_of_string.
+Separate Extraction Translations.run_translation SerializeEAst.program_of_string.
 
 Recursive Extraction Library BinPos.

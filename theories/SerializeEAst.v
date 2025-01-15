@@ -77,6 +77,67 @@ Instance Serialize_term : Serialize term :=
 
 
 
+Instance Serialize_allowed_eliminations : Serialize Universes.allowed_eliminations :=
+  fun x =>
+    match x with
+    | Universes.IntoSProp => Atom "IntoSProp"
+    | Universes.IntoPropSProp => Atom "IntoPropSProp"
+    | Universes.IntoSetPropSProp => Atom "IntoSetPropSProp"
+    | Universes.IntoAny => Atom "IntoAny"
+    end%sexp.
+
+Instance Serialize_constructor_body : Serialize constructor_body :=
+  fun cb =>
+    [ Atom "constructor_body"; to_sexp (cstr_name cb); to_sexp (cstr_nargs cb) ]%sexp.
+
+Instance Serialize_projection_body : Serialize projection_body :=
+  fun pb =>
+    [ Atom "projection_body"; to_sexp (proj_name pb) ]%sexp.
+
+Instance Serialize_one_inductive_body : Serialize one_inductive_body :=
+  fun oib =>
+    [ Atom "one_inductive_body"
+    ; to_sexp (ind_name oib)
+    ; to_sexp (ind_propositional oib)
+    ; to_sexp (ind_kelim oib)
+    ; to_sexp (ind_ctors oib)
+    ; to_sexp (ind_projs oib)
+    ]%sexp.
+
+Instance Serialize_recursivity_kind : Serialize BasicAst.recursivity_kind :=
+  fun x =>
+    match x with
+    | BasicAst.Finite => Atom "Finite"
+    | BasicAst.CoFinite => Atom "CoFinite"
+    | BasicAst.BiFinite => Atom "BiFinite"
+    end%sexp.
+
+Instance Serialize_mutual_inductive_body : Serialize mutual_inductive_body :=
+  fun mib =>
+    [ Atom "mutual_inductive_body"
+    ; to_sexp (ind_finite mib)
+    ; to_sexp (ind_npars mib)
+    ; to_sexp (ind_bodies mib)
+    ]%sexp.
+
+Instance Serialize_constant_body : Serialize constant_body :=
+  fun cb =>
+    [ Atom "constant_body"
+    ; to_sexp (cst_body cb)
+    ]%sexp.
+
+Instance Serialize_global_decl : Serialize global_decl :=
+  fun gd =>
+    match gd with
+    | ConstantDecl cb => [ Atom "ConstantDecl"; to_sexp cb ]
+    | InductiveDecl mib => [ Atom "InductiveDecl"; to_sexp mib ]
+    end%sexp.
+
+Instance Serialize_global_declarations : Serialize global_declarations :=
+  fun gd =>
+    to_sexp gd.
+
+
 
 
 

@@ -13,7 +13,11 @@ let read_ast f : program =
   let t = program_of_string (String.trim s) in
   match t with
   | Lib.Datatypes.Coq_inr t -> t
-  | _ -> failwith "Could not parse s-expr"
+  | Lib.Datatypes.Coq_inl e ->
+    let err_msg = Lib.CeresExtra.string_of_error true true e in
+    print_endline "Failed parsing input program";
+    print_endline err_msg;
+    exit 1
 
 let write_wasm f p =
   let f = open_out f in

@@ -226,5 +226,77 @@ Instance Deserialize_term : Deserialize term :=
   deserialize_term.
 
 
+
+Instance Deserialize_allowed_eliminations : Deserialize Universes.allowed_eliminations :=
+  fun l e =>
+    Deser.match_con "allowed_eliminations"
+      [ ("IntoSProp", Universes.IntoSProp)
+      ; ("IntoPropSProp", Universes.IntoPropSProp)
+      ; ("IntoSetPropSProp", Universes.IntoSetPropSProp)
+      ; ("IntoAny", Universes.IntoAny)
+      ]
+      []
+      l e.
+
+Instance Deserialize_constructor_body : Deserialize constructor_body :=
+  fun l e =>
+    Deser.match_con "constructor_body" []
+      [ ("constructor_body", Deser.con2_ mkConstructor) ]
+      l e.
+
+Instance Deserialize_projection_body : Deserialize projection_body :=
+  fun l e =>
+    Deser.match_con "projection_body" []
+      [ ("projection_body", Deser.con1_ mkProjection) ]
+      l e.
+
+Instance Deserialize_one_inductive_body : Deserialize one_inductive_body :=
+  fun l e =>
+    Deser.match_con "one_inductive_body" []
+      [ ("one_inductive_body", Deser.con5_ Build_one_inductive_body) ]
+      l e.
+
+Instance Deserialize_recursivity_kind : Deserialize BasicAst.recursivity_kind :=
+  fun l e =>
+    Deser.match_con "recursivity_kind"
+      [ ("Finite", BasicAst.Finite)
+      ; ("CoFinite", BasicAst.CoFinite)
+      ; ("BiFinite", BasicAst.BiFinite)
+      ]
+      []
+      l e.
+
+Instance Deserialize_mutual_inductive_body : Deserialize mutual_inductive_body :=
+  fun l e =>
+    Deser.match_con "mutual_inductive_body" []
+      [ ("mutual_inductive_body", Deser.con3_ Build_mutual_inductive_body) ]
+      l e.
+
+Instance Deserialize_constant_body : Deserialize constant_body :=
+  fun l e =>
+    Deser.match_con "constant_body" []
+      [ ("constant_body", Deser.con1_ Build_constant_body) ]
+      l e.
+
+Instance Deserialize_global_decl : Deserialize global_decl :=
+  fun l e =>
+    Deser.match_con "global_decl"
+      []
+      [ ("ConstantDecl", Deser.con1_ ConstantDecl)
+      ; ("InductiveDecl", Deser.con1_ InductiveDecl)
+      ]
+      l e.
+
+Instance Deserialize_global_declarations : Deserialize global_declarations :=
+ fun l e =>
+    _from_sexp l e.
+
+
+
+
+
+
+
+
 Definition term_of_string (s : string) : error + term :=
   from_string s.

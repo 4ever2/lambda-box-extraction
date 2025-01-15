@@ -149,6 +149,15 @@ Instance Serialize_global_declarations : Serialize global_declarations :=
     to_sexp gd.
 
 
+
+(** ** Deserialize program *)
+
+Instance Serialize_program : Serialize program :=
+ fun p =>
+    to_sexp p.
+
+
+
 (** * Deserializers *)
 (** ** Common definitions deserializers *)
 
@@ -311,40 +320,20 @@ Instance Deserialize_global_declarations : Deserialize global_declarations :=
 
 
 
+(** ** Deserialize program *)
+
+Instance Deserialize_program : Deserialize program :=
+ fun l e =>
+    _from_sexp l e.
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+(** * Main deserialization functions *)
 Definition term_of_string (s : string) : error + term :=
+  from_string s.
+
+Definition context_of_string (s : string) : error + global_declarations :=
+  from_string s.
+
+Definition program_of_string (s : string) : error + program :=
   from_string s.

@@ -1,5 +1,5 @@
 From MetaCoq.Erasure Require Import EAst.
-From Coq Require Import List ZArith String.
+From Coq Require Import List String.
 From Ceres Require Import Ceres.
 From LambdaBox Require Import SerializeCommon.
 
@@ -7,9 +7,6 @@ Import ListNotations.
 Local Open Scope string_scope.
 
 
-
-Local Notation "'bs_to_s' s" := (bytestring.String.to_string s) (at level 200).
-Local Notation "'s_to_bs' s" := (bytestring.String.of_string s) (at level 200).
 
 (** * Serializers *)
 

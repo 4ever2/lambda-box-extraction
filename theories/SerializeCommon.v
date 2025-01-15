@@ -1,5 +1,6 @@
+From MetaCoq.Utils Require bytestring.
 From MetaCoq.Erasure Require Import EAst.
-From Coq Require Import List ZArith String.
+From Coq Require Import List String.
 From Ceres Require Import Ceres.
 
 Import ListNotations.
@@ -7,15 +8,12 @@ Local Open Scope string_scope.
 
 
 
-Local Notation "'bs_to_s' s" := (bytestring.String.to_string s) (at level 200).
-Local Notation "'s_to_bs' s" := (bytestring.String.of_string s) (at level 200).
-
 (** * Serializers *)
 
 (** ** Kername *)
 Instance Serialize_ident : Serialize Kernames.ident :=
   fun i =>
-    Atom (Str (bs_to_s i)).
+    Atom (Str (bytestring.String.to_string i)).
 
 Instance Serialize_dirpath : Serialize Kernames.dirpath :=
   fun d =>
@@ -75,7 +73,7 @@ Instance Serialize_allowed_eliminations : Serialize Universes.allowed_eliminatio
 Instance Deserialize_ident : Deserialize Kernames.ident :=
   fun l e =>
     match e with
-    | Atom_ (Str s) => inr (s_to_bs s)
+    | Atom_ (Str s) => inr (bytestring.String.of_string s)
     | _ => inl (DeserError l "error")
     end.
 

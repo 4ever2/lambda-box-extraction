@@ -1,14 +1,4 @@
-From MetaCoq.Erasure Require Import ExAst.
-From Coq Require Import List ZArith String.
 From Ceres Require Import Ceres.
-
-Import ListNotations.
-Local Open Scope string_scope.
-
-
-
-Local Notation "'bs_to_s' s" := (bytestring.String.to_string s) (at level 200).
-Local Notation "'s_to_bs' s" := (bytestring.String.of_string s) (at level 200).
 
 
 Local Notation "p >>= f" := (Deser.bind_field p f) (at level 50, left associativity) : deser_scope.

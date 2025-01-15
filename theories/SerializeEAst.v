@@ -1,5 +1,6 @@
 From MetaCoq.Erasure Require Import EAst.
-From Coq Require Import List ZArith_base String.
+From Coq Require Import List.
+From Coq Require Import String.
 From Ceres Require Import Ceres.
 From LambdaBox Require Import SerializeCommon.
 From LambdaBox Require Import SerializePrimitives.

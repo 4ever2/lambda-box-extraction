@@ -1,6 +1,9 @@
 From MetaCoq.Utils Require bytestring.
-From MetaCoq.Erasure Require Import EAst.
-From Coq Require Import List String.
+From MetaCoq.Common Require Import BasicAst.
+From MetaCoq.Common Require Import Kernames.
+From MetaCoq.Common Require Import Universes.
+From Coq Require Import List.
+From Coq Require Import String.
 From Ceres Require Import Ceres.
 
 Import ListNotations.
@@ -11,58 +14,58 @@ Local Open Scope string_scope.
 (** * Serializers *)
 
 (** ** Kername *)
-Instance Serialize_ident : Serialize Kernames.ident :=
+Instance Serialize_ident : Serialize ident :=
   fun i =>
     Atom (Str (bytestring.String.to_string i)).
 
-Instance Serialize_dirpath : Serialize Kernames.dirpath :=
+Instance Serialize_dirpath : Serialize dirpath :=
   fun d =>
     to_sexp d.
 
-Instance Serialize_modpath : Serialize Kernames.modpath :=
-  fix sz (m : Kernames.modpath) : sexp :=
+Instance Serialize_modpath : Serialize modpath :=
+  fix sz (m : modpath) : sexp :=
     match m with
-    | Kernames.MPfile dp => [ Atom "MPfile"; to_sexp dp ]
-    | Kernames.MPbound dp id i => [ Atom "MPbound"; to_sexp dp; to_sexp id; to_sexp i ]
-    | Kernames.MPdot mp id => [ Atom "MPdot"; sz mp; to_sexp id ]
+    | MPfile dp => [ Atom "MPfile"; to_sexp dp ]
+    | MPbound dp id i => [ Atom "MPbound"; to_sexp dp; to_sexp id; to_sexp i ]
+    | MPdot mp id => [ Atom "MPdot"; sz mp; to_sexp id ]
     end%sexp.
 
-Instance Serialize_kername : Serialize Kernames.kername :=
+Instance Serialize_kername : Serialize kername :=
   fun kn =>
     to_sexp kn.
 
-Instance Serialize_inductive : Serialize Kernames.inductive :=
+Instance Serialize_inductive : Serialize inductive :=
   fun i =>
-    [ Atom "inductive"; to_sexp (Kernames.inductive_mind i); to_sexp (Kernames.inductive_ind i) ]%sexp.
+    [ Atom "inductive"; to_sexp (inductive_mind i); to_sexp (inductive_ind i) ]%sexp.
 
-Instance Serialize_projection : Serialize Kernames.projection :=
+Instance Serialize_projection : Serialize projection :=
   fun p =>
-    [ Atom "projection"; to_sexp (Kernames.proj_ind p); to_sexp (Kernames.proj_npars p); to_sexp (Kernames.proj_arg p) ]%sexp.
+    [ Atom "projection"; to_sexp (proj_ind p); to_sexp (proj_npars p); to_sexp (proj_arg p) ]%sexp.
 
 (** ** BasicAst *)
-Instance Serialize_name : Serialize BasicAst.name :=
+Instance Serialize_name : Serialize name :=
   fun n =>
     match n with
-    | BasicAst.nAnon => Atom "nAnon"
-    | BasicAst.nNamed i => [ Atom "nNamed"; to_sexp i ]
+    | nAnon => Atom "nAnon"
+    | nNamed i => [ Atom "nNamed"; to_sexp i ]
     end%sexp.
 
-Instance Serialize_recursivity_kind : Serialize BasicAst.recursivity_kind :=
+Instance Serialize_recursivity_kind : Serialize recursivity_kind :=
   fun x =>
     match x with
-    | BasicAst.Finite => Atom "Finite"
-    | BasicAst.CoFinite => Atom "CoFinite"
-    | BasicAst.BiFinite => Atom "BiFinite"
+    | Finite => Atom "Finite"
+    | CoFinite => Atom "CoFinite"
+    | BiFinite => Atom "BiFinite"
     end%sexp.
 
 (** ** Universe *)
-Instance Serialize_allowed_eliminations : Serialize Universes.allowed_eliminations :=
+Instance Serialize_allowed_eliminations : Serialize allowed_eliminations :=
   fun x =>
     match x with
-    | Universes.IntoSProp => Atom "IntoSProp"
-    | Universes.IntoPropSProp => Atom "IntoPropSProp"
-    | Universes.IntoSetPropSProp => Atom "IntoSetPropSProp"
-    | Universes.IntoAny => Atom "IntoAny"
+    | IntoSProp => Atom "IntoSProp"
+    | IntoPropSProp => Atom "IntoPropSProp"
+    | IntoSetPropSProp => Atom "IntoSetPropSProp"
+    | IntoAny => Atom "IntoAny"
     end%sexp.
 
 
@@ -70,67 +73,67 @@ Instance Serialize_allowed_eliminations : Serialize Universes.allowed_eliminatio
 (** * Deserializers *)
 
 (** ** Kername *)
-Instance Deserialize_ident : Deserialize Kernames.ident :=
+Instance Deserialize_ident : Deserialize ident :=
   fun l e =>
     match e with
     | Atom_ (Str s) => inr (bytestring.String.of_string s)
     | _ => inl (DeserError l "error")
     end.
 
-Instance Deserialize_dirpath : Deserialize Kernames.dirpath :=
+Instance Deserialize_dirpath : Deserialize dirpath :=
  fun l e =>
     _from_sexp l e.
 
-Instance Deserialize_modpath : Deserialize Kernames.modpath :=
-  fix ds (l : loc) (e : sexp) : error + Kernames.modpath :=
+Instance Deserialize_modpath : Deserialize modpath :=
+  fix ds (l : loc) (e : sexp) : error + modpath :=
     Deser.match_con "modpath" []
-      [ ("MPfile", Deser.con1_ Kernames.MPfile)
-      ; ("MPbound", Deser.con3_ Kernames.MPbound)
-      ; ("MPdot", Deser.con2 Kernames.MPdot ds _from_sexp )
+      [ ("MPfile", Deser.con1_ MPfile)
+      ; ("MPbound", Deser.con3_ MPbound)
+      ; ("MPdot", Deser.con2 MPdot ds _from_sexp )
       ] l e.
 
-Instance Deserialize_kername : Deserialize Kernames.kername :=
+Instance Deserialize_kername : Deserialize kername :=
  fun l e =>
     _from_sexp l e.
 
-Instance Deserialize_inductive : Deserialize Kernames.inductive :=
+Instance Deserialize_inductive : Deserialize inductive :=
   fun l e =>
     Deser.match_con "inductive" []
-      [ ("inductive", Deser.con2_ Kernames.mkInd) ]
+      [ ("inductive", Deser.con2_ mkInd) ]
       l e.
 
-Instance Deserialize_projection : Deserialize Kernames.projection :=
+Instance Deserialize_projection : Deserialize projection :=
   fun l e =>
     Deser.match_con "projection" []
-      [ ("projection", Deser.con3_ Kernames.mkProjection) ]
+      [ ("projection", Deser.con3_ mkProjection) ]
       l e.
 
 (** ** BasicAst *)
-Instance Deserialize_name : Deserialize BasicAst.name :=
+Instance Deserialize_name : Deserialize name :=
   fun l e =>
     Deser.match_con "name"
-      [ ("nAnon", BasicAst.nAnon) ]
-      [ ("nNamed", Deser.con1_ BasicAst.nNamed) ]
+      [ ("nAnon", nAnon) ]
+      [ ("nNamed", Deser.con1_ nNamed) ]
       l e.
 
-Instance Deserialize_recursivity_kind : Deserialize BasicAst.recursivity_kind :=
+Instance Deserialize_recursivity_kind : Deserialize recursivity_kind :=
   fun l e =>
     Deser.match_con "recursivity_kind"
-      [ ("Finite", BasicAst.Finite)
-      ; ("CoFinite", BasicAst.CoFinite)
-      ; ("BiFinite", BasicAst.BiFinite)
+      [ ("Finite", Finite)
+      ; ("CoFinite", CoFinite)
+      ; ("BiFinite", BiFinite)
       ]
       []
       l e.
 
 (** ** Universe *)
-Instance Deserialize_allowed_eliminations : Deserialize Universes.allowed_eliminations :=
+Instance Deserialize_allowed_eliminations : Deserialize allowed_eliminations :=
   fun l e =>
     Deser.match_con "allowed_eliminations"
-      [ ("IntoSProp", Universes.IntoSProp)
-      ; ("IntoPropSProp", Universes.IntoPropSProp)
-      ; ("IntoSetPropSProp", Universes.IntoSetPropSProp)
-      ; ("IntoAny", Universes.IntoAny)
+      [ ("IntoSProp", IntoSProp)
+      ; ("IntoPropSProp", IntoPropSProp)
+      ; ("IntoSetPropSProp", IntoSetPropSProp)
+      ; ("IntoAny", IntoAny)
       ]
       []
       l e.

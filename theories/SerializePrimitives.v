@@ -1,26 +1,35 @@
-From MetaCoq.Erasure Require Import EAst.
-From Coq Require Import List ZArith_base String.
+From Coq Require Import List.
+From Coq Require Import ZArith_base.
+From Coq Require Import String.
+From Coq Require PrimInt63.
+From Coq Require PrimFloat.
 From Ceres Require Import Ceres.
-From LambdaBox Require Import SerializeCommon.
+
+From MetaCoq.Common Require Import Primitive.
+From MetaCoq.Erasure Require Import EPrimitive.
 
 Import ListNotations.
 Local Open Scope string_scope.
 
 
 
+(** * Axioms *)
+(* TODO: resolve axioms *)
+Axiom Z_of_prim_int : PrimInt63.int -> Z.
+Axiom string_of_prim_float : PrimFloat.float -> string.
+Axiom prim_int_of_Z : Z -> PrimInt63.int.
+Axiom prim_float_of_string : string -> PrimFloat.float.
+
+
+
 (** * Serializers *)
 
-(* TODO *)
-Axiom Z_of_prim_int : PrimInt63.int -> Z.
-(* TODO *)
-Axiom string_of_prim_float : PrimFloat.float -> string.
-
-Instance Serialize_prim_tag : Serialize Primitive.prim_tag :=
+Instance Serialize_prim_tag : Serialize prim_tag :=
   fun t =>
     match t with
-    | Primitive.primInt => Atom "primInt"
-    | Primitive.primFloat => Atom "primFloat"
-    | Primitive.primArray => Atom "primArray"
+    | primInt => Atom "primInt"
+    | primFloat => Atom "primFloat"
+    | primArray => Atom "primArray"
     end%sexp.
 
 Instance Serialize_prim_int : Serialize PrimInt63.int :=
@@ -29,34 +38,29 @@ Instance Serialize_prim_int : Serialize PrimInt63.int :=
 Instance Serialize_prim_float : Serialize PrimFloat.float :=
   fun f => Atom (Str (string_of_prim_float f)).
 
-Instance Serialize_array_model {T : Set} `{Serialize T} : Serialize (EPrimitive.array_model T) :=
+Instance Serialize_array_model {T : Set} `{Serialize T} : Serialize (array_model T) :=
   fun a =>
-    [ Atom "array_model"; to_sexp (EPrimitive.array_default a); to_sexp (EPrimitive.array_value a) ]%sexp.
+    [ Atom "array_model"; to_sexp (array_default a); to_sexp (array_value a) ]%sexp.
 
-Instance Serialize_prim_val {T : Set} `{Serialize T} : Serialize (EPrimitive.prim_val T) :=
+Instance Serialize_prim_val {T : Set} `{Serialize T} : Serialize (prim_val T) :=
   fun p =>
-    let t := EPrimitive.prim_val_tag p in
-    match EPrimitive.prim_val_model p with
-    | EPrimitive.primIntModel i => to_sexp (t, i)
-    | EPrimitive.primFloatModel f => to_sexp (t, f)
-    | EPrimitive.primArrayModel a => to_sexp (t, a)
+    let t := prim_val_tag p in
+    match prim_val_model p with
+    | primIntModel i => to_sexp (t, i)
+    | primFloatModel f => to_sexp (t, f)
+    | primArrayModel a => to_sexp (t, a)
     end.
 
 
 
 (** * Deserializers *)
 
-(* TODO *)
-Axiom prim_int_of_Z : Z -> PrimInt63.int.
-(* TODO *)
-Axiom prim_float_of_string : string -> PrimFloat.float.
-
-Instance Deerialize_prim_tag : Deserialize Primitive.prim_tag :=
+Instance Deerialize_prim_tag : Deserialize prim_tag :=
   fun l e =>
     Deser.match_con "prim_tag"
-      [ ("primInt", Primitive.primInt)
-      ; ("primFloat", Primitive.primFloat)
-      ; ("primArray", Primitive.primArray)
+      [ ("primInt", primInt)
+      ; ("primFloat", primFloat)
+      ; ("primArray", primArray)
       ]
       [] l e.
 
@@ -74,34 +78,34 @@ Instance Deserialize_prim_float : Deserialize PrimFloat.float :=
     | _ => inl (DeserError l "error")
     end.
 
-Instance Deserialize_array_model {T : Set} `{Deserialize T} : Deserialize (EPrimitive.array_model T) :=
+Instance Deserialize_array_model {T : Set} `{Deserialize T} : Deserialize (array_model T) :=
   fun l e =>
     Deser.match_con "array_model" []
-      [ ("array_model", Deser.con2_ EPrimitive.Build_array_model) ]
+      [ ("array_model", Deser.con2_ Build_array_model) ]
       l e.
 
-Instance Deserialize_prim_val {T : Set} `{Deserialize T} : Deserialize (EPrimitive.prim_val T) :=
+Instance Deserialize_prim_val {T : Set} `{Deserialize T} : Deserialize (prim_val T) :=
   fun l e =>
     match e with
     | List (e1 :: e2 :: nil) =>
-      let t := @_from_sexp Primitive.prim_tag _ l e1 in
+      let t := @_from_sexp prim_tag _ l e1 in
       match t with
-      | inr Primitive.primInt =>
+      | inr primInt =>
         let v := @_from_sexp PrimInt63.int _ l e2 in
         match v with
-        | inr v => inr (EPrimitive.prim_int v)
+        | inr v => inr (prim_int v)
         | inl e => inl e
         end
-      | inr Primitive.primFloat =>
+      | inr primFloat =>
         let v := @_from_sexp PrimFloat.float _ l e2 in
         match v with
-        | inr v => inr (EPrimitive.prim_float v)
+        | inr v => inr (prim_float v)
         | inl e => inl e
         end
-      | inr Primitive.primArray =>
-        let v := @_from_sexp (EPrimitive.array_model T) _ l e2 in
+      | inr primArray =>
+        let v := @_from_sexp (array_model T) _ l e2 in
         match v with
-        | inr v => inr (EPrimitive.prim_array v)
+        | inr v => inr (prim_array v)
         | inl e => inl e
         end
       | inl e => inl e

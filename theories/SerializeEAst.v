@@ -90,7 +90,7 @@ Instance Serialize_global_declarations : Serialize global_declarations :=
 
 
 
-(** ** Deserialize program *)
+(** ** Serialize program *)
 
 Instance Serialize_program : Serialize program :=
  fun p =>

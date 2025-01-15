@@ -1,7 +1,8 @@
 From MetaCoq.Erasure Require Import EAst.
-From Coq Require Import List String.
+From Coq Require Import List ZArith_base String.
 From Ceres Require Import Ceres.
 From LambdaBox Require Import SerializeCommon.
+From LambdaBox Require Import SerializePrimitives.
 
 Import ListNotations.
 Local Open Scope string_scope.
@@ -11,6 +12,7 @@ Local Open Scope string_scope.
 (** * Serializers *)
 
 (** ** Term serializer *)
+
 Instance Serialize_def {T : Set} `{Serialize T} : Serialize (def T) :=
   fun d =>
     [ Atom "def"; to_sexp (dname d); to_sexp (dbody d); to_sexp (rarg d) ]%sexp.

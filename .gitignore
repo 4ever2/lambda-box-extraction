@@ -68,3 +68,9 @@ _build/
 ### VisualStudioCode Patch ###
 # Ignore all local history of files
 .history
+
+## Test files
+*.ast
+*.wasm
+*.rs
+*.elm

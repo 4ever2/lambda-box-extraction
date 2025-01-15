@@ -37,8 +37,7 @@ Instance Serialize_term : Serialize term :=
     | tProj p c => [ Atom "tProj"; to_sexp p; sz c ]
     | tFix mfix idx => [ Atom "tFix"; @to_sexp _ (@Serialize_mfixpoint _ sz) mfix; to_sexp idx ]
     | tCoFix mfix idx => [ Atom "tCoFix"; @to_sexp _ (@Serialize_mfixpoint _ sz) mfix; to_sexp idx  ]
-    (* | tPrim (prim : prim_val term) *)
-    | tPrim prim => [ Atom "tPrim" ] (* Unsupported *)
+    | tPrim prim => [ Atom "tPrim"; @to_sexp _ (@Serialize_prim_val _ sz) prim ]
     | tLazy t => [ Atom "tLazy"; sz t ]
     | tForce t => [ Atom "tForce"; sz t ]
     end%sexp.
@@ -121,6 +120,7 @@ Fixpoint deserialize_term (l : loc) (e : sexp) {struct e} : error + term :=
     let ds_mfixpoint : FromSexp (mfixpoint term) := @_from_sexp (mfixpoint term) (@Deserialize_mfixpoint term ds) in
     let ds_cases : FromSexp (list (list BasicAst.name * term)) := @_from_sexp (list (list BasicAst.name * term))
       (@Deserialize_list (list BasicAst.name * term) (@Deserialize_prod (list BasicAst.name) term _from_sexp ds)) in
+    let ds_prim : FromSexp (EPrimitive.prim_val term) := @_from_sexp (EPrimitive.prim_val term) (@Deserialize_prim_val term ds) in
     Deser.match_con "term"
       [ ("tBox", tBox) ]
       [ ("tRel", Deser.con1_ tRel)
@@ -135,7 +135,7 @@ Fixpoint deserialize_term (l : loc) (e : sexp) {struct e} : error + term :=
       ; ("tProj", Deser.con2 tProj _from_sexp ds)
       ; ("tFix", Deser.con2 tFix ds_mfixpoint _from_sexp)
       ; ("tCoFix", Deser.con2 tCoFix ds_mfixpoint _from_sexp)
-      (* ; ("tPrim", Deser.con? tPrim) *) (* Unsupported *)
+      ; ("tPrim", Deser.con1 tPrim ds_prim)
       ; ("tLazy", Deser.con1 tLazy ds)
       ; ("tForce", Deser.con1 tForce ds)
       ]

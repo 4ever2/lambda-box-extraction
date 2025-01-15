@@ -2,3 +2,8 @@
 theories/Translations.v
 theories/Extraction.v
 theories/CoqToLambdaBox.v
+theories/serialization/CeresExtra.v
+theories/serialization/SerializeCommon.v
+theories/serialization/SerializePrimitives.v
+theories/serialization/SerializeEAst.v
+theories/serialization/SerializeExAst.v

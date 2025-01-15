@@ -11,6 +11,9 @@ theory: CoqMakefile
 clean: CoqMakefile
 	+@make -f CoqMakefile clean
 	rm -f CoqMakefile
+	dune clean
+	find src/. -type f -name "*.ml" -delete
+	find src/. -type f -name "*.mli" -delete
 .PHONY: clean
 
 install: CoqMakefile
@@ -24,7 +27,7 @@ uninstall: CoqMakefile
 patch: theory
 	patch -p1 < patches/int.diff
 	patch -p1 < patches/misc.diff
-	patch -p1 < patches/sexp.diff
+	patch -p1 < patches/axioms.diff
 .PHONY: patch
 
 mllib: patch

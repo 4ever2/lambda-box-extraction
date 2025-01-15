@@ -51,14 +51,14 @@ Definition cic_to_box_typed p :=
 
 
 (* Example term *)
-Definition t (X : Type) (x : X) := x.
+(* Definition t (X : Type) (x : X) := x. *)
 
 (* Translate Coq def -> lambda_cic *)
-MetaCoq Quote Recursively Definition ex1 := t.
+(* MetaCoq Quote Recursively Definition ex1 := t. *)
 
 (* Translate lambda_cic -> lambda_box *)
-Eval vm_compute in cic_to_box ex1.
+(* Eval vm_compute in cic_to_box ex1. *)
 
 (* Translate lambda_cic -> lambda_boxtyped *)
 (* Note that this only translates the environment *)
-Eval vm_compute in cic_to_box_typed ex1.
+(* Eval vm_compute in cic_to_box_typed ex1. *)

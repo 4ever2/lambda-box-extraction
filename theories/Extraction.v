@@ -30,5 +30,10 @@ Set Warnings "-extraction-opaque-accessed".
 Set Warnings "-extraction-logical-axiom".
 Set Extraction Output Directory "src/".
 
-Separate Extraction Translations.run_translation.
+From Coq Require Import ExtrOcamlNativeString.
+From LambdaBox Require SerializeEAst.
+From LambdaBox Require SerializeExAst.
+From LambdaBox Require CeresExtra.
+Separate Extraction Translations.run_translation SerializeEAst.program_of_string SerializeExAst.global_env_of_string CeresExtra.string_of_error.
+
 Recursive Extraction Library BinPos.

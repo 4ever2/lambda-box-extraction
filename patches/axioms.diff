@@ -1,0 +1,17 @@
+--- a/src/SerializePrimitives.ml
++++ b/src/SerializePrimitives.ml
+@@ -7,12 +7,12 @@
+
+ (** val prim_int_of_Z : coq_Z -> Uint63.t **)
+
+-let prim_int_of_Z =
++let prim_int_of_Z x =
+   failwith "AXIOM TO BE REALIZED"
+
+ (** val prim_float_of_string : string -> Float64.t **)
+
+-let prim_float_of_string =
++let prim_float_of_string x =
+   failwith "AXIOM TO BE REALIZED"
+
+ (** val coq_Deerialize_prim_tag : prim_tag coq_Deserialize **)

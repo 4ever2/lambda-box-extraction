@@ -5,3 +5,4 @@ theories/CoqToLambdaBox.v
 theories/CeresExtra.v
 theories/SerializeCommon.v
 theories/SerializeEAst.v
+theories/SerializeExAst.v

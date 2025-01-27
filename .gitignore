@@ -68,7 +68,12 @@ _build/
 .history
 
 ## Test files
+theories/test
 *.ast
+!examples/*.ast
 *.wasm
+!examples/*.wasm
 *.rs
+!examples/*.rs
 *.elm
+!examples/*.elm

@@ -1,5 +1,5 @@
 (executable
- (public_name main)
+ (public_name lbox)
  (name main)
  (libraries lib sexplib)
  (preprocess (pps ppx_sexp_conv)))

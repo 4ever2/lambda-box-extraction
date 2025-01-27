@@ -33,8 +33,6 @@ Makefile.coq.conf
 *.aux
 *.d
 *.lia.cache
-doc/
-docs/
 _opam/
 .merlin
 META.*

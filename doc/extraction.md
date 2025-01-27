@@ -4,6 +4,7 @@
 ![extraction](pipeline.png)
 
 
+
 ## Translations
 * Coq -> $\lambda_{CIC}$
   * Quote function (Coq -> Coq AST) implemented in OCaml: https://github.com/MetaCoq/metacoq/blob/coq-8.20/template-coq/src/run_template_monad.ml#L442

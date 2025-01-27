@@ -1,7 +1,8 @@
-From MetaCoq.Template Require Import Loader.
-From MetaCoq.ErasurePlugin Require Import Erasure Loader.
 From MetaCoq.Utils Require Import utils.
 From MetaCoq.Template Require Import Ast.
+From MetaCoq.Template Require Import Loader.
+From MetaCoq.ErasurePlugin Require Import Erasure.
+From MetaCoq.ErasurePlugin Require Import Loader.
 From MetaCoq.Erasure.Typed Require Import ResultMonad.
 From MetaCoq.Erasure.Typed Require Import Optimize.
 From MetaCoq.Erasure.Typed Require Import Extraction.
@@ -15,6 +16,7 @@ Import ListNotations.
 Local Open Scope string.
 Local Notation "'bs_to_s' s" := (bytestring.String.to_string s) (at level 200).
 Local Notation "'s_to_bs' s" := (bytestring.String.of_string s) (at level 200).
+
 
 
 Program Definition cic_to_box p :=

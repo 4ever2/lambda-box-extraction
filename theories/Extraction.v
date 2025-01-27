@@ -1,6 +1,16 @@
 From MetaCoq.Erasure Require EAst.
 From LambdaBox Require Translations.
-From Coq Require Import ExtrOcamlBasic ExtrOCamlFloats ExtrOCamlInt63 Extraction.
+From LambdaBox Require SerializePrimitives.
+From LambdaBox Require SerializeEAst.
+From LambdaBox Require SerializeExAst.
+From LambdaBox Require CeresExtra.
+From Coq Require Import ExtrOcamlBasic.
+From Coq Require Import ExtrOCamlFloats.
+From Coq Require Import ExtrOCamlInt63.
+From Coq Require Import ExtrOcamlNativeString.
+From Coq Require Import Extraction.
+
+
 
 Extract Inlined Constant Coqlib.proj_sumbool => "(fun x -> x)".
 
@@ -25,15 +35,29 @@ Extraction Blacklist config List String Nat Int Ast Universes UnivSubst Typing R
            Instances Classes Term Monad Coqlib Errors Compile Checker Eq Classes0 Numeral
            Uint63 Number Values Bytes.
 
+
+(* TODO: add time implementation if *)
+Extract Constant MetaCoq.Common.Transform.time =>
+  "(fun c f x -> f x)".
+
+(* TODO: implement primitive integer serialization *)
+Extract Constant SerializePrimitives.prim_int_of_Z =>
+  "(fun x -> failwith ""AXIOM TO BE REALIZED"")".
+Extract Constant SerializePrimitives.Z_of_prim_int =>
+  "(fun x -> failwith ""AXIOM TO BE REALIZED"")".
+
+(* TODO: implement primitive float serialization *)
+Extract Constant SerializePrimitives.string_of_prim_float =>
+  "(fun x -> failwith ""AXIOM TO BE REALIZED"")".
+Extract Constant SerializePrimitives.prim_float_of_string =>
+  "(fun x -> failwith ""AXIOM TO BE REALIZED"")".
+
+
 Set Warnings "-extraction-reserved-identifier".
 Set Warnings "-extraction-opaque-accessed".
 Set Warnings "-extraction-logical-axiom".
 Set Extraction Output Directory "src/".
 
-From Coq Require Import ExtrOcamlNativeString.
-From LambdaBox Require SerializeEAst.
-From LambdaBox Require SerializeExAst.
-From LambdaBox Require CeresExtra.
-Separate Extraction Translations.run_translation SerializeEAst.program_of_string SerializeExAst.global_env_of_string CeresExtra.string_of_error.
+Separate Extraction Translations.l_box_to_wasm SerializeEAst.program_of_string SerializeExAst.global_env_of_string CeresExtra.string_of_error.
 
 Recursive Extraction Library BinPos.

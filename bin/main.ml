@@ -26,7 +26,7 @@ let write_wasm f p =
   flush f;
   close_out f
 
-let p = run_translation (read_ast "test.ast")
+let p = l_box_to_wasm (read_ast "test.ast")
 let () =
   match p with
   | (Lib.CompM.Ret prg, dbg) ->

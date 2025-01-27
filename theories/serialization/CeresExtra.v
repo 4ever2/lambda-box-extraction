@@ -4,9 +4,10 @@ From Ceres Require Import Ceres.
 From Ceres Require CeresParserUtils.
 From Ceres Require CeresString.
 
-
 Local Notation "p >>= f" := (Deser.bind_field p f) (at level 50, left associativity) : deser_scope.
 Local Open Scope deser_scope.
+
+
 
 Definition con6 {A B C D E F R} (f : A -> B -> C -> D -> E -> F -> R)
   : FromSexp A -> FromSexp B -> FromSexp C -> FromSexp D -> FromSexp E -> FromSexp F -> FromSexpList R :=

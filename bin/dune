@@ -1,5 +1,5 @@
 (executable
  (public_name lbox)
  (name main)
- (libraries lib sexplib)
+ (libraries lib sexplib cmdliner)
  (preprocess (pps ppx_sexp_conv)))

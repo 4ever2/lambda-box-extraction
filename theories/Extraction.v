@@ -14,10 +14,6 @@ From Coq Require Import Extraction.
 
 Extract Inlined Constant Coqlib.proj_sumbool => "(fun x -> x)".
 
-Extract Inductive Decimal.int => "decimal_int" [ "DecimalPos" "DecimalNeg" ] "(fun hp hn d -> match d with DecimalPos p -> hp p | DecimalNeg p -> hn p)".
-Extract Inductive Hexadecimal.int => "hexadecimal_int" [ "HexadecimalPos" "HexadecimalNeg" ] "(fun hp hn d -> match d with HexadecimalPos p -> hp p | HexadecimalNeg p -> hn p)".
-Extract Inductive Number.int => "number_int" [ "IntDecimal" "IntHexadecimal" ] "(fun hp hn d -> match d with IntDecimal p -> hp p | IntHexadecimal p -> hn p)".
-
 Extraction Inline Equations.Prop.Classes.noConfusion.
 Extraction Inline Equations.Prop.Logic.eq_elim.
 Extraction Inline Equations.Prop.Logic.eq_elim_r.

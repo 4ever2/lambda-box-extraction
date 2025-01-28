@@ -1,4 +1,4 @@
-all: theory patch mllib
+all: theory mllib
 .PHONY: all
 
 CoqMakefile: _CoqProject
@@ -24,11 +24,7 @@ uninstall: CoqMakefile
 	+@make -f CoqMakefile uninstall
 .PHONY: uninstall
 
-patch: theory
-	./patches/patch.sh
-.PHONY: patch
-
-mllib: patch
+mllib: theory
 	dune build
 .PHONY: mllib
 

@@ -24,8 +24,8 @@
  type decimal =
  | Decimal of decimal_int * uint
  | DecimalExp of decimal_int * uint * decimal_int
---- src/hexadecimal.ml
-+++ src/hexadecimal.ml
+--- src/Hexadecimal.ml
++++ src/Hexadecimal.ml
 @@ -112,6 +112,10 @@ let rec uint_rec f f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 = funct
  | Df u0 ->
    f15 u0 (uint_rec f f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 u0)
@@ -37,8 +37,8 @@
  type hexadecimal =
  | Hexadecimal of hexadecimal_int * uint
  | HexadecimalExp of hexadecimal_int * uint * decimal_int
---- src/hexadecimal.mli
-+++ src/hexadecimal.mli
+--- src/Hexadecimal.mli
++++ src/Hexadecimal.mli
 @@ -36,6 +36,10 @@ val uint_rec :
    (uint -> 'a1 -> 'a1) -> (uint -> 'a1 -> 'a1) -> (uint -> 'a1 -> 'a1) ->
    (uint -> 'a1 -> 'a1) -> uint -> 'a1
@@ -50,8 +50,8 @@
  type hexadecimal =
  | Hexadecimal of hexadecimal_int * uint
  | HexadecimalExp of hexadecimal_int * uint * decimal_int
---- src/number0.ml
-+++ src/number0.ml
+--- src/Number0.ml
++++ src/Number0.ml
 @@ -9,6 +9,10 @@ type number =
  | Decimal of decimal
  | Hexadecimal of hexadecimal
@@ -63,8 +63,8 @@
  (** val uint_beq : uint -> uint -> bool **)
 
  let uint_beq x y =
---- src/number0.mli
-+++ src/number0.mli
+--- src/Number0.mli
++++ src/Number0.mli
 @@ -9,6 +9,10 @@ type number =
  | Decimal of decimal
  | Hexadecimal of hexadecimal

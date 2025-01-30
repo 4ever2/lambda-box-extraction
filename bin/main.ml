@@ -84,6 +84,13 @@ let wasm_cmd =
   let info = Cmd.info "wasm" ~doc ~sdocs ~man in
   Cmd.v info Term.(const compile_wasm $ copts_t $ file)
 
+let typed_opts_t =
+  let opt_arg =
+    let doc = "Enable dearging optimization." in
+    Arg.(value & flag & info ["opt"] ~doc)
+  in
+  Term.(const mk_typed_opts $ opt_arg)
+
 let rust_cmd =
   let file =
     let doc = "lambda box typed environment" in
@@ -97,7 +104,7 @@ let rust_cmd =
     `Blocks help_secs; ]
   in
   let info = Cmd.info "rust" ~doc ~sdocs ~man in
-  Cmd.v info Term.(const compile_rust $ copts_t $ file)
+  Cmd.v info Term.(const compile_rust $ copts_t $ typed_opts_t $ file)
 
 let elm_cmd =
   let file =
@@ -112,7 +119,7 @@ let elm_cmd =
     `Blocks help_secs; ]
   in
   let info = Cmd.info "elm" ~doc ~sdocs ~man in
-  Cmd.v info Term.(const compile_elm $ copts_t $ file)
+  Cmd.v info Term.(const compile_elm $ copts_t $ typed_opts_t $ file)
 
 let main_cmd =
   let doc = "a compiler for lambda box to webassembly" in

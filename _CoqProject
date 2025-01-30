@@ -1,6 +1,8 @@
 -Q theories LambdaBox
 theories/CoqToLambdaBox.v
 theories/LambdaBoxToWASM.v
+theories/LambdaBoxToRust.v
+theories/LambdaBoxToElm.v
 theories/Translations.v
 theories/Extraction.v
 theories/serialization/CeresExtra.v

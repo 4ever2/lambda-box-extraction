@@ -8,14 +8,9 @@ From MetaCoq.Erasure.Typed Require Import Optimize.
 From MetaCoq.Erasure.Typed Require Import Extraction.
 From Coq Require Import ZArith.
 From Coq Require Import List.
-From Coq Require Import String.
 
 Import MCMonadNotation.
 Import ListNotations.
-
-Local Open Scope string.
-Local Notation "'bs_to_s' s" := (bytestring.String.to_string s) (at level 200).
-Local Notation "'s_to_bs' s" := (bytestring.String.of_string s) (at level 200).
 
 
 
@@ -41,7 +36,7 @@ Definition cic_to_box_typed p :=
   entry <- match p.2 with
            | tConst kn _ => Ok kn
            | tInd ind _ => Ok (inductive_mind ind)
-           | _ => Err (s_to_bs "Expected program to be a tConst or tInd")
+           | _ => Err "Expected program to be a tConst or tInd"
            end;;
   Σ <- extract_template_env
          no_check_args

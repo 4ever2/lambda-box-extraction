@@ -54,6 +54,6 @@ Set Warnings "-extraction-opaque-accessed".
 Set Warnings "-extraction-logical-axiom".
 Set Extraction Output Directory "src/".
 
-Separate Extraction Translations.l_box_to_wasm Translations.l_box_to_rust SerializeEAst.program_of_string SerializeExAst.global_env_of_string CeresExtra.string_of_error.
+Separate Extraction Translations.l_box_to_wasm Translations.l_box_to_rust LambdaBoxToRust.default_remaps SerializeEAst.program_of_string SerializeExAst.global_env_of_string CeresExtra.string_of_error.
 
 Recursive Extraction Library BinPos.

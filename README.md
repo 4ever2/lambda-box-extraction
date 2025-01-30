@@ -16,12 +16,18 @@ opam install . --deps-only
 You can then build the project by running `make`.
 
 ## Usage
+For local development the tool can be called with:
 ```
 dune exec lbox -- TARGETLANGUAGE FILE [--outfile FILE]
 ```
 E.g.
 ```
 dune exec lbox -- wasm prog.box --outfile prog.wasm
+```
+
+For general usage, the tool can be install with `make install`
+```
+lbox TARGETLANGUAGE FILE [--outfile FILE]
 ```
 
 ## Target languages

@@ -37,6 +37,9 @@ pin-depends: [
   ["coq-primitive.8.19.dev" "git+https://github.com/palmskog/coq-primitive.git"]
 ]
 
+build: [ "dune" "build" "-p" name "-j" jobs "@install" ]
+install: [ "dune" "install" "-p" name ]
+
 tags: [
   "keyword:extraction"
   "logpath:LambdaBox"

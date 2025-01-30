@@ -90,6 +90,13 @@ let write_wasm_res opts f p =
   flush f;
   close_out f
 
+  let write_elm_res opts f p =
+  let f = get_out_file opts f "elm" in
+  let p = unescape_unicode (Caml_bytestring.caml_string_of_bytestring p) in
+  output_string f p;
+  flush f;
+  close_out f
+
 let write_rust_res opts f p =
   let f = get_out_file opts f "rs" in
   List.iter (fun s -> output_string f ((unescape_unicode (Caml_bytestring.caml_string_of_bytestring s)) ^ "\n")) p;
@@ -119,6 +126,16 @@ let compile_rust opts f =
   | Lib.ResultMonad.Ok prg ->
     print_endline "Compiled successfully:";
     write_rust_res opts f prg
+  | Lib.ResultMonad.Err e ->
+    print_endline "Could not compile:";
+    print_endline (Caml_bytestring.caml_string_of_bytestring e)
+
+let compile_elm opts f =
+  let p = l_box_to_elm (read_typed_ast f) Lib.LambdaBoxToElm.default_preamble Lib.LambdaBoxToElm.default_remaps in
+  match p with
+  | Lib.ResultMonad.Ok prg ->
+    print_endline "Compiled successfully:";
+    write_elm_res opts f prg
   | Lib.ResultMonad.Err e ->
     print_endline "Could not compile:";
     print_endline (Caml_bytestring.caml_string_of_bytestring e)

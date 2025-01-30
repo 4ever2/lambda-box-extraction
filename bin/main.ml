@@ -98,11 +98,26 @@ let rust_cmd =
   let info = Cmd.info "rust" ~doc ~sdocs ~man in
   Cmd.v info Term.(const compile_rust $ copts_t $ file)
 
+let elm_cmd =
+  let file =
+    let doc = "lambda box typed environment" in
+    Arg.(required & pos 0 (some file) None  & info []
+           ~docv:"FILE" ~doc)
+  in
+  let doc = "Compile lambda box to elm" in
+  let man = [
+    `S Manpage.s_description;
+    `P "";
+    `Blocks help_secs; ]
+  in
+  let info = Cmd.info "elm" ~doc ~sdocs ~man in
+  Cmd.v info Term.(const compile_elm $ copts_t $ file)
+
 let main_cmd =
   let doc = "a compiler for lambda box to webassembly" in
   let man = help_secs in
   let info = Cmd.info "lbox" ~version ~doc ~sdocs ~man ~exits in
   let default = Term.(ret (const (fun _ -> `Help (`Pager, None)) $ copts_t)) in
-  Cmd.group info ~default [wasm_cmd; rust_cmd; help_cmd]
+  Cmd.group info ~default [wasm_cmd; rust_cmd; elm_cmd; help_cmd]
 
 let () = exit (Cmd.eval main_cmd)

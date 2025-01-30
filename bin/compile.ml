@@ -69,6 +69,10 @@ let print_debug opts dbg =
     print_endline (caml_string_of_bytestring dbg))
 
 
+let mk_tparams topts =
+  Lib.TypedTransforms.mk_params topts.optimize topts.optimize
+
+
 let compile_wasm opts f =
   let p = l_box_to_wasm (read_ast f) in
   match p with
@@ -81,8 +85,8 @@ let compile_wasm opts f =
     print_endline "Could not compile:";
     print_endline (caml_string_of_bytestring s)
 
-let compile_rust opts f =
-  let p = l_box_to_rust (read_typed_ast f) Lib.LambdaBoxToRust.default_remaps in
+let compile_rust opts topts f =
+  let p = l_box_to_rust (read_typed_ast f) Lib.LambdaBoxToRust.default_remaps (mk_tparams topts) in
   match p with
   | Lib.ResultMonad.Ok prg ->
     print_endline "Compiled successfully:";
@@ -91,8 +95,8 @@ let compile_rust opts f =
     print_endline "Could not compile:";
     print_endline (caml_string_of_bytestring e)
 
-let compile_elm opts f =
-  let p = l_box_to_elm (read_typed_ast f) Lib.LambdaBoxToElm.default_preamble Lib.LambdaBoxToElm.default_remaps in
+let compile_elm opts topts f =
+  let p = l_box_to_elm (read_typed_ast f) Lib.LambdaBoxToElm.default_preamble Lib.LambdaBoxToElm.default_remaps (mk_tparams topts) in
   match p with
   | Lib.ResultMonad.Ok prg ->
     print_endline "Compiled successfully:";

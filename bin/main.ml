@@ -1,5 +1,6 @@
 open Cmdliner
 open Compile
+open Common
 
 let version = "0.0.1"
 

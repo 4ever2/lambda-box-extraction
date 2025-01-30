@@ -1,22 +1,20 @@
 From Coq Require Import List.
 From Coq Require Import String.
 From MetaCoq.Utils Require Import bytestring.
+From MetaCoq.Utils Require Import monad_utils.
+From MetaCoq.Common Require Import Kernames.
 From MetaCoq.Erasure Require Import ExAst.
-
 From ElmExtraction Require Import PrettyPrinterMonad.
 From ElmExtraction Require Import ElmExtract.
 From ElmExtraction Require Import Common.
+From MetaCoq.Erasure.Typed Require Import ResultMonad.
 
 Import ListNotations.
+Import MCMonadNotation.
 
 Local Open Scope bs_scope.
 
 
-From MetaCoq Require ExAst.
-From MetaCoq.Erasure.Typed Require Import ResultMonad.
-From MetaCoq.Utils Require Import monad_utils.
-From MetaCoq.Common Require Import Kernames.
-Import MCMonadNotation.
 
 #[local]
 Instance ElmBoxes : ElmPrintConfig :=

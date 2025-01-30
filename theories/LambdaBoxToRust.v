@@ -1,20 +1,14 @@
 From Coq Require Import List.
 From Coq Require Import String.
 From MetaCoq.Utils Require Import bytestring.
+From MetaCoq.Utils Require Import monad_utils.
 From MetaCoq.Erasure Require Import ExAst.
-
+From MetaCoq.Erasure.Typed Require Import ResultMonad.
 From RustExtraction Require Import PrettyPrinterMonad.
 From RustExtraction Require Import Printing.
 From RustExtraction Require Import RustExtract.
 
 Import ListNotations.
-
-(* Local Open Scope string_scope. *)
-
-
-From MetaCoq Require ExAst.
-From MetaCoq.Erasure.Typed Require Import ResultMonad.
-From MetaCoq.Utils Require Import monad_utils.
 Import MCMonadNotation.
 
 

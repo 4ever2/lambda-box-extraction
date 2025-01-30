@@ -1,5 +1,8 @@
-all: theory mllib
+all: build
 .PHONY: all
+
+build: theory mllib
+.PHONY: build
 
 CoqMakefile: _CoqProject
 	coq_makefile -f _CoqProject -o CoqMakefile
@@ -7,6 +10,10 @@ CoqMakefile: _CoqProject
 theory: CoqMakefile
 	+@make -f CoqMakefile
 .PHONY: theory
+
+mllib: theory
+	dune build
+.PHONY: mllib
 
 clean: CoqMakefile
 	+@make -f CoqMakefile clean
@@ -16,17 +23,13 @@ clean: CoqMakefile
 	find src/. -type f -name "*.mli" -delete
 .PHONY: clean
 
-install: CoqMakefile
-	+@make -f CoqMakefile install
+install: build
+	dune install
 .PHONY: install
 
-uninstall: CoqMakefile
-	+@make -f CoqMakefile uninstall
+uninstall:
+	dune uninstall
 .PHONY: uninstall
-
-mllib: theory
-	dune build
-.PHONY: mllib
 
 # Forward most things to Coq makefile. Use 'force' to make this phony.
 %: CoqMakefile force

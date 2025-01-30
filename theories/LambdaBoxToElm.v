@@ -8,6 +8,7 @@ From ElmExtraction Require Import PrettyPrinterMonad.
 From ElmExtraction Require Import ElmExtract.
 From ElmExtraction Require Import Common.
 From MetaCoq.Erasure.Typed Require Import ResultMonad.
+From LambdaBox Require Import TypedTransforms.
 
 Import ListNotations.
 Import MCMonadNotation.
@@ -28,7 +29,8 @@ Definition default_preamble : string := elm_false_rec.
 
 Definition default_remaps : list (kername * string) := [].
 
-Definition box_to_elm (Σ : ExAst.global_env) (preamble : string) (remaps : list (kername * string)) : result string string :=
+Definition box_to_elm (Σ : ExAst.global_env) (preamble : string) (remaps : list (kername * string)) params : result string string :=
   let remaps_fun kn := option_map snd (List.find (fun '(kn',v) => eq_kername kn kn') remaps) in
+  Σ <- typed_transfoms params Σ;;
   '(_, s) <- (finish_print (print_env Σ remaps_fun));;
   ret (preamble ++ nl ++ s ++ nl).

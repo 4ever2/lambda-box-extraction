@@ -57,4 +57,5 @@ Set Extraction Output Directory "src/".
 Separate Extraction Translations.l_box_to_wasm
                     Translations.l_box_to_rust LambdaBoxToRust.default_remaps
                     Translations.l_box_to_elm LambdaBoxToElm.default_remaps LambdaBoxToElm.default_preamble
+                    TypedTransforms.mk_params
                     SerializeEAst.program_of_string SerializeExAst.global_env_of_string CeresExtra.string_of_error.

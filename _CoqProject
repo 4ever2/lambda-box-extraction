@@ -1,5 +1,6 @@
 -Q theories LambdaBox
 theories/CoqToLambdaBox.v
+theories/TypedTransforms.v
 theories/LambdaBoxToWASM.v
 theories/LambdaBoxToRust.v
 theories/LambdaBoxToElm.v

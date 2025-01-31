@@ -3,6 +3,7 @@ open Lib.EAst
 open Lib.ExAst
 open Lib.SerializeEAst
 open Lib.SerializeExAst
+open Lib.CheckWf
 open Unicode
 open Common
 open Caml_bytestring
@@ -72,9 +73,25 @@ let print_debug opts dbg =
 let mk_tparams topts =
   Lib.TypedTransforms.mk_params topts.optimize topts.optimize
 
+let check_wf checker flags opts p =
+  if opts.bypass_wf then ()
+  else
+  print_endline "Checking program wellformedness";
+  if checker flags p then ()
+  else
+    (print_endline "Program not wellformed";
+    exit 1)
+
+let check_wf_untyped =
+  check_wf check_wf_program agda_eflags
+
+let check_wf_typed =
+  check_wf CheckWfExAst.check_wf_typed_program agda_typed_eflags
 
 let compile_wasm opts f =
-  let p = l_box_to_wasm (read_ast f) in
+  let p = (read_ast f) in
+  check_wf_untyped opts p;
+  let p = l_box_to_wasm p in
   match p with
   | (Lib.CompM.Ret prg, dbg) ->
     print_debug opts dbg;
@@ -83,24 +100,31 @@ let compile_wasm opts f =
   | (Lib.CompM.Err s, dbg) ->
     print_debug opts dbg;
     print_endline "Could not compile:";
-    print_endline (caml_string_of_bytestring s)
+    print_endline (caml_string_of_bytestring s);
+    exit 1
 
 let compile_rust opts topts f =
-  let p = l_box_to_rust (read_typed_ast f) Lib.LambdaBoxToRust.default_remaps (mk_tparams topts) in
+  let p = (read_typed_ast f) in
+  check_wf_typed opts p;
+  let p = l_box_to_rust p Lib.LambdaBoxToRust.default_remaps (mk_tparams topts) in
   match p with
   | Lib.ResultMonad.Ok prg ->
     print_endline "Compiled successfully:";
     write_rust_res opts f prg
   | Lib.ResultMonad.Err e ->
     print_endline "Could not compile:";
-    print_endline (caml_string_of_bytestring e)
+    print_endline (caml_string_of_bytestring e);
+    exit 1
 
 let compile_elm opts topts f =
-  let p = l_box_to_elm (read_typed_ast f) Lib.LambdaBoxToElm.default_preamble Lib.LambdaBoxToElm.default_remaps (mk_tparams topts) in
+  let p = (read_typed_ast f) in
+  check_wf_typed opts p;
+  let p = l_box_to_elm p Lib.LambdaBoxToElm.default_preamble Lib.LambdaBoxToElm.default_remaps (mk_tparams topts) in
   match p with
   | Lib.ResultMonad.Ok prg ->
     print_endline "Compiled successfully:";
     write_elm_res opts f prg
   | Lib.ResultMonad.Err e ->
     print_endline "Could not compile:";
-    print_endline (caml_string_of_bytestring e)
+    print_endline (caml_string_of_bytestring e);
+    exit 1

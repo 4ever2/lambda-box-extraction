@@ -21,7 +21,11 @@ let copts_t =
     let doc = "Output file." in
     Arg.(value & opt (some string) None & info ["o"; "outfile"] ~docs ~doc)
   in
-  Term.(const mk_copts $ verbose_arg $ debug_arg $ out_arg)
+  let wf_arg =
+    let doc = "Bypass welformedness checks." in
+    Arg.(value & flag & info ["bypass-wf"] ~docs ~doc)
+  in
+  Term.(const mk_copts $ verbose_arg $ debug_arg $ out_arg $ wf_arg)
 
 let sdocs = Manpage.s_common_options
 

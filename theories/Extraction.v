@@ -1,4 +1,5 @@
 From MetaCoq.Erasure Require EAst.
+From LambdaBox Require CheckWf.
 From LambdaBox Require Translations.
 From LambdaBox Require SerializePrimitives.
 From LambdaBox Require SerializeEAst.
@@ -58,4 +59,5 @@ Separate Extraction Translations.l_box_to_wasm
                     Translations.l_box_to_rust LambdaBoxToRust.default_remaps
                     Translations.l_box_to_elm LambdaBoxToElm.default_remaps LambdaBoxToElm.default_preamble
                     TypedTransforms.mk_params
+                    CheckWf.check_wf_program CheckWf.CheckWfExAst.check_wf_typed_program CheckWf.agda_eflags CheckWf.agda_typed_eflags
                     SerializeEAst.program_of_string SerializeExAst.global_env_of_string CeresExtra.string_of_error.

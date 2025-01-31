@@ -1,27 +1,15 @@
 From Coq             Require Import List Logic.Decidable ssreflect.
 From MetaCoq.Common  Require Import BasicAst Kernames Universes EnvMap.
 From MetaCoq.Erasure Require Import EAst EWellformed.
-From MetaCoq.Utils   Require Import bytestring ReflectEq.
+From MetaCoq.Erasure.Typed Require ExAst.
+From MetaCoq.Utils   Require Import ReflectEq.
 From Equations       Require Import Equations.
 
 Import ListNotations.
 Import EnvMap.
-Import Kernames.
 
-#[global] Obligation Tactic := idtac.
-#[global] Set Equations Transparent.
-#[global] Set Equations With UIP.
 
-Definition inspect {A} (a : A) : {b | a = b} := exist _ a eq_refl.
-Notation "x 'eqn:' p" := (exist _ x p) (only parsing, at level 20).
 
-(*
-#[local] Obligation Tactic :=
-          try simpl;
-          try intro wf_decls;
-          try dependent elimination wf_decls;
-          try auto.
-*)
 
 Definition eflags : EEnvFlags :=
   {| has_axioms      := true;
@@ -46,6 +34,8 @@ Definition eflags : EEnvFlags :=
      cstr_as_blocks  := true;   (* The backend fully applies ctors       *)
   |}.
 
+Definition inspect {A} (a : A) : {b | a = b} := exist _ a eq_refl.
+
 Fixpoint check_fresh_global (k : kername) (decls : global_declarations) : bool :=
   match decls with
   | []    => true
@@ -64,35 +54,24 @@ Definition check_wf_program {efl : EEnvFlags} (p : program) : bool :=
 (* freshness boolean check coincides with the freshness property *)
 Fixpoint check_fresh_globalP (k : kername) (decls : global_declarations)
   : reflectProp (fresh_global k decls) (check_fresh_global k decls).
-dependent elimination decls; simpl.
 Proof.
+  dependent elimination decls; simpl.
 - apply reflectP.
   apply Forall_nil.
 - destruct (inspect (fst p == k)).
-  destruct x.
-  + rewrite e.
-    simpl.
-    apply reflectF.
-    intro global_ds.
+  destruct x; rewrite e; simpl.
+  + apply reflectF => global_ds.
     dependent elimination global_ds.
     apply n.
-    apply eqb_eq.
-    auto.
-  + rewrite e.
-    simpl.
-    destruct (check_fresh_globalP k l).
+    by apply eqb_eq.
+  + destruct (check_fresh_globalP k l).
     * apply reflectP.
-      apply Forall_cons.
-      destruct (neqb (fst p) k).
-      apply H0.
-      rewrite e.
-      simpl.
-      auto.
-      auto.
-    * apply reflectF.
-      intro gds.
-      dependent elimination gds.
-      auto.
+      apply Forall_cons; auto.
+      destruct (neqb (fst p) k) as [Hneq _].
+      apply Hneq.
+      by rewrite e.
+    * apply reflectF => gds.
+      by dependent elimination gds.
 Defined.
 
 (* well-formedness boolean check coincides with the wf property *)
@@ -105,99 +84,24 @@ dependent elimination decls.
 - remember (check_wf_glob l).
   pose x := (check_wf_globP efl l).
   rewrite <-Heqb in x.
-  destruct x.
-  + simpl.
-    rewrite <-Heqb.
-    simpl.
-    remember (check_fresh_global (fst p) l).
+  destruct x; simpl; rewrite <-Heqb; simpl.
+  + remember (check_fresh_global (fst p) l).
     pose x := (check_fresh_globalP (fst p) l).
     rewrite <-Heqb0 in x.
-    destruct x.
-    simpl.
+    destruct x => /=.
     remember (wf_global_decl l (snd p)).
     destruct b.
     apply reflectP.
     destruct p.
-    apply wf_glob_cons; auto.
-    apply reflectF.
-    intro gds.
+    by constructor.
+    apply reflectF => gds.
     dependent elimination gds.
     simpl in Heqb1.
     rewrite <-Heqb1 in i.
     discriminate i.
-    simpl.
-    apply reflectF.
-    intro gds.
-    dependent elimination gds.
-    auto.
-  + simpl.
-    rewrite <- Heqb.
-    simpl.
-    apply reflectF.
-    intro gds.
-    dependent elimination gds.
-    auto.
+    apply reflectF => gds.
+    by dependent elimination gds.
+  + apply reflectF => gds.
+    by dependent elimination gds.
 Defined.
 
-(*
-
-check_fresh_globalP k [] := _;
-check_fresh_globalP k ((k', _)::ds) with inspect (eq_kername k' k), inspect (check_fresh_global k ds) := {
- | false eqn: p | true eqn: q := _;
- | _     eqn: p | _    eqn: q := _
-}.
-- apply ReflectT.
-  apply Forall_nil.
-- rewrite q.
-  rewrite p.
-  simpl.
-  apply ReflectT.
-  apply Forall_cons.
-  + .
-
-
-Equations? dec_fresh_global (k : kername) (decls : global_declarations) : decidable (fresh_global k decls) :=
-dec_fresh_global k [] := or_introl (Forall_nil _);
-dec_fresh_global k ((k', _)::ds) with dec_fresh_global k ds := {
-  | or_intror rotten_k_ds := or_intror _;
-  | or_introl fresh_k_ds  with eq_dec k' k := {
-     | left  k'eqk  := or_intror _;
-     | right k'neqk := or_introl _
-  };
-}.
-- apply Forall_cons; auto.
-Defined.
-
-Equations? dec_wf_glob {efl : EEnvFlags} (decls : global_declarations) : decidable (wf_glob decls) :=
-dec_wf_glob [] := or_introl wf_glob_nil;
-dec_wf_glob ((k, d)::ds) with dec_wf_glob ds := {
-  | or_introl wf_ds with inspect (wf_global_decl ds d), dec_fresh_global k ds := {
-      | true  eqn:     wf_d | or_introl fresh_k  := or_introl _;
-      | true  eqn:     wf_d | or_intror rotten_k := or_intror _;
-      | false eqn: not_wf_d | _                  := or_intror _;
-    };
-  | or_intror not_wf_ds := or_intror _
-}.
-- apply wf_glob_cons; auto.
-- simpl in not_wf_d.
-  rewrite not_wf_d in i.
-  auto.
-Defined.
-
-Equations wf_program {efl : EEnvFlags} (p : program) : Prop :=
-wf_program (decls , t) := wf_glob decls /\ is_true (wellformed decls 0 t).
-
-Equations? dec_wf_program {efl : EEnvFlags} (p : program) : decidable (wf_program p) :=
-dec_wf_program (decls, t) with dec_wf_glob decls := {
-  | or_introl wf_glob_decls with inspect (wellformed decls 0 t) := {
-      | true  eqn: wf_t := or_introl _;
-      | false eqn: wf_t := or_intror _;
-    };
-  | or_intror _ := or_intror _;
-}.
-- rewrite wf_t in i.
-  discriminate i.
-Defined.
-
-
-*)

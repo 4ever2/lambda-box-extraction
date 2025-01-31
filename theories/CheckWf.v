@@ -1,17 +1,20 @@
-From Coq             Require Import List Logic.Decidable ssreflect.
-From MetaCoq.Common  Require Import BasicAst Kernames Universes EnvMap.
-From MetaCoq.Erasure Require Import EAst EWellformed.
+From Coq Require Import List.
+From Coq Require Import Logic.Decidable.
+From Coq Require Import ssreflect.
+From MetaCoq.Utils Require Import ReflectEq.
+From MetaCoq.Common Require Import Kernames.
+From MetaCoq.Common Require Import EnvMap.
+From MetaCoq.Erasure Require Import EAst.
+From MetaCoq.Erasure Require Import EWellformed.
 From MetaCoq.Erasure.Typed Require ExAst.
-From MetaCoq.Utils   Require Import ReflectEq.
-From Equations       Require Import Equations.
+From Equations Require Import Equations.
 
 Import ListNotations.
 Import EnvMap.
 
 
 
-
-Definition eflags : EEnvFlags :=
+Definition agda_eflags : EEnvFlags :=
   {| has_axioms      := true;
      term_switches   :=
        {| has_tBox        := true
@@ -105,3 +108,38 @@ dependent elimination decls.
     by dependent elimination gds.
 Defined.
 
+Module CheckWfExAst.
+  Import ExAst.
+
+  Fixpoint check_fresh_global (k : kername) (decls : global_env) : bool :=
+    match decls with
+    | []    => true
+    | (kn,_,_)::ds => negb (eq_kername kn k) && check_fresh_global k ds
+    end.
+
+  Definition check_wf_typed_program {efl : EEnvFlags} (p : global_env) : bool :=
+    check_wf_glob (trans_env p).
+
+  Fixpoint check_fresh_globalP (k : kername) (decls : global_env)
+    : reflectProp (fresh_global k decls) (check_fresh_global k decls).
+  Proof.
+    dependent elimination decls; simpl.
+    - apply reflectP.
+      apply Forall_nil.
+    - destruct p as [[kn ?] ?].
+      destruct (inspect (kn == k)).
+      destruct x; rewrite e; simpl.
+      + apply reflectF => global_ds.
+        dependent elimination global_ds.
+        apply y.
+        by apply eqb_eq.
+      + destruct (check_fresh_globalP k l).
+        * apply reflectP.
+          apply Forall_cons; auto.
+          destruct (neqb kn k) as [Hneq _].
+          apply Hneq.
+          by rewrite e.
+        * apply reflectF => gds.
+          by dependent elimination gds.
+  Defined.
+End CheckWfExAst.

@@ -17,6 +17,6 @@
  (name coq-lambda-box-extraction)
  (synopsis "A framework for extracting lambda box programs")
  (description "A framework for extracting lambda box programs")
- (depends ocaml ppx_sexp_conv sexplib coq-primitive)
+ (depends ocaml coq-primitive)
  (tags
   ("keyword:extraction" "logpath:LambdaBox")))

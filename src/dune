@@ -1,7 +1,6 @@
 (library
  (name lib)
- (libraries sexplib coq-primitive.uint63 coq-primitive.float64)
- (preprocess (pps ppx_sexp_conv)))
+ (libraries coq-primitive.uint63 coq-primitive.float64))
 
 (env
  (dev

@@ -37,6 +37,29 @@ Definition agda_eflags : EEnvFlags :=
      cstr_as_blocks  := true;   (* The backend fully applies ctors       *)
   |}.
 
+Definition agda_typed_eflags : EEnvFlags :=
+  {| has_axioms      := true;
+     term_switches   :=
+       {| has_tBox        := true
+        ; has_tRel        := true
+        ; has_tVar        := true
+        ; has_tEvar       := true
+        ; has_tLambda     := true
+        ; has_tLetIn      := true
+        ; has_tApp        := true
+        ; has_tConst      := true
+        ; has_tConstruct  := true
+        ; has_tCase       := true
+        ; has_tProj       := false (* Our backends shouldn't produce projections *)
+        ; has_tFix        := true
+        ; has_tCoFix      := true
+        ; has_tPrim       := all_primitive_flags
+        ; has_tLazy_Force := true
+        |};
+     has_cstr_params := false;  (* Agda already drops constructor params *)
+     cstr_as_blocks  := true;   (* The backend fully applies ctors       *)
+  |}.
+
 Definition inspect {A} (a : A) : {b | a = b} := exist _ a eq_refl.
 
 Fixpoint check_fresh_global (k : kername) (decls : global_declarations) : bool :=

@@ -73,10 +73,11 @@ let print_debug opts dbg =
 let mk_tparams topts =
   Lib.TypedTransforms.mk_params topts.optimize topts.optimize
 
-let check_wf checker flags p =
+let check_wf checker flags opts p =
+  if opts.bypass_wf then ()
+  else
   print_endline "Checking program wellformedness";
-  if checker flags p
-  then ()
+  if checker flags p then ()
   else
     (print_endline "Program not wellformed";
     exit 1)
@@ -89,7 +90,7 @@ let check_wf_typed =
 
 let compile_wasm opts f =
   let p = (read_ast f) in
-  check_wf_untyped p;
+  check_wf_untyped opts p;
   let p = l_box_to_wasm p in
   match p with
   | (Lib.CompM.Ret prg, dbg) ->
@@ -104,7 +105,7 @@ let compile_wasm opts f =
 
 let compile_rust opts topts f =
   let p = (read_typed_ast f) in
-  check_wf_typed p;
+  check_wf_typed opts p;
   let p = l_box_to_rust p Lib.LambdaBoxToRust.default_remaps (mk_tparams topts) in
   match p with
   | Lib.ResultMonad.Ok prg ->
@@ -117,7 +118,7 @@ let compile_rust opts topts f =
 
 let compile_elm opts topts f =
   let p = (read_typed_ast f) in
-  check_wf_typed p;
+  check_wf_typed opts p;
   let p = l_box_to_elm p Lib.LambdaBoxToElm.default_preamble Lib.LambdaBoxToElm.default_remaps (mk_tparams topts) in
   match p with
   | Lib.ResultMonad.Ok prg ->

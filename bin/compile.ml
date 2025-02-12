@@ -176,8 +176,7 @@ let compile_c opts copts f =
   | (CompM.Ret ((nenv, header), prg), dbg) ->
     print_debug opts dbg;
     print_endline "Compiled successfully:";
-    (* let runtime_imports = [FromLibrary ((if opts.cps then "gc.h" else "gc_stack.h"), None)] in *)
-    let runtime_imports = [FromLibrary (("gc_stack.h"), None)] in
+    let runtime_imports = [FromLibrary ((if copts.cps then "gc.h" else "gc_stack.h"), None)] in
     let imports = runtime_imports in
     let hstr  = "test.h" in
     let cstr' = "test.c" in

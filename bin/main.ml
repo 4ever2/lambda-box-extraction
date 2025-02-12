@@ -103,6 +103,21 @@ let eval_cmd =
   let info = Cmd.info "wasm" ~doc ~sdocs ~man in
   Cmd.v info Term.(const compile_wasm $ copts_t $ file)
 
+let c_cmd =
+  let file =
+    let doc = "lambda box program" in
+    Arg.(required & pos 0 (some file) None  & info []
+           ~docv:"FILE" ~doc)
+  in
+  let doc = "Compile lambda box to C" in
+  let man = [
+    `S Manpage.s_description;
+    `P "";
+    `Blocks help_secs; ]
+  in
+  let info = Cmd.info "c" ~doc ~sdocs ~man in
+  Cmd.v info Term.(const compile_c $ copts_t $ file)
+
 let typed_opts_t =
   let opt_arg =
     let doc = "Enable dearging optimization." in

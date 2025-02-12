@@ -1,4 +1,4 @@
 (executable
  (public_name lbox)
  (name main)
- (libraries lib cmdliner str))
+ (libraries lib libC cmdliner str))

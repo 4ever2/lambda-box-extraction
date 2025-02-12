@@ -6,6 +6,7 @@ theories/TypedTransforms.v
 theories/LambdaBoxToWasm.v
 theories/LambdaBoxToRust.v
 theories/LambdaBoxToElm.v
+theories/LambdaBoxToC.v
 theories/Translations.v
 theories/Extraction.v
 theories/serialization/CeresExtra.v

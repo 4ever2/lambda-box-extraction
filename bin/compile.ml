@@ -146,3 +146,100 @@ let eval_box opts f =
     print_endline "Could not evaluate program:";
     print_endline (caml_string_of_bytestring e);
     exit 1
+
+
+
+
+
+
+type import =
+    FromRelativePath of string
+  | FromAbsolutePath of string
+  | FromLibrary of string * string option
+
+let printCProg prog names (dest : string) (imports : import list) =
+  let imports' = List.map (fun i -> match i with
+    | FromRelativePath s -> "#include \"" ^ s ^ "\""
+    | FromLibrary (s, _) -> "#include <" ^ s ^ ">"
+    | FromAbsolutePath _ ->
+        failwith "Import with absolute path should have been filled") imports in
+  LibC.PrintClight.print_dest_names_imports prog (Lib.Cps.M.elements names) dest imports'
+
+let compile_c opts f =
+  let p = (read_ast f) in
+  check_wf_untyped opts p;
+  let p = l_box_to_c p in
+  (* let p = Lib.LambdaBoxToWasm.show_IR p in *)
+  match p with
+  | (Lib.CompM.Ret ((nenv, header), prg), dbg) ->
+    print_debug opts dbg;
+    print_endline "Compiled successfully:";
+    (* let runtime_imports = [FromLibrary ((if opts.cps then "gc.h" else "gc_stack.h"), None)] in *)
+    let runtime_imports = [FromLibrary (("gc_stack.h"), None)] in
+    let imports = runtime_imports in
+
+    let hstr  = "test.h" in
+    let cstr' = "test.c" in
+    let hstr' = "test.h" in
+    printCProg prg nenv cstr' (imports @ [FromRelativePath hstr]);
+    printCProg header nenv hstr' (runtime_imports);
+    (*
+          let fname = opts.filename in
+      let suff = opts.ext in
+      let cstr = fname ^ suff ^ ".c" in
+      let hstr = fname ^ suff ^ ".h" in
+      let cstr' = make_fname opts cstr in
+      let hstr' = make_fname opts hstr in
+
+
+    *)
+
+
+    (* write_wasm_res opts f prg *)
+  | (Lib.CompM.Err s, dbg) ->
+    print_debug opts dbg;
+    print_endline "Could not compile:";
+    print_endline (caml_string_of_bytestring s);
+    exit 1
+
+
+(*
+
+  let compile opts term imports =
+    let debug = opts.debug in
+    let options = make_pipeline_options opts in
+    let runtime_imports = [FromLibrary ((if opts.cps then "gc.h" else "gc_stack.h"), None)] in
+    let curlib = Sys.getcwd () in
+    let imports = List.map (fun i ->
+      match i with
+      | FromAbsolutePath s -> FromRelativePath (Filename.concat curlib s)
+      | _ -> i) imports in
+    let imports = runtime_imports @ get_global_includes () @ imports in
+    let p = CI.compile options term in
+    match p with
+    | (CompM.Ret ((nenv, header), prg), dbg) ->
+      debug_msg debug "Finished compiling, printing to file.";
+      let time = Unix.gettimeofday() in
+      let fname = opts.filename in
+      let suff = opts.ext in
+      let cstr = fname ^ suff ^ ".c" in
+      let hstr = fname ^ suff ^ ".h" in
+      let cstr' = make_fname opts cstr in
+      let hstr' = make_fname opts hstr in
+      CI.printProg prg nenv cstr' (imports @ [FromRelativePath hstr]);
+      CI.printProg header nenv hstr' (runtime_imports);
+
+      (* let cstr = Metacoq_template_plugin.Tm_util.string_to_list (Names.KerName.to_string (Names.Constant.canonical const) ^ suff ^ ".c") in
+      * let hstr = Metacoq_template_plugin.Tm_util.string_to_list (Names.KerName.to_string (Names.Constant.canonical const) ^ suff ^ ".h") in
+      * Pipeline.printProg (nenv,prg) cstr;
+      * Pipeline.printProg (nenv,header) hstr; *)
+      let time = (Unix.gettimeofday() -. time) in
+      debug_msg debug (Printf.sprintf "Printed to file %s in %f s.." cstr' time);
+      debug_msg debug "Pipeline debug:";
+      debug_msg debug (string_of_bytestring dbg)
+    | (CompM.Err s, dbg) ->
+      debug_msg debug "Pipeline debug:";
+      debug_msg debug (string_of_bytestring dbg);
+      CErrors.user_err Pp.(str "Could not compile: " ++ (pr_string s) ++ str "\n")
+
+*)

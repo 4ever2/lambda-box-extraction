@@ -28,13 +28,13 @@ let parse_ast p s =
 let read_ast f : program =
   let s = read_file f in
   print_endline "Compiling:";
-  print_endline s;
+  (* print_endline s; *)
   parse_ast program_of_string s
 
 let read_typed_ast f : global_env =
   let s = read_file f in
   print_endline "Compiling:";
-  print_endline s;
+  (* print_endline s; *)
   parse_ast global_env_of_string s
 
 
@@ -92,6 +92,7 @@ let compile_wasm opts f =
   let p = (read_ast f) in
   check_wf_untyped opts p;
   let p = l_box_to_wasm p in
+  (* let p = Lib.LambdaBoxToWasm.show_IR p in *)
   match p with
   | (Lib.CompM.Ret prg, dbg) ->
     print_debug opts dbg;
@@ -126,5 +127,22 @@ let compile_elm opts topts f =
     write_elm_res opts f prg
   | Lib.ResultMonad.Err e ->
     print_endline "Could not compile:";
+    print_endline (caml_string_of_bytestring e);
+    exit 1
+
+
+
+
+let eval_box opts f =
+  let p = (read_ast f) in
+  check_wf_untyped opts p;
+  let p = Lib.Eval.eval_box p  in
+  print_endline "Evaluating:";
+  match p with
+  | (Lib.ExceptionMonad.Ret t) ->
+    print_endline "Evaluated program to:";
+    print_endline (caml_string_of_bytestring t)
+  | (Lib.ExceptionMonad.Exc e) ->
+    print_endline "Could not evaluate program:";
     print_endline (caml_string_of_bytestring e);
     exit 1

@@ -73,7 +73,22 @@ let exits = Cmd.Exit.defaults @ [
   Cmd.Exit.info 20 ~max:29 ~doc:"on compiler errors.";
 ]
 
-let wasm_cmd =
+let eval_cmd =
+  let file =
+    let doc = "lambda box program" in
+    Arg.(required & pos 0 (some file) None  & info []
+           ~docv:"FILE" ~doc)
+  in
+  let doc = "Evaluate lambda box program" in
+  let man = [
+    `S Manpage.s_description;
+    `P "";
+    `Blocks help_secs; ]
+  in
+  let info = Cmd.info "eval" ~doc ~sdocs ~man in
+  Cmd.v info Term.(const eval_box $ copts_t $ file)
+
+  let wasm_cmd =
   let file =
     let doc = "lambda box program" in
     Arg.(required & pos 0 (some file) None  & info []
@@ -130,6 +145,6 @@ let main_cmd =
   let man = help_secs in
   let info = Cmd.info "lbox" ~version ~doc ~sdocs ~man ~exits in
   let default = Term.(ret (const (fun _ -> `Help (`Pager, None)) $ copts_t)) in
-  Cmd.group info ~default [wasm_cmd; rust_cmd; elm_cmd; help_cmd]
+  Cmd.group info ~default [eval_cmd; wasm_cmd; c_cmd; rust_cmd; elm_cmd; help_cmd]
 
 let () = exit (Cmd.eval main_cmd)

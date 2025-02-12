@@ -6,7 +6,7 @@ open LambdaBox.SerializeExAst
 open LambdaBox.CheckWf
 open Unicode
 open Common
-open Caml_bytestring
+open PrintC.Caml_bytestring
 
 module Datatypes = LambdaBox.Datatypes
 module CeresExtra = LambdaBox.CeresExtra

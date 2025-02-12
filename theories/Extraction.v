@@ -59,7 +59,7 @@ Set Extraction Output Directory "src/extraction/".
 Require compcert.cfrontend.Csyntax
         compcert.cfrontend.Clight.
 
-Separate Extraction Translations.l_box_to_wasm LambdaBoxToWasm.show_IR
+Separate Extraction Translations.l_box_to_wasm CertiCoqPipeline.show_IR CertiCoqPipeline.make_opts
                     Translations.l_box_to_rust LambdaBoxToRust.default_remaps
                     Translations.l_box_to_elm LambdaBoxToElm.default_remaps LambdaBoxToElm.default_preamble
                     Translations.l_box_to_c
@@ -70,5 +70,4 @@ Separate Extraction Translations.l_box_to_wasm LambdaBoxToWasm.show_IR
                     Floats.Float32.to_bits Floats.Float.to_bits
                     Floats.Float32.of_bits Floats.Float.of_bits
                     Csyntax
-                    Clight
-                    .
+                    Clight.

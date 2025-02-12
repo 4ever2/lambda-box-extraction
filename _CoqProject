@@ -3,6 +3,7 @@ theories/CheckWf.v
 theories/Eval.v
 theories/CoqToLambdaBox.v
 theories/TypedTransforms.v
+theories/CertiCoqPipeline.v
 theories/LambdaBoxToWasm.v
 theories/LambdaBoxToRust.v
 theories/LambdaBoxToElm.v

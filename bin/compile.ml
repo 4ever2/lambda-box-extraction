@@ -55,6 +55,11 @@ let get_out_file opts f ext =
   | Some f -> f
   | None -> (Filename.remove_extension f)^"."^ext
 
+let get_header_file opts f =
+  match opts.output_file with
+  | Some f -> (Filename.remove_extension f)^".h"
+  | None -> (Filename.remove_extension f)^".h"
+
 let write_res f p =
   let f = open_out f in
   p f;
@@ -181,11 +186,10 @@ let compile_c opts copts f =
     print_endline "Compiled successfully:";
     let runtime_imports = [FromLibrary ((if copts.cps then "gc.h" else "gc_stack.h"), None)] in
     let imports = runtime_imports in
-    let hstr  = "test.h" in
-    let cstr' = "test.c" in
-    let hstr' = "test.h" in
-    printCProg prg nenv cstr' (imports @ [FromRelativePath hstr]);
-    printCProg header nenv hstr' (runtime_imports);
+    let cstr = get_out_file opts f "c" in
+    let hstr = get_header_file opts f in
+    printCProg prg nenv cstr (imports @ [FromRelativePath hstr]);
+    printCProg header nenv hstr (runtime_imports);
   | (CompM.Err s, dbg) ->
     print_debug opts dbg;
     print_endline "Could not compile:";

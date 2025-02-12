@@ -100,10 +100,13 @@ let check_wf_untyped =
 let check_wf_typed =
   check_wf CheckWfExAst.check_wf_typed_program agda_typed_eflags
 
-let compile_wasm opts f =
+let mk_copts opts copts =
+  LambdaBox.CertiCoqPipeline.make_opts copts.cps opts.debug
+
+let compile_wasm opts copts f =
   let p = (read_ast f) in
   check_wf_untyped opts p;
-  let p = l_box_to_wasm p in
+  let p = l_box_to_wasm (mk_copts opts copts) p in
   (* let p = LambdaBoxToWasm.show_IR p in *)
   match p with
   | (CompM.Ret prg, dbg) ->
@@ -164,10 +167,10 @@ let printCProg prog names (dest : string) (imports : import list) =
         failwith "Import with absolute path should have been filled") imports in
   PrintC.PrintClight.print_dest_names_imports prog (Cps.M.elements names) dest imports'
 
-let compile_c opts f =
+let compile_c opts copts f =
   let p = (read_ast f) in
   check_wf_untyped opts p;
-  let p = l_box_to_c p in
+  let p = l_box_to_c (mk_copts opts copts) p in
   (* let p = LambdaBoxToWasm.show_IR p in *)
   match p with
   | (CompM.Ret ((nenv, header), prg), dbg) ->

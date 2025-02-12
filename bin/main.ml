@@ -88,7 +88,14 @@ let eval_cmd =
   let info = Cmd.info "eval" ~doc ~sdocs ~man in
   Cmd.v info Term.(const eval_box $ copts_t $ file)
 
-  let wasm_cmd =
+let certicoq_opts_t =
+  let cps_arg =
+    let doc = "Use CPS translation pipeline." in
+    Arg.(value & flag & info ["cps"] ~doc)
+  in
+  Term.(const (fun x -> mk_certicoq_opts (not x)) $ cps_arg)
+
+let wasm_cmd =
   let file =
     let doc = "lambda box program" in
     Arg.(required & pos 0 (some file) None  & info []
@@ -101,7 +108,7 @@ let eval_cmd =
     `Blocks help_secs; ]
   in
   let info = Cmd.info "wasm" ~doc ~sdocs ~man in
-  Cmd.v info Term.(const compile_wasm $ copts_t $ file)
+  Cmd.v info Term.(const compile_wasm $ copts_t $ certicoq_opts_t $ file)
 
 let c_cmd =
   let file =
@@ -116,7 +123,7 @@ let c_cmd =
     `Blocks help_secs; ]
   in
   let info = Cmd.info "c" ~doc ~sdocs ~man in
-  Cmd.v info Term.(const compile_c $ copts_t $ file)
+  Cmd.v info Term.(const compile_c $ copts_t $ certicoq_opts_t $ file)
 
 let typed_opts_t =
   let opt_arg =

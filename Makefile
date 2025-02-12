@@ -19,8 +19,8 @@ clean: CoqMakefile
 	+@make -f CoqMakefile clean
 	rm -f CoqMakefile
 	dune clean
-	find src/. -type f -name "*.ml" -delete
-	find src/. -type f -name "*.mli" -delete
+	find src/extraction/. -type f -name "*.ml" -delete
+	find src/extraction/. -type f -name "*.mli" -delete
 .PHONY: clean
 
 install: build

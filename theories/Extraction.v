@@ -54,7 +54,7 @@ Extract Constant SerializePrimitives.prim_float_of_string =>
 Set Warnings "-extraction-reserved-identifier".
 Set Warnings "-extraction-opaque-accessed".
 Set Warnings "-extraction-logical-axiom".
-Set Extraction Output Directory "src/".
+Set Extraction Output Directory "src/extraction/".
 
 Require compcert.cfrontend.Csyntax
         compcert.cfrontend.Clight.

@@ -73,7 +73,16 @@ theories/test
 !examples/*.ast
 *.wasm
 !examples/*.wasm
+*.cwasm
+!examples/*.cwasm
 *.rs
 !examples/*.rs
 *.elm
 !examples/*.elm
+*.c
+!examples/*.c
+*.h
+!examples/*.h
+
+examples/**/*.txt
+examples/**/*.v

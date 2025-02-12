@@ -1,12 +1,12 @@
 From MetaCoq.Erasure Require EAst.
-From LambdaBox Require LambdaBoxToWASM.
+From LambdaBox Require LambdaBoxToWasm.
 From LambdaBox Require LambdaBoxToRust.
 From LambdaBox Require LambdaBoxToElm.
 
 
 
 Definition l_box_to_wasm :=
-    LambdaBoxToWASM.run_translation.
+    LambdaBoxToWasm.run_translation.
 
 Definition l_box_to_rust :=
     LambdaBoxToRust.box_to_rust.

@@ -2,7 +2,7 @@
 theories/CheckWf.v
 theories/CoqToLambdaBox.v
 theories/TypedTransforms.v
-theories/LambdaBoxToWASM.v
+theories/LambdaBoxToWasm.v
 theories/LambdaBoxToRust.v
 theories/LambdaBoxToElm.v
 theories/Translations.v

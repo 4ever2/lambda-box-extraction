@@ -76,6 +76,11 @@ let write_rust_res opts f p =
   write_res f (fun f ->
     List.iter (fun s -> output_string f ((unescape_unicode (caml_string_of_bytestring s)) ^ "\n")) p)
 
+let write_anf_res opts f p =
+  let f = get_out_file opts f "anf" in
+  let p = caml_string_of_bytestring p in
+  write_res f (fun f -> output_string f p)
+
 let print_debug opts dbg =
   if opts.debug then
     (print_endline "Pipeline debug:";
@@ -107,7 +112,6 @@ let compile_wasm opts copts f =
   let p = (read_ast f) in
   check_wf_untyped opts p;
   let p = l_box_to_wasm (mk_copts opts copts) p in
-  (* let p = LambdaBoxToWasm.show_IR p in *)
   match p with
   | (CompM.Ret prg, dbg) ->
     print_debug opts dbg;
@@ -171,7 +175,6 @@ let compile_c opts copts f =
   let p = (read_ast f) in
   check_wf_untyped opts p;
   let p = l_box_to_c (mk_copts opts copts) p in
-  (* let p = LambdaBoxToWasm.show_IR p in *)
   match p with
   | (CompM.Ret ((nenv, header), prg), dbg) ->
     print_debug opts dbg;
@@ -183,6 +186,21 @@ let compile_c opts copts f =
     let hstr' = "test.h" in
     printCProg prg nenv cstr' (imports @ [FromRelativePath hstr]);
     printCProg header nenv hstr' (runtime_imports);
+  | (CompM.Err s, dbg) ->
+    print_debug opts dbg;
+    print_endline "Could not compile:";
+    print_endline (caml_string_of_bytestring s);
+    exit 1
+
+let compile_anf opts copts f =
+  let p = (read_ast f) in
+  check_wf_untyped opts p;
+  let p = LambdaBox.CertiCoqPipeline.show_IR (mk_copts opts copts) p in
+  match p with
+  | (CompM.Ret prg, dbg) ->
+    print_debug opts dbg;
+    print_endline "Compiled successfully:";
+    write_anf_res opts f prg
   | (CompM.Err s, dbg) ->
     print_debug opts dbg;
     print_endline "Could not compile:";

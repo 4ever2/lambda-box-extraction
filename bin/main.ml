@@ -125,6 +125,21 @@ let c_cmd =
   let info = Cmd.info "c" ~doc ~sdocs ~man in
   Cmd.v info Term.(const compile_c $ copts_t $ certicoq_opts_t $ file)
 
+let anf_cmd =
+  let file =
+    let doc = "lambda box program" in
+    Arg.(required & pos 0 (some file) None  & info []
+           ~docv:"FILE" ~doc)
+  in
+  let doc = "Compile lambda box to ANF" in
+  let man = [
+    `S Manpage.s_description;
+    `P "";
+    `Blocks help_secs; ]
+  in
+  let info = Cmd.info "anf" ~doc ~sdocs ~man in
+  Cmd.v info Term.(const compile_anf $ copts_t $ certicoq_opts_t $ file)
+
 let typed_opts_t =
   let opt_arg =
     let doc = "Enable dearging optimization." in
@@ -167,6 +182,6 @@ let main_cmd =
   let man = help_secs in
   let info = Cmd.info "lbox" ~version ~doc ~sdocs ~man ~exits in
   let default = Term.(ret (const (fun _ -> `Help (`Pager, None)) $ copts_t)) in
-  Cmd.group info ~default [eval_cmd; wasm_cmd; c_cmd; rust_cmd; elm_cmd; help_cmd]
+  Cmd.group info ~default [eval_cmd; wasm_cmd; c_cmd; anf_cmd; rust_cmd; elm_cmd; help_cmd]
 
 let () = exit (Cmd.eval main_cmd)

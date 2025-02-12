@@ -15,12 +15,17 @@
 
 (* Library of useful Caml <-> Coq conversions *)
 
-open Lib.Datatypes
-open Lib.BinNums
-open Lib.BinNat
-open Lib.BinInt
-open Lib.BinPos
-open Lib.Floats
+open LambdaBox.Datatypes
+open LambdaBox.BinNums
+open LambdaBox.BinNat
+open LambdaBox.BinInt
+open LambdaBox.BinPos
+open LambdaBox.Floats
+
+module BinPos = LambdaBox.BinPos
+module Integers = LambdaBox.Integers
+module Ascii = LambdaBox.Ascii
+module String0 = LambdaBox.String0
 
 (* Coq's [nat] type and some of its operations *)
 
@@ -62,7 +67,7 @@ module P = struct
   | Coq_xH -> Int64.one
   let rec of_int x =
     if x = 0 then Coq_xH
-    else Lib.BinPos.Pos.succ (of_int (pred x))
+    else BinPos.Pos.succ (of_int (pred x))
 end
 module Z = struct
   let to_int = function
@@ -355,8 +360,8 @@ end
  * let coqint_of_camlint64 : int64 -> Integers.Int64.int = Z.of_uint64
  *    (\* interpret the int64 as unsigned so that result Z is in range for int *\) *)
 
-let camlint_of_coqint : Lib.Integers.Int.int -> int32 = fun x -> Int32.of_int (Z.to_int x)
-let camlint64_of_coqint : Lib.Integers.Int64.int -> int64 = fun x -> Z.to_int64 x
+let camlint_of_coqint : Integers.Int.int -> int32 = fun x -> Int32.of_int (Z.to_int x)
+let camlint64_of_coqint : Integers.Int64.int -> int64 = fun x -> Z.to_int64 x
 
 (* Atoms (positive integers representing strings) *)
 type atom = positive
@@ -386,16 +391,16 @@ let first_unused_ident () = !next_atom
 (* Strings *)
 
 let char_of_ascii a =
-  let code = Lib.Ascii.coq_N_of_ascii a in
+  let code = Ascii.coq_N_of_ascii a in
   Char.chr (N.to_int code)
 
 let ascii_of_char a =
   let code = Char.code a in
-  Lib.Ascii.ascii_of_N (N.of_int code)
+  Ascii.ascii_of_N (N.of_int code)
 
-let camlstring_of_coqstring s = s (* (s: Lib.String0.string) = *)
-(*   let open Lib.String0 in
-  let open Lib.Ascii in
+let camlstring_of_coqstring s = s (* (s: String0.string) = *)
+(*   let open String0 in
+  let open Ascii in
   let r = Stdlib.Bytes.create (Nat.to_int (length s)) in
   let rec fill pos = function
   | EmptyString -> r
@@ -403,7 +408,7 @@ let camlstring_of_coqstring s = s (* (s: Lib.String0.string) = *)
   in Stdlib.Bytes.to_string (fill 0 s) *)
 
 let coqstring_of_camlstring s = s
-(*   let open Lib.String0 in
+(*   let open String0 in
   let rec cstring accu pos =
     if pos < 0 then accu else cstring (String (ascii_of_char s.[pos], accu)) (pos - 1)
   in cstring EmptyString (String.length s - 1) *)

@@ -1,12 +1,24 @@
-open Lib.Translations
-open Lib.EAst
-open Lib.ExAst
-open Lib.SerializeEAst
-open Lib.SerializeExAst
-open Lib.CheckWf
+open LambdaBox.Translations
+open LambdaBox.EAst
+open LambdaBox.ExAst
+open LambdaBox.SerializeEAst
+open LambdaBox.SerializeExAst
+open LambdaBox.CheckWf
 open Unicode
 open Common
 open Caml_bytestring
+
+module Datatypes = LambdaBox.Datatypes
+module CeresExtra = LambdaBox.CeresExtra
+module TypedTransforms = LambdaBox.TypedTransforms
+module LambdaBoxToWasm = LambdaBox.LambdaBoxToWasm
+module LambdaBoxToRust = LambdaBox.LambdaBoxToRust
+module LambdaBoxToElm = LambdaBox.LambdaBoxToElm
+module CompM = LambdaBox.CompM
+module ResultMonad = LambdaBox.ResultMonad
+module ExceptionMonad = LambdaBox.ExceptionMonad
+module Cps = LambdaBox.Cps
+module Eval = LambdaBox.Eval
 
 
 let read_file f =
@@ -18,9 +30,9 @@ let read_file f =
 let parse_ast p s =
   let t = p (String.trim s) in
   match t with
-  | Lib.Datatypes.Coq_inr t -> t
-  | Lib.Datatypes.Coq_inl e ->
-    let err_msg = Lib.CeresExtra.string_of_error true true e in
+  | Datatypes.Coq_inr t -> t
+  | Datatypes.Coq_inl e ->
+    let err_msg = CeresExtra.string_of_error true true e in
     print_endline "Failed parsing input program";
     print_endline err_msg;
     exit 1
@@ -71,7 +83,7 @@ let print_debug opts dbg =
 
 
 let mk_tparams topts =
-  Lib.TypedTransforms.mk_params topts.optimize topts.optimize
+  TypedTransforms.mk_params topts.optimize topts.optimize
 
 let check_wf checker flags opts p =
   if opts.bypass_wf then ()
@@ -92,13 +104,13 @@ let compile_wasm opts f =
   let p = (read_ast f) in
   check_wf_untyped opts p;
   let p = l_box_to_wasm p in
-  (* let p = Lib.LambdaBoxToWasm.show_IR p in *)
+  (* let p = LambdaBoxToWasm.show_IR p in *)
   match p with
-  | (Lib.CompM.Ret prg, dbg) ->
+  | (CompM.Ret prg, dbg) ->
     print_debug opts dbg;
     print_endline "Compiled successfully:";
     write_wasm_res opts f prg
-  | (Lib.CompM.Err s, dbg) ->
+  | (CompM.Err s, dbg) ->
     print_debug opts dbg;
     print_endline "Could not compile:";
     print_endline (caml_string_of_bytestring s);
@@ -107,12 +119,12 @@ let compile_wasm opts f =
 let compile_rust opts topts f =
   let p = (read_typed_ast f) in
   check_wf_typed opts p;
-  let p = l_box_to_rust p Lib.LambdaBoxToRust.default_remaps (mk_tparams topts) in
+  let p = l_box_to_rust p LambdaBoxToRust.default_remaps (mk_tparams topts) in
   match p with
-  | Lib.ResultMonad.Ok prg ->
+  | ResultMonad.Ok prg ->
     print_endline "Compiled successfully:";
     write_rust_res opts f prg
-  | Lib.ResultMonad.Err e ->
+  | ResultMonad.Err e ->
     print_endline "Could not compile:";
     print_endline (caml_string_of_bytestring e);
     exit 1
@@ -120,12 +132,12 @@ let compile_rust opts topts f =
 let compile_elm opts topts f =
   let p = (read_typed_ast f) in
   check_wf_typed opts p;
-  let p = l_box_to_elm p Lib.LambdaBoxToElm.default_preamble Lib.LambdaBoxToElm.default_remaps (mk_tparams topts) in
+  let p = l_box_to_elm p LambdaBoxToElm.default_preamble LambdaBoxToElm.default_remaps (mk_tparams topts) in
   match p with
-  | Lib.ResultMonad.Ok prg ->
+  | ResultMonad.Ok prg ->
     print_endline "Compiled successfully:";
     write_elm_res opts f prg
-  | Lib.ResultMonad.Err e ->
+  | ResultMonad.Err e ->
     print_endline "Could not compile:";
     print_endline (caml_string_of_bytestring e);
     exit 1
@@ -133,13 +145,13 @@ let compile_elm opts topts f =
 let eval_box opts f =
   let p = (read_ast f) in
   check_wf_untyped opts p;
-  let p = Lib.Eval.eval_box p  in
+  let p = Eval.eval_box p  in
   print_endline "Evaluating:";
   match p with
-  | (Lib.ExceptionMonad.Ret t) ->
+  | (ExceptionMonad.Ret t) ->
     print_endline "Evaluated program to:";
     print_endline (caml_string_of_bytestring t)
-  | (Lib.ExceptionMonad.Exc e) ->
+  | (ExceptionMonad.Exc e) ->
     print_endline "Could not evaluate program:";
     print_endline (caml_string_of_bytestring e);
     exit 1
@@ -150,15 +162,15 @@ let printCProg prog names (dest : string) (imports : import list) =
     | FromLibrary (s, _) -> "#include <" ^ s ^ ">"
     | FromAbsolutePath _ ->
         failwith "Import with absolute path should have been filled") imports in
-  LibC.PrintClight.print_dest_names_imports prog (Lib.Cps.M.elements names) dest imports'
+  PrintC.PrintClight.print_dest_names_imports prog (Cps.M.elements names) dest imports'
 
 let compile_c opts f =
   let p = (read_ast f) in
   check_wf_untyped opts p;
   let p = l_box_to_c p in
-  (* let p = Lib.LambdaBoxToWasm.show_IR p in *)
+  (* let p = LambdaBoxToWasm.show_IR p in *)
   match p with
-  | (Lib.CompM.Ret ((nenv, header), prg), dbg) ->
+  | (CompM.Ret ((nenv, header), prg), dbg) ->
     print_debug opts dbg;
     print_endline "Compiled successfully:";
     (* let runtime_imports = [FromLibrary ((if opts.cps then "gc.h" else "gc_stack.h"), None)] in *)
@@ -169,7 +181,7 @@ let compile_c opts f =
     let hstr' = "test.h" in
     printCProg prg nenv cstr' (imports @ [FromRelativePath hstr]);
     printCProg header nenv hstr' (runtime_imports);
-  | (Lib.CompM.Err s, dbg) ->
+  | (CompM.Err s, dbg) ->
     print_debug opts dbg;
     print_endline "Could not compile:";
     print_endline (caml_string_of_bytestring s);

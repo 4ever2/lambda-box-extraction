@@ -16,15 +16,18 @@
 
 (** Pretty-printer for Csyntax *)
 
-module Ctypes = Lib.Ctypes
-module Cop = Lib.Cop
-module Values0 = Lib.Values0
-module Csyntax = Lib.Csyntax
+module Ctypes = LambdaBox.Ctypes
+module Cop = LambdaBox.Cop
+module Values0 = LambdaBox.Values0
+module Csyntax = LambdaBox.Csyntax
+module Integers = LambdaBox.Integers
+module Datatypes = LambdaBox.Datatypes
+module BinNums = LambdaBox.BinNums
 
 open Format
 open Camlcoq
 open Values0
-open Lib.AST
+open LambdaBox.AST
 open! Ctypes
 open Cop
 open Csyntax
@@ -76,7 +79,7 @@ let name_longtype sg =
 (* Declarator (identifier + type) *)
 
 let attributes a =
-  let open Lib.Datatypes in
+  let open Datatypes in
   let s1 = if a.attr_volatile then " volatile" else "" in
   match a.attr_alignas with
   | None -> s1
@@ -91,7 +94,7 @@ let name_optid id =
   if id = "" then "" else " " ^ id
 
 let is_int_or_ptr_attr a n =
-  let open Lib.Datatypes in
+  let open Datatypes in
   match a.attr_alignas with
   | Some l when N.to_int l = n -> true
   | _ -> false
@@ -188,7 +191,7 @@ let rec precedence = function
 (* Expressions *)
 
 let print_pointer_hook
-   : (formatter -> Values0.block * Lib.Integers.Int.int -> unit) ref
+   : (formatter -> Values0.block * Integers.Int.int -> unit) ref
    = ref (fun p (b, ofs) -> ())
 
 let is_nan (f : float) = f <> f
@@ -488,7 +491,7 @@ let string_of_init id =
 
 let chop_last_nul id =
   match List.rev id with
-  | Init_int8 Lib.BinNums.Z0 :: tl -> List.rev tl
+  | Init_int8 BinNums.Z0 :: tl -> List.rev tl
   | _ -> id
 
 let print_init p = function

@@ -1,6 +1,6 @@
 (library
- (name libC)
- (libraries coq-primitive.uint63 coq-primitive.float64 lib str))
+ (name PrintC)
+ (libraries coq-primitive.uint63 coq-primitive.float64 LambdaBox str))
 
 (env
  (dev

@@ -1,5 +1,5 @@
 (library
- (name lib)
+ (name LambdaBox)
  (libraries coq-primitive.uint63 coq-primitive.float64))
 
 (env

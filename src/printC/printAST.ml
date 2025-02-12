@@ -18,7 +18,7 @@
 
 open Printf
 open Camlcoq
-open Lib.AST
+open LambdaBox.AST
 
 let name_of_type = function
   | Tint -> "int"

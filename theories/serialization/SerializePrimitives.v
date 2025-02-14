@@ -112,3 +112,41 @@ Instance Deserialize_prim_val {T : Set} `{Deserialize T} : Deserialize (prim_val
       end
     | _ => inl (DeserError l "error")
     end.
+
+
+
+(** * Main serialization functions *)
+
+Definition string_of_prim_tag (t : prim_tag) : string :=
+  @to_string prim_tag Serialize_prim_tag t.
+
+Definition string_of_prim_int (i : PrimInt63.int) : string :=
+  @to_string PrimInt63.int Serialize_prim_int i.
+
+Definition string_of_prim_float' (f : PrimFloat.float) : string :=
+  @to_string PrimFloat.float Serialize_prim_float f.
+
+Definition string_of_array_model {T : Set} `{Serialize T} (a : array_model T) : string :=
+  @to_string (array_model T) Serialize_array_model a.
+
+Definition string_of_prim_val {T : Set} `{Serialize T} (p : prim_val T) : string :=
+  @to_string (prim_val T) Serialize_prim_val p.
+
+
+
+(** * Main deserialization functions *)
+
+Definition prim_tag_of_string (s : string) : error + prim_tag :=
+  @from_string prim_tag Deserialize_prim_tag s.
+
+Definition prim_int_of_string (s : string) : error + PrimInt63.int :=
+  @from_string PrimInt63.int Deserialize_prim_int s.
+
+Definition prim_float_of_string' (s : string) : error + PrimFloat.float :=
+  @from_string PrimFloat.float Deserialize_prim_float s.
+
+Definition array_model_of_string {T : Set} `{Deserialize T} (s : string) : error + (array_model T) :=
+  @from_string (array_model T) Deserialize_array_model s.
+
+Definition prim_val_of_string {T : Set} `{Deserialize T} (s : string) : error + (prim_val T) :=
+  @from_string (prim_val T) Deserialize_prim_val s.

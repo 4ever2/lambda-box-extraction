@@ -3,6 +3,7 @@ From Coq Require Import List.
 From Ceres Require Import Ceres.
 From Ceres Require CeresParserUtils.
 From Ceres Require CeresString.
+From MetaCoq.Utils Require bytestring.
 
 Local Notation "p >>= f" := (Deser.bind_field p f) (at level 50, left associativity) : deser_scope.
 Local Open Scope deser_scope.
@@ -89,3 +90,34 @@ Definition string_of_error (print_loc print_sexp : bool) (e : error) : string :=
     then msg_str ++ " at location " ++ string_of_loc l
     else msg_str
   end.
+
+
+
+Lemma eqb_ascii_refl : forall c,
+  CeresString.eqb_ascii c c = true.
+Proof.
+  intros c.
+  destruct c.
+  unfold CeresString.eqb_ascii.
+  rewrite !Bool.eqb_reflx.
+  reflexivity.
+Qed.
+
+Lemma neqb_ascii_neq : forall a b,
+  a <> b -> CeresString.eqb_ascii a b = false.
+Proof.
+  intros.
+  apply CeresString.neqb_neq_ascii.
+  assumption.
+Qed.
+
+Lemma bytestring_complete : forall s,
+  bytestring.String.of_string (bytestring.String.to_string s) = s.
+Proof.
+  induction s.
+  - reflexivity.
+  - cbn.
+    rewrite IHs.
+    rewrite Ascii.byte_of_ascii_of_byte.
+    reflexivity.
+Qed.

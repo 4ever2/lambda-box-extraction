@@ -97,7 +97,11 @@ let certicoq_opts_t =
     let doc = "Parse input as typed lambda box program." in
     Arg.(value & opt (some string) None & info ["typed"] ~doc)
   in
-  Term.(const (fun x y -> mk_certicoq_opts (not x) y) $ cps_arg $ typed_arg)
+  let opt_arg =
+    let doc = "Enable dearging optimization." in
+    Arg.(value & flag & info ["opt"] ~doc)
+  in
+  Term.(const (fun x y -> mk_certicoq_opts (not x) y) $ cps_arg $ typed_arg $ opt_arg)
 
 let wasm_cmd =
   let file =

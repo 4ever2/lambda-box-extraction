@@ -113,10 +113,20 @@ let check_wf_typed =
 let mk_copts opts copts =
   LambdaBox.CertiCoqPipeline.make_opts copts.cps opts.debug
 
-let convert_typed f n =
+let convert_typed f n opt =
   let p = read_typed_ast f in
   match LambdaBox.SerializeCommon.kername_of_string n with
   | Datatypes.Coq_inr kn ->
+    let p =
+      if opt
+      then match TypedTransforms.typed_transfoms (mk_tparams {optimize = opt}) p with
+           | ResultMonad.Ok p -> p
+           | ResultMonad.Err e ->
+             print_endline "Failed optimizing:";
+             print_endline (caml_string_of_bytestring e);
+             exit 1
+      else p
+    in
     (LambdaBox.ExAst.trans_env p, LambdaBox.EAst.Coq_tConst kn)
   | Datatypes.Coq_inl e ->
     let err_msg = CeresExtra.string_of_error true true e in
@@ -127,7 +137,7 @@ let convert_typed f n =
 let compile_wasm opts copts f =
   let p =
     match copts.typed with
-    | Some n -> convert_typed f n
+    | Some n -> convert_typed f n copts.optimize
     | None -> read_ast f
   in
   check_wf_untyped opts p;
@@ -194,7 +204,7 @@ let printCProg prog names (dest : string) (imports : import list) =
 let compile_c opts copts f =
   let p =
     match copts.typed with
-    | Some n -> convert_typed f n
+    | Some n -> convert_typed f n copts.optimize
     | None -> read_ast f
   in
   check_wf_untyped opts p;
@@ -218,7 +228,7 @@ let compile_c opts copts f =
 let compile_anf opts copts f =
   let p =
     match copts.typed with
-    | Some n -> convert_typed f n
+    | Some n -> convert_typed f n copts.optimize
     | None -> read_ast f
   in
   check_wf_untyped opts p;

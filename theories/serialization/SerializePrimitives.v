@@ -15,9 +15,9 @@ Local Open Scope string_scope.
 
 (** * Axioms *)
 (* TODO: resolve axioms *)
-Axiom Z_of_prim_int : PrimInt63.int -> Z.
+Axiom string_of_prim_int : PrimInt63.int -> string.
 Axiom string_of_prim_float : PrimFloat.float -> string.
-Axiom prim_int_of_Z : Z -> PrimInt63.int.
+Axiom prim_int_of_string : string -> PrimInt63.int.
 Axiom prim_float_of_string : string -> PrimFloat.float.
 
 
@@ -33,7 +33,7 @@ Instance Serialize_prim_tag : Serialize prim_tag :=
     end%sexp.
 
 Instance Serialize_prim_int : Serialize PrimInt63.int :=
-  fun i => Atom (Num (Z_of_prim_int i)).
+  fun i => Atom (Str (string_of_prim_int i)).
 
 Instance Serialize_prim_float : Serialize PrimFloat.float :=
   fun f => Atom (Str (string_of_prim_float f)).
@@ -67,7 +67,7 @@ Instance Deserialize_prim_tag : Deserialize prim_tag :=
 Instance Deserialize_prim_int : Deserialize PrimInt63.int :=
   fun l e =>
     match e with
-    | Atom_ (Num i) => inr (prim_int_of_Z i)
+    | Atom_ (Str i) => inr (prim_int_of_string i)
     | _ => inl (DeserError l "error")
     end.
 
@@ -120,7 +120,7 @@ Instance Deserialize_prim_val {T : Set} `{Deserialize T} : Deserialize (prim_val
 Definition string_of_prim_tag (t : prim_tag) : string :=
   @to_string prim_tag Serialize_prim_tag t.
 
-Definition string_of_prim_int (i : PrimInt63.int) : string :=
+Definition string_of_prim_int' (i : PrimInt63.int) : string :=
   @to_string PrimInt63.int Serialize_prim_int i.
 
 Definition string_of_prim_float' (f : PrimFloat.float) : string :=
@@ -139,7 +139,7 @@ Definition string_of_prim_val {T : Set} `{Serialize T} (p : prim_val T) : string
 Definition prim_tag_of_string (s : string) : error + prim_tag :=
   @from_string prim_tag Deserialize_prim_tag s.
 
-Definition prim_int_of_string (s : string) : error + PrimInt63.int :=
+Definition prim_int_of_string' (s : string) : error + PrimInt63.int :=
   @from_string PrimInt63.int Deserialize_prim_int s.
 
 Definition prim_float_of_string' (s : string) : error + PrimFloat.float :=

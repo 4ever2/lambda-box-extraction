@@ -36,17 +36,17 @@ Extraction Blacklist config List String Nat Int Ast Universes UnivSubst Typing R
 Extract Constant MetaCoq.Common.Transform.time =>
   "(fun c f x -> f x)".
 
-(* TODO: implement primitive integer serialization *)
-Extract Constant SerializePrimitives.prim_int_of_Z =>
-  "(fun x -> failwith ""AXIOM TO BE REALIZED"")".
-Extract Constant SerializePrimitives.Z_of_prim_int =>
-  "(fun x -> failwith ""AXIOM TO BE REALIZED"")".
+(* TODO: validate prim int implementations *)
+Extract Constant SerializePrimitives.string_of_prim_int =>
+  "(fun i -> i |> Uint63.to_int64 |> Int64.to_string)".
+Extract Constant SerializePrimitives.prim_int_of_string =>
+  "(fun s -> s |> Int64.of_string |> Uint63.of_int64)".
 
-(* TODO: implement primitive float serialization *)
+(* TODO: validate prim float implementations *)
 Extract Constant SerializePrimitives.string_of_prim_float =>
-  "(fun x -> failwith ""AXIOM TO BE REALIZED"")".
+  "(fun f -> f |> Float64.to_float |> Int64.bits_of_float |> Int64.to_string)".
 Extract Constant SerializePrimitives.prim_float_of_string =>
-  "(fun x -> failwith ""AXIOM TO BE REALIZED"")".
+  "(fun s -> s |> Int64.of_string |> Int64.float_of_bits |> Float64.of_float)".
 
 
 Set Warnings "-extraction-reserved-identifier".

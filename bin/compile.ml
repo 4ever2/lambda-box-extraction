@@ -113,8 +113,23 @@ let check_wf_typed =
 let mk_copts opts copts =
   LambdaBox.CertiCoqPipeline.make_opts copts.cps opts.debug
 
+let convert_typed f n =
+  let p = read_typed_ast f in
+  match LambdaBox.SerializeCommon.kername_of_string n with
+  | Datatypes.Coq_inr kn ->
+    (LambdaBox.ExAst.trans_env p, LambdaBox.EAst.Coq_tConst kn)
+  | Datatypes.Coq_inl e ->
+    let err_msg = CeresExtra.string_of_error true true e in
+    print_endline "Failed parsing kername";
+    print_endline err_msg;
+    exit 1
+
 let compile_wasm opts copts f =
-  let p = (read_ast f) in
+  let p =
+    match copts.typed with
+    | Some n -> convert_typed f n
+    | None -> read_ast f
+  in
   check_wf_untyped opts p;
   let p = l_box_to_wasm (mk_copts opts copts) p in
   match p with
@@ -129,7 +144,7 @@ let compile_wasm opts copts f =
     exit 1
 
 let compile_rust opts topts f =
-  let p = (read_typed_ast f) in
+  let p = read_typed_ast f in
   check_wf_typed opts p;
   let p = l_box_to_rust p LambdaBoxToRust.default_remaps (mk_tparams topts) in
   match p with
@@ -142,7 +157,7 @@ let compile_rust opts topts f =
     exit 1
 
 let compile_elm opts topts f =
-  let p = (read_typed_ast f) in
+  let p = read_typed_ast f in
   check_wf_typed opts p;
   let p = l_box_to_elm p LambdaBoxToElm.default_preamble LambdaBoxToElm.default_remaps (mk_tparams topts) in
   match p with
@@ -155,7 +170,7 @@ let compile_elm opts topts f =
     exit 1
 
 let eval_box opts f =
-  let p = (read_ast f) in
+  let p = read_ast f in
   check_wf_untyped opts p;
   let p = Eval.eval_box p  in
   print_endline "Evaluating:";
@@ -177,7 +192,11 @@ let printCProg prog names (dest : string) (imports : import list) =
   PrintC.PrintClight.print_dest_names_imports prog (Cps.M.elements names) dest imports'
 
 let compile_c opts copts f =
-  let p = (read_ast f) in
+  let p =
+    match copts.typed with
+    | Some n -> convert_typed f n
+    | None -> read_ast f
+  in
   check_wf_untyped opts p;
   let p = l_box_to_c (mk_copts opts copts) p in
   match p with
@@ -197,7 +216,11 @@ let compile_c opts copts f =
     exit 1
 
 let compile_anf opts copts f =
-  let p = (read_ast f) in
+  let p =
+    match copts.typed with
+    | Some n -> convert_typed f n
+    | None -> read_ast f
+  in
   check_wf_untyped opts p;
   let p = LambdaBox.CertiCoqPipeline.show_IR (mk_copts opts copts) p in
   match p with

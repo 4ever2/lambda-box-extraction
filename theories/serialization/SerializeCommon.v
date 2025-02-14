@@ -137,3 +137,9 @@ Instance Deserialize_allowed_eliminations : Deserialize allowed_eliminations :=
       ]
       []
       l e.
+
+
+
+(** * Main deserialization functions *)
+Definition kername_of_string (s : string) : error + kername :=
+  from_string s.

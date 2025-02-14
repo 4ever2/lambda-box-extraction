@@ -18,6 +18,10 @@ theories/serialization/SerializePrimitives.v
 theories/serialization/SerializeEAst.v
 theories/serialization/SerializeExAst.v
 theories/serialization/SerializeCommonComplete.v
+theories/serialization/SerializeCommonSound.v
 theories/serialization/SerializePrimitivesComplete.v
+theories/serialization/SerializePrimitivesSound.v
 theories/serialization/SerializeEAstComplete.v
+theories/serialization/SerializeEAstSound.v
 theories/serialization/SerializeExAstComplete.v
+theories/serialization/SerializeExAstSound.v

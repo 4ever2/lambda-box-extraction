@@ -55,7 +55,7 @@ Instance Serialize_prim_val {T : Set} `{Serialize T} : Serialize (prim_val T) :=
 
 (** * Deserializers *)
 
-Instance Deerialize_prim_tag : Deserialize prim_tag :=
+Instance Deserialize_prim_tag : Deserialize prim_tag :=
   fun l e =>
     Deser.match_con "prim_tag"
       [ ("primInt", primInt)

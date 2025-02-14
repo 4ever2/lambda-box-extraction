@@ -202,12 +202,80 @@ Instance Deserialize_program : Deserialize program :=
 
 
 
+(** * Main serialization functions *)
+
+(** ** Term serializer *)
+Definition string_of_def {T : Set} `{Serialize T} (d : def T) : string :=
+  @to_string (def T) Serialize_def d.
+
+Definition string_of_mfixpoint {T : Set} `{Serialize T} (f : mfixpoint T) : string :=
+  @to_string (mfixpoint T) Serialize_mfixpoint f.
+
+Definition string_of_term (t : term) : string :=
+  @to_string term Serialize_term t.
+
+(** ** Context serializer *)
+Definition string_of_constructor_body (cb : constructor_body) : string :=
+  @to_string constructor_body Serialize_constructor_body cb.
+
+Definition string_of_projection_body (pb : projection_body) : string :=
+  @to_string projection_body Serialize_projection_body pb.
+
+Definition string_of_one_inductive_body (oib : one_inductive_body) : string :=
+  @to_string one_inductive_body Serialize_one_inductive_body oib.
+
+Definition string_of_mutual_inductive_body (mib : mutual_inductive_body) : string :=
+  @to_string mutual_inductive_body Serialize_mutual_inductive_body mib.
+
+Definition string_of_constant_body (cb : constant_body) : string :=
+  @to_string constant_body Serialize_constant_body cb.
+
+Definition string_of_global_decl (gd : global_decl) : string :=
+  @to_string global_decl Serialize_global_decl gd.
+
+Definition string_of_global_declarations (gd : global_declarations) : string :=
+  @to_string global_declarations Serialize_global_declarations gd.
+
+(** ** Serialize program *)
+Definition string_of_program (p : program) : string :=
+  @to_string program Serialize_program p.
+
+
+
 (** * Main deserialization functions *)
+
+(** ** Term deserializer *)
+Definition def_of_string {T : Set} `{Deserialize T} (s : string) : error + (def T) :=
+  @from_string (def T) Deserialize_def s.
+
+Definition mfixpoint_of_string {T : Set} `{Deserialize T} (s : string) : error + (mfixpoint T) :=
+  @from_string (mfixpoint T) Deserialize_mfixpoint s.
+
 Definition term_of_string (s : string) : error + term :=
-  from_string s.
+  @from_string term Deserialize_term s.
+
+(** ** Context deserializer *)
+Definition constructor_body_of_string (s : string) : error + constructor_body :=
+  @from_string constructor_body Deserialize_constructor_body s.
+
+Definition projection_body_of_string (s : string) : error + projection_body :=
+  @from_string projection_body Deserialize_projection_body s.
+
+Definition one_inductive_body_of_string (s : string) : error + one_inductive_body :=
+  @from_string one_inductive_body Deserialize_one_inductive_body s.
+
+Definition mutual_inductive_body_of_string (s : string) : error + mutual_inductive_body :=
+  @from_string mutual_inductive_body Deserialize_mutual_inductive_body s.
+
+Definition constant_body_of_string (s : string) : error + constant_body :=
+  @from_string constant_body Deserialize_constant_body s.
+
+Definition global_decl_of_string (s : string) : error + global_decl :=
+  @from_string global_decl Deserialize_global_decl s.
 
 Definition context_of_string (s : string) : error + global_declarations :=
-  from_string s.
+  @from_string global_declarations Deserialize_global_declarations s.
 
+(** ** Deserialize program *)
 Definition program_of_string (s : string) : error + program :=
-  from_string s.
+  @from_string program Deserialize_program s.

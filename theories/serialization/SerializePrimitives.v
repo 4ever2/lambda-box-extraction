@@ -14,7 +14,7 @@ Local Open Scope string_scope.
 
 
 (** * Axioms *)
-(* TODO: resolve axioms *)
+(* Realized in extraction *)
 Axiom string_of_prim_int : PrimInt63.int -> string.
 Axiom string_of_prim_float : PrimFloat.float -> string.
 Axiom prim_int_of_string : string -> PrimInt63.int.

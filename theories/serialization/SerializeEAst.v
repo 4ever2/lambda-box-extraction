@@ -34,7 +34,7 @@ Instance Serialize_term : Serialize term :=
     | tApp u v => [ Atom "tApp"; sz u; sz v ]
     | tConst k => [ Atom "tConst"; to_sexp k ]
     | tConstruct ind n args => [ Atom "tConstruct"; to_sexp ind; to_sexp n; List (map sz args)  ]
-    | tCase indn c brs => [ Atom "tCase"; to_sexp indn; sz c; List (map (fun '(ns,t) => [ to_sexp ns; sz t ]) brs) ]
+    | tCase indn c brs => [ Atom "tCase"; to_sexp indn; sz c; List (map (@to_sexp _ (@Serialize_product _ _ _ sz)) brs) ]
     | tProj p c => [ Atom "tProj"; to_sexp p; sz c ]
     | tFix mfix idx => [ Atom "tFix"; @to_sexp _ (@Serialize_mfixpoint _ sz) mfix; to_sexp idx ]
     | tCoFix mfix idx => [ Atom "tCoFix"; @to_sexp _ (@Serialize_mfixpoint _ sz) mfix; to_sexp idx  ]

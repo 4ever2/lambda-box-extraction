@@ -148,6 +148,21 @@ let anf_cmd =
   let info = Cmd.info "anf" ~doc ~sdocs ~man in
   Cmd.v info Term.(const compile_anf $ copts_t $ certicoq_opts_t $ file)
 
+let ocaml_cmd =
+  let file =
+    let doc = "lambda box program" in
+    Arg.(required & pos 0 (some file) None  & info []
+           ~docv:"FILE" ~doc)
+  in
+  let doc = "Compile lambda box to OCaml" in
+  let man = [
+    `S Manpage.s_description;
+    `P "";
+    `Blocks help_secs; ]
+  in
+  let info = Cmd.info "ocaml" ~doc ~sdocs ~man in
+  Cmd.v info Term.(const compile_ocaml $ copts_t $ file)
+
 let typed_opts_t =
   let opt_arg =
     let doc = "Enable dearging optimization." in

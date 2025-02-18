@@ -92,6 +92,12 @@ let write_anf_res opts f p =
   let p = caml_string_of_bytestring p in
   write_res f (fun f -> output_string f p)
 
+let write_ocaml_res opts f p =
+  let f = get_out_file opts f "ml" in
+  write_res f (fun f ->
+    (* List.iter (fun s -> output_string f (((caml_string_of_bytestring s)) ^ "\n")) (fst p); *)
+    output_string f (caml_string_of_bytestring (snd p)))
+
 let print_debug opts dbg =
   if opts.debug then
     (print_endline "Pipeline debug:";
@@ -158,6 +164,12 @@ let compile_wasm opts copts f =
     print_endline "Could not compile:";
     print_endline (caml_string_of_bytestring s);
     exit 1
+
+let compile_ocaml opts f =
+  let p = read_ast f in
+  check_wf_untyped opts p;
+  let p = l_box_to_ocaml p in
+  write_ocaml_res opts f p
 
 let compile_rust opts topts f =
   let p = read_typed_ast f in

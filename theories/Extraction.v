@@ -1,7 +1,10 @@
 From MetaCoq.Erasure Require EAst.
 From LambdaBox Require CheckWf.
 From LambdaBox Require Eval.
+From LambdaBox Require EvalAnf.
+Local Unset Universe Checking. (* TODO: fix universe inconsistency *)
 From LambdaBox Require Translations.
+Local Set Universe Checking.
 From LambdaBox Require SerializePrimitives.
 From LambdaBox Require SerializeCommon.
 From LambdaBox Require SerializeEAst.
@@ -29,10 +32,15 @@ Extraction Inline Equations.Init.pr2.
 Extraction Inline Equations.Init.hidebody.
 Extraction Inline Equations.Prop.DepElim.solution_left.
 
+Extract Inductive Equations.Init.sigma => "( * )" ["(,)"].
+Extract Constant Equations.Init.pr1 => "fst".
+Extract Constant Equations.Init.pr2 => "snd".
+Extraction Inline Equations.Init.pr1 Equations.Init.pr2.
+
 Extraction Blacklist config List String Nat Int Ast Universes UnivSubst Typing Retyping
            OrderedType Logic Common Equality Char char uGraph
            Instances Classes Term Monad Coqlib Errors Compile Checker Eq Classes0 Numeral
-           Uint63 Number Values Bytes.
+           Uint63 Number Values Bytes ws_cumul_pb.
 
 
 (* TODO: add time implementation if *)
@@ -52,6 +60,12 @@ Extract Constant SerializePrimitives.prim_float_of_string =>
   "(fun x -> failwith ""AXIOM TO BE REALIZED"")".
 
 
+Extract Constant Malfunction.FFI.coq_msg_info => "(fun s -> ())".
+Extract Constant Malfunction.FFI.coq_user_error => "(fun s -> ())".
+Extraction Inline Malfunction.FFI.coq_msg_info.
+Extraction Inline Malfunction.FFI.coq_user_error.
+
+
 Set Warnings "-extraction-reserved-identifier".
 Set Warnings "-extraction-opaque-accessed".
 Set Warnings "-extraction-logical-axiom".
@@ -64,6 +78,7 @@ Separate Extraction Translations.l_box_to_wasm CertiCoqPipeline.show_IR CertiCoq
                     Translations.l_box_to_rust LambdaBoxToRust.default_remaps
                     Translations.l_box_to_elm LambdaBoxToElm.default_remaps LambdaBoxToElm.default_preamble
                     Translations.l_box_to_c
+                    Translations.l_box_to_ocaml
                     TypedTransforms.mk_params
                     Eval.eval_box Eval.eval_box_typed
                     CheckWf.check_wf_program CheckWf.CheckWfExAst.check_wf_typed_program CheckWf.agda_eflags CheckWf.agda_typed_eflags
@@ -71,4 +86,5 @@ Separate Extraction Translations.l_box_to_wasm CertiCoqPipeline.show_IR CertiCoq
                     Floats.Float32.to_bits Floats.Float.to_bits
                     Floats.Float32.of_bits Floats.Float.of_bits
                     Csyntax
-                    Clight.
+                    Clight
+                    String.length.

@@ -18,7 +18,7 @@ module CompM = LambdaBox.CompM
 module ResultMonad = LambdaBox.ResultMonad
 module ExceptionMonad = LambdaBox.ExceptionMonad
 module Cps = LambdaBox.Cps
-module Eval = LambdaBox.Eval
+module Eval = LambdaBox.EvalBox
 
 
 let string_of_cstring = PrintC.Camlcoq.camlstring_of_coqstring
@@ -197,24 +197,10 @@ let compile_elm opts topts f =
     print_endline (caml_string_of_bytestring e);
     exit 1
 
-let eval_box opts f =
+let eval_box opts copts anf f =
   let p = read_ast f in
   check_wf_untyped opts p;
-  let p = Eval.eval_box p  in
-  print_endline "Evaluating:";
-  match p with
-  | (ExceptionMonad.Ret t) ->
-    print_endline "Evaluated program to:";
-    print_endline (caml_string_of_bytestring t)
-  | (ExceptionMonad.Exc e) ->
-    print_endline "Could not evaluate program:";
-    print_endline (caml_string_of_bytestring e);
-    exit 1
-
-let eval_anf opts copts f =
-  let p = read_ast f in
-  check_wf_untyped opts p;
-  let p = LambdaBox.EvalAnf.eval_box (mk_copts opts copts) p in
+  let p = Eval.eval (mk_copts opts copts) anf p in
   print_endline "Evaluating:";
   match p with
   | (CompM.Ret t, dbg) ->

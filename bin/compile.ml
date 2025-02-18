@@ -104,11 +104,11 @@ let mk_tparams topts =
 let check_wf checker flags opts p =
   if opts.bypass_wf then ()
   else
-  print_endline "Checking program wellformedness";
+  (print_endline "Checking program wellformedness";
   if checker flags p then ()
   else
     (print_endline "Program not wellformed";
-    exit 1)
+    exit 1))
 
 let check_wf_untyped =
   check_wf check_wf_program agda_eflags

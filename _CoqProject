@@ -1,6 +1,7 @@
 -Q theories LambdaBox
 theories/CheckWf.v
 theories/Eval.v
+theories/EvalAnf.v
 theories/CoqToLambdaBox.v
 theories/TypedTransforms.v
 theories/CertiCoqPipeline.v

@@ -80,7 +80,7 @@ Separate Extraction Translations.l_box_to_wasm CertiCoqPipeline.show_IR CertiCoq
                     Translations.l_box_to_c
                     Translations.l_box_to_ocaml
                     TypedTransforms.mk_params
-                    Eval.eval_box Eval.eval_box_typed
+                    Eval.eval_box Eval.eval_box_typed EvalAnf.eval_box
                     CheckWf.check_wf_program CheckWf.CheckWfExAst.check_wf_typed_program CheckWf.agda_eflags CheckWf.agda_typed_eflags
                     SerializeEAst.program_of_string SerializeExAst.global_env_of_string SerializeCommon.kername_of_string CeresExtra.string_of_error
                     Floats.Float32.to_bits Floats.Float.to_bits

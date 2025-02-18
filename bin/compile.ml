@@ -211,6 +211,22 @@ let eval_box opts f =
     print_endline (caml_string_of_bytestring e);
     exit 1
 
+let eval_anf opts copts f =
+  let p = read_ast f in
+  check_wf_untyped opts p;
+  let p = LambdaBox.EvalAnf.eval_box (mk_copts opts copts) p in
+  print_endline "Evaluating:";
+  match p with
+  | (CompM.Ret t, dbg) ->
+    print_debug opts dbg;
+    print_endline "Evaluated program to:";
+    print_endline (caml_string_of_bytestring t)
+  | (CompM.Err s, dbg) ->
+    print_debug opts dbg;
+    print_endline "Could not compile:";
+    print_endline (caml_string_of_bytestring s);
+    exit 1
+
 let printCProg prog names (dest : string) (imports : import list) =
   let imports' = List.map (fun i -> match i with
     | FromRelativePath s -> "#include \"" ^ s ^ "\""

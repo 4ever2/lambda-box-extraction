@@ -21,6 +21,12 @@ module Cps = LambdaBox.Cps
 module Eval = LambdaBox.Eval
 
 
+let string_of_cstring = PrintC.Camlcoq.camlstring_of_coqstring
+let cstring_of_string = PrintC.Camlcoq.coqstring_of_camlstring
+
+let cprint_endline s =
+  print_endline (string_of_cstring s)
+
 let read_file f =
   let c = open_in f in
   let s = really_input_string c (in_channel_length c) in
@@ -28,13 +34,13 @@ let read_file f =
   escape_unicode s
 
 let parse_ast p s =
-  let t = p (String.trim s) in
+  let t = p (cstring_of_string (String.trim s)) in
   match t with
   | Datatypes.Coq_inr t -> t
   | Datatypes.Coq_inl e ->
     let err_msg = CeresExtra.string_of_error true true e in
     print_endline "Failed parsing input program";
-    print_endline err_msg;
+    cprint_endline err_msg;
     exit 1
 
 let read_ast f : program =
@@ -115,7 +121,7 @@ let mk_copts opts copts =
 
 let convert_typed f n opt =
   let p = read_typed_ast f in
-  match LambdaBox.SerializeCommon.kername_of_string n with
+  match LambdaBox.SerializeCommon.kername_of_string (cstring_of_string n) with
   | Datatypes.Coq_inr kn ->
     let p =
       if opt
@@ -131,7 +137,7 @@ let convert_typed f n opt =
   | Datatypes.Coq_inl e ->
     let err_msg = CeresExtra.string_of_error true true e in
     print_endline "Failed parsing kername";
-    print_endline err_msg;
+    cprint_endline err_msg;
     exit 1
 
 let compile_wasm opts copts f =

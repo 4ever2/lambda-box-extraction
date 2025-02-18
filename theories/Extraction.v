@@ -10,7 +10,7 @@ From LambdaBox Require CeresExtra.
 From Coq Require Import ExtrOcamlBasic.
 From Coq Require Import ExtrOCamlFloats.
 From Coq Require Import ExtrOCamlInt63.
-From Coq Require Import ExtrOcamlNativeString.
+(* From Coq Require Import ExtrOcamlNativeString. *)
 From Coq Require Import Extraction.
 
 

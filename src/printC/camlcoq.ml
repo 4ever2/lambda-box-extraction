@@ -398,20 +398,22 @@ let ascii_of_char a =
   let code = Char.code a in
   Ascii.ascii_of_N (N.of_int code)
 
-let camlstring_of_coqstring s = s (* (s: String0.string) = *)
-(*   let open String0 in
+(* let camlstring_of_coqstring (s: String0.string) =
+  let open String0 in
   let open Ascii in
-  let r = Stdlib.Bytes.create (Nat.to_int (length s)) in
+  let r = Bytes.create (Nat.to_int (length s)) in
   let rec fill pos = function
   | EmptyString -> r
-  | String (c, s) -> Stdlib.Bytes.set r pos (char_of_ascii c); fill (pos + 1) s
-  in Stdlib.Bytes.to_string (fill 0 s) *)
+  | String (c, s) -> Bytes.set r pos (char_of_ascii c); fill (pos + 1) s
+  in Bytes.to_string (fill 0 s)
 
-let coqstring_of_camlstring s = s
-(*   let open String0 in
+let coqstring_of_camlstring s =
+  let open String0 in
   let rec cstring accu pos =
     if pos < 0 then accu else cstring (String (ascii_of_char s.[pos], accu)) (pos - 1)
   in cstring EmptyString (String.length s - 1) *)
+let camlstring_of_coqstring (s: String0.string) = Caml_ascii_string.caml_string_of_ascii_string s
+let coqstring_of_camlstring s = Caml_ascii_string.ascii_string_of_caml_string s
 
 (* Floats *)
 

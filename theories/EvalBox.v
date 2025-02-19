@@ -52,10 +52,10 @@ Definition eval (opts : Options) (anf : bool) (p : EAst.program) : compM.error s
   let pipeline p :=
     if anf
     then
-      p <- box_to_mut p;;
-      eval_box fuel p
-    else
       p <- box_to_anf p;;
       eval_anf fuel p
+    else
+      p <- box_to_mut p;;
+      eval_box fuel p
   in
   run_pipeline EAst.program string opts p pipeline.

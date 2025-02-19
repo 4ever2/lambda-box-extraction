@@ -78,15 +78,25 @@ let certicoq_opts_t =
     let doc = "Use CPS translation pipeline." in
     Arg.(value & flag & info ["cps"] ~doc)
   in
+  Term.(const (fun x -> mk_certicoq_opts (not x)) $ cps_arg )
+
+let eopts_t =
   let typed_arg =
     let doc = "Parse input as typed lambda box program." in
     Arg.(value & opt (some string) None & info ["typed"] ~doc)
   in
   let opt_arg =
+    let doc = "Enable dearging optimization (only available when using --typed)." in
+    Arg.(value & flag & info ["opt"] ~doc)
+  in
+  Term.(const mk_erasure_opts $ typed_arg $ opt_arg)
+
+let teopts_t =
+  let opt_arg =
     let doc = "Enable dearging optimization." in
     Arg.(value & flag & info ["opt"] ~doc)
   in
-  Term.(const (fun x y -> mk_certicoq_opts (not x) y) $ cps_arg $ typed_arg $ opt_arg)
+  Term.(const mk_typed_erasure_opts $ opt_arg)
 
 let eval_cmd =
   let file =
@@ -105,7 +115,7 @@ let eval_cmd =
     `Blocks help_secs; ]
   in
   let info = Cmd.info "eval" ~doc ~sdocs ~man in
-  Cmd.v info Term.(const eval_box $ copts_t $ certicoq_opts_t $ anf_arg $ file)
+  Cmd.v info Term.(const eval_box $ copts_t $ eopts_t $ certicoq_opts_t $ anf_arg $ file)
 
 let wasm_cmd =
   let file =
@@ -120,7 +130,7 @@ let wasm_cmd =
     `Blocks help_secs; ]
   in
   let info = Cmd.info "wasm" ~doc ~sdocs ~man in
-  Cmd.v info Term.(const compile_wasm $ copts_t $ certicoq_opts_t $ file)
+  Cmd.v info Term.(const compile_wasm $ copts_t $ eopts_t $ certicoq_opts_t $ file)
 
 let c_cmd =
   let file =
@@ -135,7 +145,7 @@ let c_cmd =
     `Blocks help_secs; ]
   in
   let info = Cmd.info "c" ~doc ~sdocs ~man in
-  Cmd.v info Term.(const compile_c $ copts_t $ certicoq_opts_t $ file)
+  Cmd.v info Term.(const compile_c $ copts_t $ eopts_t $ certicoq_opts_t $ file)
 
 let anf_cmd =
   let file =
@@ -150,7 +160,7 @@ let anf_cmd =
     `Blocks help_secs; ]
   in
   let info = Cmd.info "anf" ~doc ~sdocs ~man in
-  Cmd.v info Term.(const compile_anf $ copts_t $ certicoq_opts_t $ file)
+  Cmd.v info Term.(const compile_anf $ copts_t $ eopts_t $ certicoq_opts_t $ file)
 
 let ocaml_cmd =
   let file =
@@ -165,14 +175,7 @@ let ocaml_cmd =
     `Blocks help_secs; ]
   in
   let info = Cmd.info "ocaml" ~doc ~sdocs ~man in
-  Cmd.v info Term.(const compile_ocaml $ copts_t $ file)
-
-let typed_opts_t =
-  let opt_arg =
-    let doc = "Enable dearging optimization." in
-    Arg.(value & flag & info ["opt"] ~doc)
-  in
-  Term.(const mk_typed_opts $ opt_arg)
+  Cmd.v info Term.(const compile_ocaml $ copts_t $ eopts_t $ file)
 
 let rust_cmd =
   let file =
@@ -187,7 +190,7 @@ let rust_cmd =
     `Blocks help_secs; ]
   in
   let info = Cmd.info "rust" ~doc ~sdocs ~man in
-  Cmd.v info Term.(const compile_rust $ copts_t $ typed_opts_t $ file)
+  Cmd.v info Term.(const compile_rust $ copts_t $ teopts_t $ file)
 
 let elm_cmd =
   let file =
@@ -202,7 +205,7 @@ let elm_cmd =
     `Blocks help_secs; ]
   in
   let info = Cmd.info "elm" ~doc ~sdocs ~man in
-  Cmd.v info Term.(const compile_elm $ copts_t $ typed_opts_t $ file)
+  Cmd.v info Term.(const compile_elm $ copts_t $ teopts_t $ file)
 
 let main_cmd =
   let doc = "a compiler for lambda box to webassembly" in

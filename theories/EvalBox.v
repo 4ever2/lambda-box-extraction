@@ -36,7 +36,7 @@ Definition box_to_anf (p : EAst.program) :=
 Definition eval_box (n : nat) (p : Program Term) : pipelineM string :=
   match wcbvEval (AstCommon.env p) n (main p) with
   | Ret p => ret (print_term p)
-  | Exc s => compM.failwith ("Could not evaluate program:\n" ^ s)
+  | Exc s => compM.failwith ("Could not evaluate program:" ^ nl ^ s)
   end.
 
 Definition eval_anf (n : nat) (p : LambdaANF_FullTerm) : pipelineM string :=
@@ -45,7 +45,7 @@ Definition eval_anf (n : nat) (p : LambdaANF_FullTerm) : pipelineM string :=
   match bstep_f prims ctor_env env p n with
   | Ret (inl (_, e)) => ret (cps_show.show_exp nenv ctor_env true e)
   | Ret (inr v) => ret (cps_show.show_val nenv ctor_env true v)
-  | Exc s => compM.failwith ("Could not evaluate program:\n" ^ s)
+  | Exc s => compM.failwith ("Could not evaluate program:" ^ nl ^ s)
   end.
 
 Definition eval (opts : Options) (anf : bool) (p : EAst.program) : compM.error string * string :=

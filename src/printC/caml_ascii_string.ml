@@ -1,5 +1,3 @@
-module Ascii = LambdaBox.Ascii
-module String0 = LambdaBox.String0
 open Ascii
 
 let rec caml_ascii_string_length_aux s acc =

@@ -15,17 +15,13 @@
 
 (* Library of useful Caml <-> Coq conversions *)
 
-open LambdaBox.Datatypes
-open LambdaBox.BinNums
-open LambdaBox.BinNat
-open LambdaBox.BinInt
-open LambdaBox.BinPos
-open LambdaBox.Floats
+open Datatypes
+open BinNums
+open BinNat
+open BinInt
+open BinPos
+open Floats
 
-module BinPos = LambdaBox.BinPos
-module Integers = LambdaBox.Integers
-module Ascii = LambdaBox.Ascii
-module String0 = LambdaBox.String0
 
 (* Coq's [nat] type and some of its operations *)
 

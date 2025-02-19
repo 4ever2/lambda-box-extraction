@@ -1,4 +1,4 @@
-open LambdaBox.Byte
+open Byte
 let char_of_byte = function
 | Coq_x00 -> '\000'
 | Coq_x01 -> '\001'

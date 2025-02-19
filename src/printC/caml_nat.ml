@@ -1,5 +1,3 @@
-module Datatypes = LambdaBox.Datatypes
-
 let nat_of_caml_int i =
   let rec aux acc i =
     if i < 0 then acc

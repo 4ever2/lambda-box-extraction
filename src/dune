@@ -1,6 +1,7 @@
 (library
  (name LambdaBox)
- (libraries coq-primitive.uint63 coq-primitive.float64))
+ (libraries coq-primitive.uint63 coq-primitive.float64 str))
+(include_subdirs unqualified)
 
 (env
  (dev

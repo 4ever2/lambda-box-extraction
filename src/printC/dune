@@ -1,8 +1,0 @@
-(library
- (name PrintC)
- (libraries coq-primitive.uint63 coq-primitive.float64 LambdaBox str))
-
-(env
- (dev
-  (flags
-   (:standard -w -20 -w -27 -w -32 -w -33 -w -34 -w -67))))

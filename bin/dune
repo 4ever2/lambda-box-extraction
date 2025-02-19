@@ -1,4 +1,4 @@
 (executable
  (public_name lbox)
  (name main)
- (libraries LambdaBox PrintC cmdliner str))
+ (libraries LambdaBox cmdliner str))

@@ -16,18 +16,11 @@
 
 (** Pretty-printer for Csyntax *)
 
-module Ctypes = LambdaBox.Ctypes
-module Cop = LambdaBox.Cop
-module Values0 = LambdaBox.Values0
-module Csyntax = LambdaBox.Csyntax
-module Integers = LambdaBox.Integers
-module Datatypes = LambdaBox.Datatypes
-module BinNums = LambdaBox.BinNums
 
 open Format
 open Camlcoq
 open Values0
-open LambdaBox.AST
+open AST
 open! Ctypes
 open Cop
 open Csyntax

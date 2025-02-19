@@ -6,7 +6,7 @@ open LambdaBox.SerializeExAst
 open LambdaBox.CheckWf
 open Unicode
 open Common
-open PrintC.Caml_bytestring
+open LambdaBox.Caml_bytestring
 
 module Datatypes = LambdaBox.Datatypes
 module CeresExtra = LambdaBox.CeresExtra
@@ -21,8 +21,8 @@ module Cps = LambdaBox.Cps
 module Eval = LambdaBox.EvalBox
 
 
-let string_of_cstring = PrintC.Camlcoq.camlstring_of_coqstring
-let cstring_of_string = PrintC.Camlcoq.coqstring_of_camlstring
+let string_of_cstring = LambdaBox.Camlcoq.camlstring_of_coqstring
+let cstring_of_string = LambdaBox.Camlcoq.coqstring_of_camlstring
 
 let cprint_endline s =
   print_endline (string_of_cstring s)
@@ -221,7 +221,7 @@ let printCProg prog names (dest : string) (imports : import list) =
     | FromLibrary (s, _) -> "#include <" ^ s ^ ">"
     | FromAbsolutePath _ ->
         failwith "Import with absolute path should have been filled") imports in
-  PrintC.PrintClight.print_dest_names_imports prog (Cps.M.elements names) dest imports'
+  LambdaBox.PrintClight.print_dest_names_imports prog (Cps.M.elements names) dest imports'
 
 let compile_c opts eopts copts f =
   let p = get_ast opts eopts f in

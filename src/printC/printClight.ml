@@ -16,11 +16,6 @@
 
 (** Pretty-printer for Clight *)
 
-module Ctypes = LambdaBox.Ctypes
-module Cop = LambdaBox.Cop
-module Clight = LambdaBox.Clight
-module AST = LambdaBox.AST
-module BasicAst = LambdaBox.BasicAst
 
 open Format
 open Camlcoq

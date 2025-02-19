@@ -1,5 +1,3 @@
-module Bytestring = LambdaBox.Bytestring
-
 let rec caml_bytestring_length_aux s acc =
   match s with
   | Bytestring.String.EmptyString -> acc

@@ -86,3 +86,4 @@ theories/test
 
 examples/**/*.txt
 examples/**/*.v
+examples/**/*.anf

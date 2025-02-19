@@ -24,6 +24,18 @@ RUNTIME_PATH := $(shell `coqc -where`/user-contrib/CertiCoq/Plugin/runtime/)
 %.exe: %.rs
 	rustc $*.rs -o $@
 
+%.mlf: %.ast
+	dune exec lbox -- ocaml -o $@ $*.ast
+
+%.cmx: %.mlf
+	malfunction cmx $*.mlf
+
+%.cmo: %.mlf
+	malfunction cmo $*.mlf
+
+#%.: %.mlf
+#	malfunction compile $*.mlf
+
 clean:
 	find . -type f -name "*.wasm" -delete
 	find . -type f -name "*.cwasm" -delete
@@ -34,3 +46,6 @@ clean:
 	find . -type f -name "*.js" -delete
 	find . -type f -name "*.rs" -delete
 	find . -type f -name "*.exe" -delete
+	find . -type f -name "*.mlf" -delete
+	find . -type f -name "*.cmx" -delete
+	find . -type f -name "*.cmo" -delete

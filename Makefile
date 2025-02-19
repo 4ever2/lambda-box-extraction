@@ -15,6 +15,11 @@ mllib: theory
 	dune build
 .PHONY: mllib
 
+clean-extraction:
+	dune clean
+	find src/extraction/. -type f -name "*.ml" -delete
+	find src/extraction/. -type f -name "*.mli" -delete
+
 clean: CoqMakefile
 	+@make -f CoqMakefile clean
 	rm -f CoqMakefile

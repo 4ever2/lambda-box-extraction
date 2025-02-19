@@ -45,15 +45,18 @@ Extract Constant MetaCoq.Common.Transform.time =>
 
 (* TODO: validate prim int implementations *)
 Extract Constant SerializePrimitives.string_of_prim_int =>
-  "(fun i -> i |> Uint63.to_int64 |> Int64.to_string)".
+  "(fun i -> i |> Uint63.to_int64 |> Int64.to_string |> Camlcoq.coqstring_of_camlstring)".
 Extract Constant SerializePrimitives.prim_int_of_string =>
-  "(fun s -> s |> Int64.of_string |> Uint63.of_int64)".
+  "(fun s -> s |> Camlcoq.camlstring_of_coqstring |> Int64.of_string |> Uint63.of_int64)".
+  (* "(fun s -> failwith "" "")". *)
 
 (* TODO: validate prim float implementations *)
 Extract Constant SerializePrimitives.string_of_prim_float =>
-  "(fun f -> f |> Float64.to_float |> Int64.bits_of_float |> Int64.to_string)".
+  "(fun f -> f |> Float64.to_float |> Int64.bits_of_float |> Int64.to_string |> Camlcoq.coqstring_of_camlstring)".
+  (* "(fun s -> failwith "" "")". *)
 Extract Constant SerializePrimitives.prim_float_of_string =>
-  "(fun s -> s |> Int64.of_string |> Int64.float_of_bits |> Float64.of_float)".
+  "(fun s -> s |> Camlcoq.camlstring_of_coqstring |> Int64.of_string |> Int64.float_of_bits |> Float64.of_float)".
+  (* "(fun s -> failwith "" "")". *)
 
 
 Extract Constant Malfunction.FFI.coq_msg_info => "(fun s -> ())".

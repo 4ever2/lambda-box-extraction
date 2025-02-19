@@ -93,9 +93,8 @@ let write_anf_res opts f p =
   write_res f (fun f -> output_string f p)
 
 let write_ocaml_res opts f p =
-  let f = get_out_file opts f "ml" in
+  let f = get_out_file opts f "mlf" in
   write_res f (fun f ->
-    (* List.iter (fun s -> output_string f (((caml_string_of_bytestring s)) ^ "\n")) (fst p); *)
     output_string f (caml_string_of_bytestring (snd p)))
 
 let print_debug opts dbg =

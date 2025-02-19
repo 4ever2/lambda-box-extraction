@@ -14,10 +14,10 @@ Local Open Scope string_scope.
 
 
 (** * Axioms *)
-(* TODO: resolve axioms *)
-Axiom Z_of_prim_int : PrimInt63.int -> Z.
+(* Realized in extraction *)
+Axiom string_of_prim_int : PrimInt63.int -> string.
 Axiom string_of_prim_float : PrimFloat.float -> string.
-Axiom prim_int_of_Z : Z -> PrimInt63.int.
+Axiom prim_int_of_string : string -> PrimInt63.int.
 Axiom prim_float_of_string : string -> PrimFloat.float.
 
 
@@ -33,7 +33,7 @@ Instance Serialize_prim_tag : Serialize prim_tag :=
     end%sexp.
 
 Instance Serialize_prim_int : Serialize PrimInt63.int :=
-  fun i => Atom (Num (Z_of_prim_int i)).
+  fun i => Atom (Str (string_of_prim_int i)).
 
 Instance Serialize_prim_float : Serialize PrimFloat.float :=
   fun f => Atom (Str (string_of_prim_float f)).
@@ -55,7 +55,7 @@ Instance Serialize_prim_val {T : Set} `{Serialize T} : Serialize (prim_val T) :=
 
 (** * Deserializers *)
 
-Instance Deerialize_prim_tag : Deserialize prim_tag :=
+Instance Deserialize_prim_tag : Deserialize prim_tag :=
   fun l e =>
     Deser.match_con "prim_tag"
       [ ("primInt", primInt)
@@ -67,7 +67,7 @@ Instance Deerialize_prim_tag : Deserialize prim_tag :=
 Instance Deserialize_prim_int : Deserialize PrimInt63.int :=
   fun l e =>
     match e with
-    | Atom_ (Num i) => inr (prim_int_of_Z i)
+    | Atom_ (Str i) => inr (prim_int_of_string i)
     | _ => inl (DeserError l "error")
     end.
 
@@ -112,3 +112,41 @@ Instance Deserialize_prim_val {T : Set} `{Deserialize T} : Deserialize (prim_val
       end
     | _ => inl (DeserError l "error")
     end.
+
+
+
+(** * Main serialization functions *)
+
+Definition string_of_prim_tag (t : prim_tag) : string :=
+  @to_string prim_tag Serialize_prim_tag t.
+
+Definition string_of_prim_int' (i : PrimInt63.int) : string :=
+  @to_string PrimInt63.int Serialize_prim_int i.
+
+Definition string_of_prim_float' (f : PrimFloat.float) : string :=
+  @to_string PrimFloat.float Serialize_prim_float f.
+
+Definition string_of_array_model {T : Set} `{Serialize T} (a : array_model T) : string :=
+  @to_string (array_model T) Serialize_array_model a.
+
+Definition string_of_prim_val {T : Set} `{Serialize T} (p : prim_val T) : string :=
+  @to_string (prim_val T) Serialize_prim_val p.
+
+
+
+(** * Main deserialization functions *)
+
+Definition prim_tag_of_string (s : string) : error + prim_tag :=
+  @from_string prim_tag Deserialize_prim_tag s.
+
+Definition prim_int_of_string' (s : string) : error + PrimInt63.int :=
+  @from_string PrimInt63.int Deserialize_prim_int s.
+
+Definition prim_float_of_string' (s : string) : error + PrimFloat.float :=
+  @from_string PrimFloat.float Deserialize_prim_float s.
+
+Definition array_model_of_string {T : Set} `{Deserialize T} (s : string) : error + (array_model T) :=
+  @from_string (array_model T) Deserialize_array_model s.
+
+Definition prim_val_of_string {T : Set} `{Deserialize T} (s : string) : error + (prim_val T) :=
+  @from_string (prim_val T) Deserialize_prim_val s.

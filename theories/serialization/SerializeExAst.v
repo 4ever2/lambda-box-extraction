@@ -199,6 +199,50 @@ Instance Deserialize_global_env : Deserialize global_env :=
 
 
 
+(** * Main serialization functions *)
+
+Definition string_of_box_type (bt : box_type) : string :=
+  @to_string box_type Serialize_box_type bt.
+
+Definition string_of_type_var_info (tvi : type_var_info) : string :=
+  @to_string type_var_info Serialize_type_var_info tvi.
+
+Definition string_of_constant_body (cb : constant_body) : string :=
+  @to_string constant_body Serialize_constant_body cb.
+
+Definition string_of_one_inductive_body (oib : one_inductive_body) : string :=
+  @to_string one_inductive_body Serialize_one_inductive_body oib.
+
+Definition string_of_mutual_inductive_body (mib : mutual_inductive_body) : string :=
+  @to_string mutual_inductive_body Serialize_mutual_inductive_body mib.
+
+Definition string_of_global_decl (gd : global_decl) : string :=
+  @to_string global_decl Serialize_global_decl gd.
+
+Definition string_of_global_env (env : global_env) : string :=
+  @to_string global_env Serialize_global_env env.
+
+
+
 (** * Main deserialization functions *)
+
+Definition box_type_of_string (s : string) : error + box_type :=
+  @from_string box_type Deserialize_box_type s.
+
+Definition type_var_info_of_string (s : string) : error + type_var_info :=
+  @from_string type_var_info Deserialize_type_var_info s.
+
+Definition constant_body_of_string (s : string) : error + constant_body :=
+  @from_string constant_body Deserialize_constant_body s.
+
+Definition one_inductive_body_of_string (s : string) : error + one_inductive_body :=
+  @from_string one_inductive_body Deserialize_one_inductive_body s.
+
+Definition mutual_inductive_body_of_string (s : string) : error + mutual_inductive_body :=
+  @from_string mutual_inductive_body Deserialize_mutual_inductive_body s.
+
+Definition global_decl_of_string (s : string) : error + global_decl :=
+  @from_string global_decl Deserialize_global_decl s.
+
 Definition global_env_of_string (s : string) : error + global_env :=
-  from_string s.
+  @from_string global_env Deserialize_global_env s.

@@ -5,10 +5,7 @@ Local Unset Universe Checking. (* TODO: fix universe inconsistency *)
 From LambdaBox Require Translations.
 Local Set Universe Checking.
 From LambdaBox Require SerializePrimitives.
-From LambdaBox Require SerializeCommon.
-From LambdaBox Require SerializeEAst.
-From LambdaBox Require SerializeExAst.
-From LambdaBox Require CeresExtra.
+From LambdaBox Require Serialize.
 From Coq Require Import ExtrOcamlBasic.
 From Coq Require Import ExtrOCamlFloats.
 From Coq Require Import ExtrOCamlInt63.
@@ -46,17 +43,17 @@ Extraction Blacklist config List String Nat Int Ast Universes UnivSubst Typing R
 Extract Constant MetaCoq.Common.Transform.time =>
   "(fun c f x -> f x)".
 
-(* TODO: implement primitive integer serialization *)
-Extract Constant SerializePrimitives.prim_int_of_Z =>
-  "(fun x -> failwith ""AXIOM TO BE REALIZED"")".
-Extract Constant SerializePrimitives.Z_of_prim_int =>
-  "(fun x -> failwith ""AXIOM TO BE REALIZED"")".
+(* TODO: validate prim int implementations *)
+Extract Constant SerializePrimitives.string_of_prim_int =>
+  "(fun i -> i |> Uint63.to_int64 |> Int64.to_string)".
+Extract Constant SerializePrimitives.prim_int_of_string =>
+  "(fun s -> s |> Int64.of_string |> Uint63.of_int64)".
 
-(* TODO: implement primitive float serialization *)
+(* TODO: validate prim float implementations *)
 Extract Constant SerializePrimitives.string_of_prim_float =>
-  "(fun x -> failwith ""AXIOM TO BE REALIZED"")".
+  "(fun f -> f |> Float64.to_float |> Int64.bits_of_float |> Int64.to_string)".
 Extract Constant SerializePrimitives.prim_float_of_string =>
-  "(fun x -> failwith ""AXIOM TO BE REALIZED"")".
+  "(fun s -> s |> Int64.of_string |> Int64.float_of_bits |> Float64.of_float)".
 
 
 Extract Constant Malfunction.FFI.coq_msg_info => "(fun s -> ())".
@@ -81,7 +78,7 @@ Separate Extraction Translations.l_box_to_wasm CertiCoqPipeline.show_IR CertiCoq
                     TypedTransforms.mk_params
                     EvalBox.eval
                     CheckWf.check_wf_program CheckWf.CheckWfExAst.check_wf_typed_program CheckWf.agda_eflags CheckWf.agda_typed_eflags
-                    SerializeEAst.program_of_string SerializeExAst.global_env_of_string SerializeCommon.kername_of_string CeresExtra.string_of_error
+                    Serialize.program_of_string Serialize.global_env_of_string Serialize.kername_of_string Serialize.string_of_error
                     Floats.Float32.to_bits Floats.Float.to_bits
                     Floats.Float32.of_bits Floats.Float.of_bits
                     Csyntax

@@ -140,6 +140,68 @@ Instance Deserialize_allowed_eliminations : Deserialize allowed_eliminations :=
 
 
 
+(** * Main serialization functions *)
+
+(** ** Kername *)
+Definition string_of_ident (id : ident) : string :=
+  @to_string ident Serialize_ident id.
+
+Definition string_of_dirpath (d : dirpath) : string :=
+  @to_string dirpath Serialize_dirpath d.
+
+Definition string_of_modpath (m : modpath) : string :=
+  @to_string modpath Serialize_modpath m.
+
+Definition string_of_kername (kn : kername) : string :=
+  @to_string kername Serialize_kername kn.
+
+Definition string_of_inductive (ind : inductive) : string :=
+  @to_string inductive Serialize_inductive ind.
+
+Definition string_of_projection (proj : projection) : string :=
+  @to_string projection Serialize_projection proj.
+
+(** ** BasicAst *)
+Definition string_of_name (n : name) : string :=
+  @to_string name Serialize_name n.
+
+Definition string_of_recursivity_kind (x : recursivity_kind) : string :=
+  @to_string recursivity_kind Serialize_recursivity_kind x.
+
+(** ** Universe *)
+Definition string_of_allowed_eliminations (x : allowed_eliminations) : string :=
+  @to_string allowed_eliminations Serialize_allowed_eliminations x.
+
+
+
 (** * Main deserialization functions *)
+
+(** ** Kername *)
+Definition ident_of_string (s : string) : error + ident :=
+  @from_string ident Deserialize_ident s.
+
+Definition dirpath_of_string (s : string) : error + dirpath :=
+  @from_string dirpath Deserialize_dirpath s.
+
+Definition modpath_of_string (s : string) : error + modpath :=
+  @from_string modpath Deserialize_modpath s.
+
 Definition kername_of_string (s : string) : error + kername :=
-  from_string s.
+  @from_string kername Deserialize_kername s.
+
+Definition inductive_of_string (s : string) : error + inductive :=
+  @from_string inductive Deserialize_inductive s.
+
+Definition projection_of_string (s : string) : error + projection :=
+  @from_string projection Deserialize_projection s.
+
+(** ** BasicAst *)
+Definition name_of_string (s : string) : error + name :=
+  @from_string name Deserialize_name s.
+
+Definition recursivity_kind_of_string (s : string) : error + recursivity_kind :=
+  @from_string recursivity_kind Deserialize_recursivity_kind s.
+
+(** ** Universe *)
+Definition allowed_eliminations_of_string (s : string) : error + allowed_eliminations :=
+  @from_string allowed_eliminations Deserialize_allowed_eliminations s.

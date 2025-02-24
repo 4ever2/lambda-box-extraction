@@ -49,9 +49,6 @@ nia.cache
 nlia.cache
 nra.cache
 
-## extraction output
-*.out
-
 ## Dune build directory
 _build/
 
@@ -68,22 +65,21 @@ _build/
 .history
 
 ## Test files
-theories/test
 *.ast
+*.tast
 !examples/*.ast
-*.wasm
-!examples/*.wasm
-*.cwasm
-!examples/*.cwasm
-*.rs
-!examples/*.rs
-*.elm
-!examples/*.elm
-*.c
-!examples/*.c
-*.h
-!examples/*.h
+!examples/*.tast
 
 examples/**/*.txt
 examples/**/*.v
 examples/**/*.anf
+
+## Extraction output
+*.out
+*.wasm
+*.cwasm
+*.rs
+*.elm
+*.c
+*.h
+*.mlf

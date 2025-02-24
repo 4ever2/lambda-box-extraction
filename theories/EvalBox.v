@@ -120,6 +120,79 @@ Section Evaluator.
         end)
     end.
 
+  Theorem bstep_f_equiv : forall n rho e v,
+    bstep_f rho e n = Ret v <->
+      eval.bstep_f pr cenv rho e n = Ret v.
+  Proof.
+    induction n; intros; try now split.
+    destruct e; try apply IHn.
+    - cbn.
+      destruct l_opt; cbn; try now split.
+      apply IHn.
+    - cbn.
+      destruct M.get; cbn; try now split.
+      destruct v1; cbn; try now split.
+      destruct findtag; cbn; try now split.
+      destruct cps_util.caseConsistent_f; cbn; try now split.
+      apply IHn.
+    - cbn.
+      destruct M.get; cbn; try now split.
+      destruct v2; cbn; try now split.
+      destruct Pos.eqb; cbn; try now split.
+      destruct List_util.nthN; cbn; try now split.
+      apply IHn.
+    - cbn.
+      destruct M.get; cbn; try now split.
+      destruct v2; cbn; try now split.
+      destruct get_list; cbn; try now split.
+      destruct find_def; cbn; try now split.
+      destruct p, p.
+      destruct Pos.eqb; cbn; try now split.
+      destruct set_lists; cbn; try now split.
+      destruct bstep_f eqn:H, eval.bstep_f eqn:H1; try now split.
+      + apply IHn in H1; congruence.
+      + apply IHn in H; congruence.
+      + cbn.
+        apply IHn in H.
+        rewrite H in H1.
+        inversion_clear H1.
+        destruct s0; cbn; try now split.
+        apply IHn.
+    - cbn.
+      destruct M.get; cbn; try now split.
+      destruct v1; cbn; try now split.
+      destruct get_list; cbn; try now split.
+      destruct find_def; cbn; try now split.
+      destruct p, p.
+      destruct Pos.eqb; cbn; try now split.
+      destruct set_lists; cbn; try now split.
+      apply IHn.
+    - cbn.
+      destruct get_list; cbn; try now split.
+      destruct M.get; cbn; try now split.
+      destruct (o l0); cbn; try now split.
+      apply IHn.
+    - cbn.
+      destruct M.get; cbn; try now split.
+  Qed.
+
+  Theorem bstep_f_equiv' : forall n rho e,
+    (exists s, bstep_f rho e n = Exc s) <->
+      (exists s, eval.bstep_f pr cenv rho e n = Exc s).
+  Proof.
+    intros.
+    split; intros.
+    - destruct H.
+      destruct bstep_f eqn:H1; try congruence.
+      destruct eval.bstep_f eqn:H2; try now eexists.
+      apply bstep_f_equiv in H2.
+      congruence.
+    - destruct H.
+      destruct eval.bstep_f eqn:H1; try congruence.
+      destruct bstep_f eqn:H2; try now eexists.
+      apply bstep_f_equiv in H2.
+      congruence.
+  Qed.
 
 End Evaluator.
 

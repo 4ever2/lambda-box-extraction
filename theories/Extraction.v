@@ -1,6 +1,7 @@
 From MetaCoq.Erasure Require EAst.
 From LambdaBox Require CheckWf.
 From LambdaBox Require EvalBox.
+From LambdaBox Require ErasurePipeline.
 Local Unset Universe Checking. (* TODO: fix universe inconsistency *)
 From LambdaBox Require Translations.
 Local Set Universe Checking.
@@ -78,7 +79,7 @@ Separate Extraction Translations.l_box_to_wasm CertiCoqPipeline.show_IR CertiCoq
                     Translations.l_box_to_elm LambdaBoxToElm.default_remaps LambdaBoxToElm.default_preamble
                     Translations.l_box_to_c
                     Translations.l_box_to_ocaml
-                    TypedTransforms.mk_params
+                    TypedTransforms.mk_params ErasurePipeline.implement_box
                     EvalBox.eval
                     CheckWf.check_wf_program CheckWf.CheckWfExAst.check_wf_typed_program CheckWf.agda_eflags CheckWf.agda_typed_eflags
                     Serialize.program_of_string Serialize.global_env_of_string Serialize.kername_of_string Serialize.string_of_error

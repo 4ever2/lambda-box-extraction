@@ -4,6 +4,7 @@ theories/EvalBox.v
 theories/CoqToLambdaBox.v
 theories/TypedTransforms.v
 theories/CertiCoqPipeline.v
+theories/ErasurePipeline.v
 theories/LambdaBoxToWasm.v
 theories/LambdaBoxToRust.v
 theories/LambdaBoxToElm.v

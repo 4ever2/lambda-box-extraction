@@ -156,6 +156,7 @@ let mk_copts opts copts =
 let compile_wasm opts eopts copts f =
   let p = get_ast opts eopts f in
   print_endline "Compiling:";
+  let p = LambdaBox.ErasurePipeline.implement_box agda_eflags p in
   let p = l_box_to_wasm (mk_copts opts copts) p in
   match p with
   | (CompM.Ret prg, dbg) ->
@@ -203,6 +204,7 @@ let compile_elm opts eopts f =
 let eval_box opts eopts copts anf f =
   let p = get_ast opts eopts f in
   print_endline "Evaluating:";
+  let p = LambdaBox.ErasurePipeline.implement_box agda_eflags p in
   let p = Eval.eval (mk_copts opts copts) anf p in
   match p with
   | (CompM.Ret t, dbg) ->
@@ -226,6 +228,7 @@ let printCProg prog names (dest : string) (imports : import list) =
 let compile_c opts eopts copts f =
   let p = get_ast opts eopts f in
   print_endline "Compiling:";
+  let p = LambdaBox.ErasurePipeline.implement_box agda_eflags p in
   let p = l_box_to_c (mk_copts opts copts) p in
   match p with
   | (CompM.Ret ((nenv, header), prg), dbg) ->
@@ -246,6 +249,7 @@ let compile_c opts eopts copts f =
 let compile_anf opts eopts copts f =
   let p = get_ast opts eopts f in
   print_endline "Compiling:";
+  let p = LambdaBox.ErasurePipeline.implement_box agda_eflags p in
   let p = LambdaBox.CertiCoqPipeline.show_IR (mk_copts opts copts) p in
   match p with
   | (CompM.Ret prg, dbg) ->

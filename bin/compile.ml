@@ -54,10 +54,13 @@ let check_wf checker flags opts p =
   if opts.bypass_wf then ()
   else
   (print_endline "Checking program wellformedness";
-  if checker flags p then ()
-  else
-    (print_endline "Program not wellformed";
-    exit 1))
+  match checker flags p with
+  | ResultMonad.Ok _ -> ()
+  | ResultMonad.Err e ->
+    print_endline "Program not wellformed";
+    print_endline (caml_string_of_bytestring e);
+    exit 1
+  )
 
 let check_wf_untyped =
   check_wf check_wf_program agda_eflags

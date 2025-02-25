@@ -54,10 +54,13 @@ let check_wf checker flags opts p =
   if opts.bypass_wf then ()
   else
   (print_endline "Checking program wellformedness";
-  if checker flags p then ()
-  else
-    (print_endline "Program not wellformed";
-    exit 1))
+  match checker flags p with
+  | ResultMonad.Ok _ -> ()
+  | ResultMonad.Err e ->
+    print_endline "Program not wellformed";
+    print_endline (caml_string_of_bytestring e);
+    exit 1
+  )
 
 let check_wf_untyped =
   check_wf check_wf_program agda_eflags
@@ -216,6 +219,9 @@ let eval_box opts eopts copts anf f =
     print_endline "Could not compile:";
     print_endline (caml_string_of_bytestring s);
     exit 1
+
+let validate_box opts eopts f =
+  ignore @@ get_ast opts eopts f
 
 let printCProg prog names (dest : string) (imports : import list) =
   let imports' = List.map (fun i -> match i with

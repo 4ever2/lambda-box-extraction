@@ -117,6 +117,21 @@ let eval_cmd =
   let info = Cmd.info "eval" ~doc ~sdocs ~man in
   Cmd.v info Term.(const eval_box $ copts_t $ eopts_t $ certicoq_opts_t $ anf_arg $ file)
 
+let validate_cmd =
+  let file =
+    let doc = "lambda box program" in
+    Arg.(required & pos 0 (some file) None  & info []
+           ~docv:"FILE" ~doc)
+  in
+  let doc = "Validate lambda box program" in
+  let man = [
+    `S Manpage.s_description;
+    `P "";
+    `Blocks help_secs; ]
+  in
+  let info = Cmd.info "validate" ~doc ~sdocs ~man in
+  Cmd.v info Term.(const validate_box $ copts_t $ eopts_t $ file)
+
 let wasm_cmd =
   let file =
     let doc = "lambda box program" in
@@ -212,6 +227,6 @@ let main_cmd =
   let man = help_secs in
   let info = Cmd.info "lbox" ~version ~doc ~sdocs ~man ~exits in
   let default = Term.(ret (const (fun _ -> `Help (`Pager, None)) $ copts_t)) in
-  Cmd.group info ~default [eval_cmd; wasm_cmd; c_cmd; anf_cmd; ocaml_cmd; rust_cmd; elm_cmd; help_cmd]
+  Cmd.group info ~default [eval_cmd; validate_cmd; wasm_cmd; c_cmd; anf_cmd; ocaml_cmd; rust_cmd; elm_cmd; help_cmd]
 
 let () = exit (Cmd.eval main_cmd)

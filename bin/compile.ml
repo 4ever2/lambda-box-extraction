@@ -217,6 +217,9 @@ let eval_box opts eopts copts anf f =
     print_endline (caml_string_of_bytestring s);
     exit 1
 
+let validate_box opts eopts f =
+  ignore @@ get_ast opts eopts f
+
 let printCProg prog names (dest : string) (imports : import list) =
   let imports' = List.map (fun i -> match i with
     | FromRelativePath s -> "#include \"" ^ s ^ "\""

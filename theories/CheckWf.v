@@ -285,32 +285,346 @@ Section WfCorrect.
     destruct r; reflexivity.
   Qed.
 
+  Lemma result_assertb' : forall b s,
+    bool_of_result (assert b s) = b.
+  Proof.
+    intros.
+    destruct b; reflexivity.
+  Qed.
+
+  Lemma result_assertb : forall b s (c : result unit string),
+    bool_of_result (assert b s ;; c) = b && (bool_of_result c).
+  Proof.
+    intros.
+    destruct b; reflexivity.
+  Qed.
+
+  Lemma result_assert_someb' {A : Type} : forall (o : option A) s,
+    bool_of_result (assert_some o s) = isSome o.
+  Proof.
+    intros.
+    destruct o; reflexivity.
+  Qed.
+
+  Lemma result_assert_someb {A : Type} : forall (o : option A) s (c : result unit string),
+    bool_of_result (assert_some o s ;; c) = isSome o && (bool_of_result c).
+  Proof.
+    intros.
+    destruct o; reflexivity.
+  Qed.
+
+  Lemma result_bindb {T E: Type} : forall (c1 c2 : (fun T => result T E) T),
+    bool_of_result (c1 ;; c2) = bool_of_result c1 && bool_of_result c2.
+  Proof.
+    intros.
+    destruct c1, c2; reflexivity.
+  Qed.
+
+  Lemma result_forallb' {A : Type} : forall (f : A -> (fun T => result T string) unit)  h (t : list A),
+    bool_of_result (fold_left (fun a t => a ;; f t) (h :: t) (Ok tt)) =
+    bool_of_result (f h) && bool_of_result (fold_left (fun a t => a ;; f t) t (Ok tt)).
+  Proof.
+    intros.
+    cbn.
+    destruct (f h); simpl.
+    - destruct t1.
+      reflexivity.
+    - induction t0.
+      + reflexivity.
+      + cbn.
+        apply IHt0.
+  Qed.
+
+  Lemma result_forallb {A : Type} : forall f f' (l : list A),
+    (forall x, bool_of_result (f x) = f' x) ->
+    bool_of_result (result_forall f l) = forallb f' l.
+  Proof.
+    induction l; auto.
+    intros.
+    unfold result_forall.
+    simpl.
+    rewrite result_forallb'.
+    rewrite H.
+    rewrite IHl.
+    assumption.
+    reflexivity.
+  Qed.
+
+  Lemma result_forall_allb {A : Type} : forall f f' (l : list A),
+    All (fun x => bool_of_result (f x) = f' x) l ->
+    bool_of_result (result_forall f l) = forallb f' l.
+  Proof.
+    induction l; auto.
+    intros.
+    unfold result_forall.
+    simpl.
+    rewrite result_forallb'.
+    inversion X; subst.
+    rewrite H0.
+    rewrite IHl.
+    assumption.
+    reflexivity.
+  Qed.
 
 
-  Theorem wellformed_equiv {efl  : EEnvFlags} : forall Σ k t,
+
+  Theorem wf_fix_gen_equiv {efl  : EEnvFlags} : forall Σ k m n,
+    All
+      (fun x : def term =>
+      bool_of_result (wellformed Σ (#|m| + k) (dbody x)) =
+      test_def (EWellformed.wellformed Σ (#|m| + k)) x) m ->
+    bool_of_result (wf_fix_gen_ (wellformed Σ) k m n) = wf_fix Σ k m n.
+  Proof.
+    intros.
+    unfold wf_fix_gen_, wf_fix_gen.
+    rewrite result_assertb.
+    apply ssrbool.andb_id2l => _.
+    apply result_forall_allb.
+    assumption.
+  Qed.
+
+  Theorem has_prim_equiv {efl  : EEnvFlags} : forall p,
+    bool_of_result (has_prim_ p) = has_prim p.
+  Proof.
+    intros.
+    unfold has_prim_, has_prim.
+    destruct p; simpl.
+    destruct x; simpl.
+    + rewrite result_assertb'.
+      reflexivity.
+    + rewrite result_assertb'.
+      reflexivity.
+    + rewrite result_assertb'.
+      reflexivity.
+  Qed.
+
+  Theorem wellformed_equiv {efl  : EEnvFlags} : forall t Σ k,
     bool_of_result (wellformed Σ k t) = EWellformed.wellformed Σ k t.
   Proof.
-  Admitted.
+    (* induction t0. *)
+    induction t0 using EInduction.term_forall_list_ind; intros.
+    - (* tBox *)
+      simpl.
+      rewrite result_assertb'.
+      reflexivity.
+    - (* tRel *)
+      simpl.
+      rewrite result_assertb.
+      rewrite result_assertb'.
+      reflexivity.
+    - (* tVar *)
+      simpl.
+      rewrite result_assertb'.
+      reflexivity.
+    - (* tEvar *)
+      simpl.
+      rewrite result_assertb.
+      apply ssrbool.andb_id2l => _.
+      apply result_forall_allb.
+      eapply make_All_All.
+      2 : apply X.
+      auto.
+    - (* tLambda *)
+      simpl.
+      rewrite result_assertb.
+      apply ssrbool.andb_id2l => _.
+      apply IHt0.
+    - (* tletIn *)
+      simpl.
+      rewrite result_assertb.
+      rewrite <- andb_assoc.
+      apply ssrbool.andb_id2l => _.
+      rewrite result_bindb.
+      rewrite IHt0_1 IHt0_2.
+      reflexivity.
+    - (* tApp *)
+      simpl.
+      rewrite result_assertb.
+      rewrite <- andb_assoc.
+      apply ssrbool.andb_id2l => _.
+      rewrite result_bindb.
+      rewrite IHt0_1 IHt0_2.
+      reflexivity.
+    - (* tConst *)
+      simpl.
+      rewrite result_assertb.
+      apply ssrbool.andb_id2l => _.
+      destruct lookup_constant; auto.
+      rewrite result_assertb'.
+      reflexivity.
+    - (* tConstruct *)
+      simpl.
+      rewrite result_assertb.
+      rewrite <- andb_assoc.
+      apply ssrbool.andb_id2l => _.
+      rewrite result_assert_someb.
+      apply ssrbool.andb_id2l => _.
+      destruct cstr_as_blocks.
+      + destruct lookup_constructor_pars_args.
+        * destruct p.
+          rewrite result_assertb.
+          apply ssrbool.andb_id2l => _.
+          apply result_forall_allb.
+          eapply make_All_All.
+          2 : apply X.
+          auto.
+        * simpl.
+          apply result_forall_allb.
+          eapply make_All_All.
+          2 : apply X.
+          auto.
+      + rewrite result_assertb'.
+        reflexivity.
+    - (* tCase *)
+      simpl.
+      rewrite result_assertb.
+      apply ssrbool.andb_id2l => _.
+      rewrite result_assertb.
+      rewrite <- andb_assoc.
+      apply ssrbool.andb_id2l => _.
+      rewrite result_bindb.
+      rewrite IHt0.
+      apply ssrbool.andb_id2l => _.
+      apply result_forall_allb.
+      eapply make_All_All.
+      2 : apply X.
+      auto.
+    - (* tProj *)
+      simpl.
+      rewrite result_assertb.
+      rewrite <- andb_assoc.
+      apply ssrbool.andb_id2l => _.
+      rewrite result_assert_someb.
+      apply ssrbool.andb_id2l => _.
+      apply IHt0.
+    - (* tFix *)
+      simpl.
+      rewrite result_assertb.
+      rewrite <- andb_assoc.
+      apply ssrbool.andb_id2l => _.
+      rewrite result_bindb.
+      f_equal.
+      apply result_forall_allb.
+      eapply make_All_All.
+      2 : apply X.
+      intros.
+      rewrite result_assertb'.
+      reflexivity.
+      apply wf_fix_gen_equiv.
+      eapply make_All_All.
+      2 : apply X.
+      auto.
+    - (* tCoFix *)
+      simpl.
+      rewrite result_assertb.
+      apply ssrbool.andb_id2l => _.
+      apply wf_fix_gen_equiv.
+      eapply make_All_All.
+      2 : apply X.
+      auto.
+    - (* tPrim *)
+      simpl.
+      rewrite result_bindb.
+      rewrite has_prim_equiv.
+      apply ssrbool.andb_id2l => _.
+      rewrite result_assertb'.
+      inversion X; subst.
+      + reflexivity.
+      + reflexivity.
+      + cbn.
+        destruct X0.
+        unfold test_array_model.
+        rewrite e.
+        apply ssrbool.andb_id2l => _.
+        eapply All_forallb_eq_forallb.
+        apply a0.
+        auto.
+    - (* tLazy *)
+      simpl.
+      rewrite result_assertb.
+      apply ssrbool.andb_id2l => _.
+      rewrite IHt0.
+      reflexivity.
+    - (* tForce *)
+      simpl.
+      rewrite result_assertb.
+      apply ssrbool.andb_id2l => _.
+      rewrite IHt0.
+      reflexivity.
+  Qed.
+
+  Theorem wf_projections_equiv : forall oib,
+    bool_of_result (wf_projections oib) = EWellformed.wf_projections oib.
+  Proof.
+    intros.
+    unfold wf_projections, EWellformed.wf_projections.
+    destruct oib; simpl.
+    destruct ind_projs; simpl; auto.
+    destruct ind_ctors; simpl; auto.
+    destruct ind_ctors; simpl; auto.
+    rewrite result_assertb'.
+    reflexivity.
+  Qed.
+
+  Theorem wf_inductive_equiv : forall oib,
+    bool_of_result (wf_inductive oib) = EWellformed.wf_inductive oib.
+  Proof.
+    intros.
+    apply wf_projections_equiv.
+  Qed.
+
+  Theorem wf_minductive_equiv {efl  : EEnvFlags}  : forall m,
+    bool_of_result (wf_minductive m) = EWellformed.wf_minductive m.
+  Proof.
+    intros.
+    rewrite result_assertb.
+    apply ssrbool.andb_id2l => _.
+    apply result_forallb.
+    apply wf_inductive_equiv.
+  Qed.
 
   Theorem wf_global_decl_equiv {efl  : EEnvFlags} : forall Σ d,
     bool_of_result (wf_global_decl Σ d) = EWellformed.wf_global_decl Σ d.
   Proof.
-  Admitted.
+    intros.
+    destruct d; simpl.
+    - destruct cst_body; simpl.
+      + by rewrite wellformed_equiv.
+      + by rewrite result_assertb'.
+    - apply wf_minductive_equiv.
+  Qed.
 
   Theorem check_fresh_global_equiv : forall k d,
     bool_of_result (check_fresh_global k d) = check_fresh_global_b k d.
   Proof.
-  Admitted.
+    induction d; auto; simpl.
+    rewrite result_assertb.
+    apply ssrbool.andb_id2l => //.
+  Qed.
 
   Theorem check_wf_glob_equiv {efl : EEnvFlags} : forall d,
     bool_of_result (check_wf_glob d) = check_wf_glob_b d.
   Proof.
-  Admitted.
+    induction d; auto; simpl.
+    rewrite 2!result_bindb.
+    rewrite result_mapb.
+    rewrite IHd.
+    rewrite check_fresh_global_equiv.
+    rewrite wf_global_decl_equiv.
+    rewrite <- andb_assoc.
+    reflexivity.
+  Qed.
 
   Theorem check_wf_program_equiv {efl : EEnvFlags} : forall p,
     bool_of_result (check_wf_program p) = check_wf_program_b p.
   Proof.
-  Admitted.
+    intros.
+    unfold check_wf_program_b; cbn.
+    rewrite <- check_wf_glob_equiv.
+    destruct check_wf_glob; auto.
+    rewrite andb_true_l.
+    apply wellformed_equiv.
+  Qed.
 
   Lemma check_fresh_globalP (k : kername) (decls : global_declarations)
     : reflectProp (fresh_global k decls) (bool_of_result (check_fresh_global k decls)).

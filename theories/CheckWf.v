@@ -119,7 +119,7 @@ Section Wf.
     | tCase ind c brs =>
       assert has_tCase (fun _ => "Program contains tCase") ;;
       let brs' := result_forall (fun br => wellformed Σ (#|br.1| + k) br.2) brs in
-      wf_brs Σ ind.1 #|brs| ;;
+      assert (wf_brs Σ ind.1 #|brs|) (fun _ => "Case not exhaustive") ;;
       wellformed Σ k c ;;
       brs'
     | tProj p c =>
@@ -160,8 +160,8 @@ Section Wf.
     | [] => Ok tt
     | _ =>
       match idecl.(ind_ctors) with
-      | [cstr] => assert (#|idecl.(ind_projs)| == cstr.(cstr_nargs)) (fun _ => "")
-      | _ => Err ""
+      | [cstr] => assert (#|idecl.(ind_projs)| == cstr.(cstr_nargs)) (fun _ => "Number of primitive projections doesn't match constructor args")
+      | _ => Err "Invalid projection"
       end
     end.
 
@@ -169,7 +169,7 @@ Section Wf.
     wf_projections idecl.
 
   Definition wf_minductive {efl  : EEnvFlags} (mdecl : mutual_inductive_body) : (fun T => result T string) unit :=
-    assert (has_cstr_params || (mdecl.(ind_npars) == 0)) (fun _ => "") ;;
+    assert (has_cstr_params || (mdecl.(ind_npars) == 0)) (fun _ => "Has constructor params") ;;
     result_forall wf_inductive mdecl.(ind_bodies).
 
   Definition wf_global_decl {efl  : EEnvFlags} Σ d : (fun T => result T string) unit :=
@@ -185,13 +185,18 @@ Section Wf.
   Fixpoint check_fresh_global (k : kername) (decls : global_declarations) : (fun T => result T string) unit :=
     match decls with
     | []    => Ok tt
-    | p::ds => assert (negb (eq_kername (fst p) k)) (fun _ => "Duplicate definition " ^ (string_of_kername (fst p)))  ;; check_fresh_global k ds
+    | p::ds =>
+      assert (negb (eq_kername (fst p) k)) (fun _ => "Duplicate definition " ^ (string_of_kername (fst p))) ;;
+      check_fresh_global k ds
     end.
 
   Fixpoint check_wf_glob {efl : EEnvFlags} (decls : global_declarations) : (fun T => result T string) unit :=
     match decls with
     | []    => Ok tt
-    | p::ds => check_wf_glob ds ;; check_fresh_global (fst p) ;; map_error (fun e => "Error while checking " ^ (string_of_kername (fst p)) ^ ": " ^ e) (wf_global_decl ds (snd p))
+    | p::ds =>
+      check_wf_glob ds ;;
+      check_fresh_global (fst p) ds ;;
+      map_error (fun e => "Error while checking " ^ (string_of_kername (fst p)) ^ ": " ^ e) (wf_global_decl ds (snd p))
     end.
 
   Definition check_wf_program {efl : EEnvFlags} (p : program) : (fun T => result T string) unit :=

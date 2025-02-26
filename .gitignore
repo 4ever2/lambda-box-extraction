@@ -67,12 +67,12 @@ _build/
 ## Test files
 *.ast
 *.tast
-!examples/*.ast
-!examples/*.tast
+!test/**/*.ast
+!test/**/*.tast
 
-examples/**/*.txt
-examples/**/*.v
-examples/**/*.anf
+test/**/*.txt
+test/**/*.v
+test/**/*.anf
 
 ## Extraction output
 *.out

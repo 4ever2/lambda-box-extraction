@@ -1,1 +1,0 @@
-(((((MPfile ("CoqToLambdaBox" "LambdaBox")) "t") (ConstantDecl (constant_body (Some (tLambda (nNamed "X") (tLambda (nNamed "x") (tRel 0)))))))) (tConst ((MPfile ("CoqToLambdaBox" "LambdaBox")) "t")))

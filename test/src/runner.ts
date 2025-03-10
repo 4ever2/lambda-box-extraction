@@ -9,6 +9,54 @@ var compile_timeout = 30000; // 30 seconds
 var remove_output = true;
 
 var failed_tests = [];
+
+
+function compile_box(file: string, lang: Lang, opts: string): string | ExecFailure {
+  // TODO write files to tmp directory
+  const out_f = path.basename(replace_ext(file, lang_to_ext(lang)));
+  const cmd = `dune exec --no-print-directory lbox -- ${lang_to_lbox_arg(lang)} ${file} -o ${out_f} ${opts}`;
+
+  try {
+    execSync(cmd, { stdio: "pipe", timeout: compile_timeout });
+    return out_f;
+  } catch (e) {
+    if (e.signal == "SIGTERM") {
+      return { type: "error", reason: "timeout" };
+    }
+
+    return { type: "error", reason: "compile error", compiler: "lbox", code: e.status, error: e.stdout.toString('utf8') };
+  }
+}
+
+
+function run_exec(file: string, test: TestCase): ExecResult {
+  const cmd = "./" + file;
+
+  try {
+    const start_main = Date.now();
+    const res = execSync(cmd, { stdio: "pipe", timeout: exec_timeout, encoding: "utf8" }).trim();
+    const stop_main = Date.now();
+    const time_main = stop_main - start_main;
+
+    if (test.expected_output === undefined || test.output_type === SimpleType.Other) {
+      return { type: "success", time: time_main };
+    }
+
+    if (res !== test.expected_output) {
+      return { type: "error", reason: "incorrect result", actual: res, expected: test.expected_output };
+    }
+
+    return { type: "success", time: time_main };
+  } catch (e) {
+    if (e.signal == "SIGTERM") {
+      return { type: "error", reason: "timeout" };
+    }
+
+    return { type: "error", reason: "runtime error", error: e }; // TODO
+  }
+}
+
+
 function print_result(res: ExecResult, test: string) {
   switch (res.type) {
     case "error":

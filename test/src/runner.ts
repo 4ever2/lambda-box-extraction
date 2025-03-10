@@ -3,11 +3,45 @@ import { Lang, TestCase, ExecResult, SimpleType, ExecFailure } from "./types";
 import { execSync } from "child_process";
 import path from "path";
 import { PathLike, unlink } from "fs";
+import { lang_to_ext, lang_to_lbox_arg, print_line, replace_ext } from "./utils";
 var exec_timeout = 30000; // 30 seconds
 var compile_timeout = 30000; // 30 seconds
 var remove_output = true;
 
 var failed_tests = [];
+function print_result(res: ExecResult, test: string) {
+  switch (res.type) {
+    case "error":
+      failed_tests.push(test);
+      switch (res.reason) {
+        case "incorrect result":
+          print_line(`expected ${res.expected} but received ${res.actual}`);
+          break;
+        case "runtime error":
+          print_line(`"runtime error (${res.error})`);
+          break;
+        case "timeout":
+          print_line("program timed out");
+          break;
+        case "compile error":
+          print_line(`${res.compiler} failed with code ${res.code}`);
+          print_line(res.error);
+          break;
+      }
+      return false;
+    case "success":
+      print_line(`test succeeded in ${res.time} ms`);
+      return true;
+  }
+}
+
+function rm(f: PathLike) {
+  if (!remove_output) return;
+
+  unlink(f, (err) => {
+    if (err) print_line(`could not remove ${f}`);
+  });
+}
 /* (backend, lbox flags) pair configurations */
 var test_configurations: TestConfiguration[] = [
   // [Lang.OCaml, ""],

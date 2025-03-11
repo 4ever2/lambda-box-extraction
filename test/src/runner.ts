@@ -199,7 +199,7 @@ async function run_tests(lang: Lang, opts: string, tests: TestCase[]) {
 /* (backend, lbox flags) pair configurations */
 var test_configurations: TestConfiguration[] = [
   [Lang.OCaml, ""],
-  [Lang.C, "--cps"],
+  [Lang.C, ""],
   [Lang.Wasm, "--cps"],
   [Lang.Wasm, ""],
   // [Lang.Rust, ""],

@@ -78,7 +78,7 @@ let certicoq_opts_t =
     let doc = "Use CPS translation pipeline." in
     Arg.(value & flag & info ["cps"] ~doc)
   in
-  Term.(const (fun x -> mk_certicoq_opts (not x)) $ cps_arg )
+  Term.(const (fun x -> mk_certicoq_opts x) $ cps_arg )
 
 let eopts_t =
   let typed_arg =

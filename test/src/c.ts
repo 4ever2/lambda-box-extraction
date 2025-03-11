@@ -102,7 +102,7 @@ int main(int argc, char *argv[]) {
 
 export function compile_c(file: string, test: TestCase, timeout: number): string | ExecFailure {
   const f_out = replace_ext(file, ".o");
-  const f_glue = "src/c/glue.c"; //TODO fix path
+  const f_glue = "src/c/glue.c";
   const cmd = `gcc -o ${f_out} -w -Wno-everything -O2 -fomit-frame-pointer -I\${C_RUNTIME_PATH} \${C_RUNTIME_PATH}/gc_stack.c ${file} ${f_glue} -xc -`;
   const main = get_c_main(test);
 

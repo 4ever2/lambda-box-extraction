@@ -3,7 +3,7 @@ import { Lang, TestCase, ExecResult, SimpleType, ExecFailure, TestConfiguration 
 import { run_wasm } from "./wasm";
 import { execSync } from "child_process";
 import path from "path";
-import { PathLike, unlink } from "fs";
+import { existsSync, mkdirSync, PathLike, unlink } from "fs";
 import { lang_to_ext, lang_to_lbox_arg, print_line, replace_ext } from "./utils";
 import { compile_c, set_c_env } from "./c";
 import { compile_types } from "./ocaml";
@@ -19,6 +19,8 @@ var remove_output = true;
 // List of failed tests
 var failed_tests: string[] = [];
 
+var tmpdir = process.env.TMPDIR;
+
 
 // Calls the lambda box compiler with
 // `file` input program
@@ -26,8 +28,7 @@ var failed_tests: string[] = [];
 // `opts` compiler options
 // returns a string containing the location of the compiled code or an ExecFailure object
 function compile_box(file: string, lang: Lang, opts: string): string | ExecFailure {
-  // TODO write files to tmp directory
-  const out_f = path.basename(replace_ext(file, lang_to_ext(lang)));
+  const out_f = path.join(tmpdir, path.basename(replace_ext(file, lang_to_ext(lang))));
   const cmd = `dune exec --no-print-directory lbox -- ${lang_to_lbox_arg(lang)} ${file} -o ${out_f} ${opts}`;
 
   try {
@@ -46,7 +47,7 @@ function compile_box(file: string, lang: Lang, opts: string): string | ExecFailu
 // Run the given executable and compare against the expected test result
 function run_exec(file: string, test: TestCase): ExecResult {
   // Command to run
-  const cmd = "./" + file;
+  const cmd = file;
 
   try {
     // Run and time the command
@@ -106,15 +107,6 @@ function print_result(res: ExecResult, test: string): boolean {
   }
 }
 
-// Deletes the file `f` from disk if `remove_output` is set
-function rm(f: PathLike) {
-  if (!remove_output) return;
-
-  unlink(f, (err) => {
-    if (err) print_line(`could not remove ${f}`);
-  });
-}
-
 // Compile and run all `tests` test programs with the `lang` backend and `opts` compiler options
 async function run_tests(lang: Lang, opts: string, tests: TestCase[]) {
   print_line(`Running ${lang} tests with options "${opts}":`);
@@ -143,18 +135,6 @@ async function run_tests(lang: Lang, opts: string, tests: TestCase[]) {
 
         // Report result
         print_result(res, test.src);
-
-        // Clean up
-        rm(f_mlf);
-        rm(replace_ext(f_mlf, ".mli"));
-        rm(replace_ext(f_mlf, ".cmi"));
-        rm(replace_ext(f_mlf, ".cmx"));
-        rm(replace_ext(f_mlf, ".o"));
-        rm(f_exec);
-        rm(f_exec + ".ml");
-        rm(f_exec + ".cmi");
-        rm(f_exec + ".cmx");
-        rm(f_exec + ".o");
       }
       break;
     case Lang.C:
@@ -181,11 +161,6 @@ async function run_tests(lang: Lang, opts: string, tests: TestCase[]) {
 
         // Report result
         print_result(res, test.src);
-
-        // Clean up
-        rm(f_c);
-        rm(replace_ext(f_c, ".h"));
-        rm(f_exec);
       }
       break;
     case Lang.Wasm:
@@ -204,9 +179,6 @@ async function run_tests(lang: Lang, opts: string, tests: TestCase[]) {
 
         // Report result
         print_result(res, test.src);
-
-        // Clean up
-        rm(f);
       }
       break;
     case Lang.Rust:
@@ -266,6 +238,14 @@ var tests: TestCase[] = [
 ];
 
 async function main() {
+  // Create tmp dir
+  if (tmpdir === undefined) {
+    print_line("error: could not find tmpdir");
+    exit(1);
+  }
+  tmpdir = path.join(tmpdir, "lbox/");
+  if (!existsSync(tmpdir)) mkdirSync(tmpdir, { recursive: false });
+
   // For each test configuration run all test programs
   for (var backend of test_configurations) {
     await run_tests(backend[0], backend[1], tests);

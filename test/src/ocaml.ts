@@ -94,18 +94,21 @@ let main =
   writeFileSync(file, content);
 }
 
+const util_dir = path.join(process.cwd(), "src/ocaml/");
+const f_types = path.join(util_dir, "types.cmx");
+
 // Compile .mlf file to OCaml executable
-export function compile_ocaml(file: string, test: TestCase, timeout: number): string | ExecFailure {
+export function compile_ocaml(file: string, test: TestCase, timeout: number, tmpdir: string): string | ExecFailure {
   const f_mli = replace_ext(file, ".mli");
   const f_cmx = replace_ext(file, ".cmx");
-  const f_main = path.basename(file, ".mlf") + "_main.ml"
+  const f_main = path.join(path.dirname(file), path.basename(file, ".mlf") + "_main.ml");
   const f_main_cmx = replace_ext(f_main, ".cmx");
   const f_exec = replace_ext(f_main, "");
 
-  const mli_cmd = `ocamlopt -I src/ocaml/ -c ${f_mli}`;
+  const mli_cmd = `ocamlopt -I ${util_dir} -c ${f_mli}`;
   const mlf_cmd = `malfunction cmx ${file}`;
-  const main_cmd = `ocamlopt -I src/ocaml/ -c ${f_main}`;
-  const exec_cmd = `ocamlopt -o ${f_exec} ${f_cmx} src/ocaml/types.cmx ${f_main_cmx}`;
+  const main_cmd = `ocamlopt -I ${util_dir} -c ${f_main}`;
+  const exec_cmd = `ocamlopt -o ${f_exec} ${f_cmx} ${f_types} ${f_main_cmx}`;
 
   try {
     // Generate mli
@@ -115,12 +118,12 @@ export function compile_ocaml(file: string, test: TestCase, timeout: number): st
     gen_main(f_main, path.basename(file, ".mlf"), test.output_type);
 
     // Compile program
-    execSync(mli_cmd, { stdio: "pipe", timeout: timeout });
-    execSync(mlf_cmd, { stdio: "pipe", timeout: timeout });
+    execSync(mli_cmd, { stdio: "pipe", timeout: timeout, cwd: tmpdir });
+    execSync(mlf_cmd, { stdio: "pipe", timeout: timeout, cwd: tmpdir });
 
     // Compile main
-    execSync(main_cmd, { stdio: "pipe", timeout: timeout });
-    execSync(exec_cmd, { stdio: "pipe", timeout: timeout });
+    execSync(main_cmd, { stdio: "pipe", timeout: timeout, cwd: tmpdir });
+    execSync(exec_cmd, { stdio: "pipe", timeout: timeout, cwd: tmpdir });
 
     return f_exec;
   } catch (e) {

@@ -138,5 +138,11 @@ dist
 # SvelteKit build / generate output
 .svelte-kit
 
+
 !src/c/*.c
 !src/c/*.h
+
+*.ml
+*.mli
+!src/ocaml/*.ml
+!src/ocaml/*.mli

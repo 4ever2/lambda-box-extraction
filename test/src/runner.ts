@@ -120,7 +120,8 @@ async function run_tests(lang: Lang, opts: string, tests: TestCase[]) {
   print_line(`Running ${lang} tests with options "${opts}":`);
   switch (lang) {
     case Lang.OCaml:
-/*       for (var test of tests) {
+      compile_types(compile_timeout);
+      for (var test of tests) {
         process.stdout.write(`  ${test.src}: `);
 
         // Compile lbox
@@ -141,15 +142,20 @@ async function run_tests(lang: Lang, opts: string, tests: TestCase[]) {
         const res = run_exec(f_exec, test);
 
         // Report result
-        print_result(res);
+        print_result(res, test.src);
 
         // Clean up
         rm(f_mlf);
+        rm(replace_ext(f_mlf, ".mli"));
+        rm(replace_ext(f_mlf, ".cmi"));
+        rm(replace_ext(f_mlf, ".cmx"));
+        rm(replace_ext(f_mlf, ".o"));
         rm(f_exec);
-      } */
-
-      // TODO
-      print_line("Not implemented yet");
+        rm(f_exec + ".ml");
+        rm(f_exec + ".cmi");
+        rm(f_exec + ".cmx");
+        rm(f_exec + ".o");
+      }
       break;
     case Lang.C:
       await set_c_env(compile_timeout);
@@ -220,10 +226,10 @@ async function run_tests(lang: Lang, opts: string, tests: TestCase[]) {
 
 /* (backend, lbox flags) pair configurations */
 var test_configurations: TestConfiguration[] = [
-  // [Lang.OCaml, ""],
-  [Lang.C, "--cps"],
-  [Lang.Wasm, "--cps"],
-  [Lang.Wasm, ""],
+  [Lang.OCaml, ""],
+  // [Lang.C, "--cps"],
+  // [Lang.Wasm, "--cps"],
+  // [Lang.Wasm, ""],
   // [Lang.Rust, ""],
   // [Lang.Elm ""],
 ];

@@ -5,8 +5,8 @@ import { print_line, replace_ext } from "./utils";
 
 var counter = 0;
 
-function get_pp_fun(lang: ProgramType): [string[], string] {
-  switch (lang) {
+function get_pp_fun(type: ProgramType): [string[], string] {
+  switch (type) {
     case SimpleType.Bool:
       counter += 1;
       return [
@@ -32,9 +32,9 @@ function get_pp_fun(lang: ProgramType): [string[], string] {
         ""
       ]
     default:
-      switch (lang.type) {
+      switch (type.type) {
         case "list":
-          var a = get_pp_fun(lang.a_t);
+          var a = get_pp_fun(type.a_t);
           counter += 1;
           return [
             ["extern void print_Coq_Init_Datatypes_list(value, void (*)(value));",
@@ -44,7 +44,7 @@ function get_pp_fun(lang: ProgramType): [string[], string] {
             `pp_${counter}`
           ];
         case "option":
-          var a = get_pp_fun(lang.a_t);
+          var a = get_pp_fun(type.a_t);
           counter += 1;
           return [
             ["extern void print_Coq_Init_Datatypes_option(value, void (*)(value));",
@@ -54,8 +54,8 @@ function get_pp_fun(lang: ProgramType): [string[], string] {
             `pp_${counter}`
           ];
         case "prod":
-          var a = get_pp_fun(lang.a_t);
-          var b = get_pp_fun(lang.b_t);
+          var a = get_pp_fun(type.a_t);
+          var b = get_pp_fun(type.b_t);
           counter += 1;
           return [
             ["extern void print_Coq_Init_Datatypes_prod(value, void (*)(value), void (*)(value));",

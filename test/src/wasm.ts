@@ -93,7 +93,7 @@ function pp_prod(val, dataView, a_t, b_t): string {
   const b = dataView.getInt32(val + 8, true);
   const b_s = pp_wasm(b_t, b, dataView);
 
-  return "(" + a_s + ", " + b_s + ")";
+  return "(pair " + a_s + " " + b_s + ")";
 }
 
 function pp_wasm(type: ProgramType, val: number, dataView: any): string {

@@ -1,21 +1,30 @@
 import { exit } from "process";
-import { Lang, TestCase, ExecResult, SimpleType, ExecFailure } from "./types";
+import { Lang, TestCase, ExecResult, SimpleType, ExecFailure, TestConfiguration } from "./types";
 import { run_wasm } from "./wasm";
 import { execSync } from "child_process";
 import path from "path";
 import { PathLike, unlink } from "fs";
 import { lang_to_ext, lang_to_lbox_arg, print_line, replace_ext } from "./utils";
 import { compile_c, set_c_env } from "./c";
-// import { compile_ocaml } from "./ocaml";
+import { compile_types } from "./ocaml";
+import { compile_ocaml } from "./ocaml";
 
 
+// Timeout used when executing the compiled code
 var exec_timeout = 30000; // 30 seconds
+// Timeout for the compilation phases
 var compile_timeout = 30000; // 30 seconds
 var remove_output = true;
 
-var failed_tests = [];
+// List of failed tests
+var failed_tests: string[] = [];
 
 
+// Calls the lambda box compiler with
+// `file` input program
+// `lang` language that we compile to
+// `opts` compiler options
+// returns a string containing the location of the compiled code or an ExecFailure object
 function compile_box(file: string, lang: Lang, opts: string): string | ExecFailure {
   // TODO write files to tmp directory
   const out_f = path.basename(replace_ext(file, lang_to_ext(lang)));
@@ -34,19 +43,25 @@ function compile_box(file: string, lang: Lang, opts: string): string | ExecFailu
 }
 
 
+// Run the given executable and compare against the expected test result
 function run_exec(file: string, test: TestCase): ExecResult {
+  // Command to run
   const cmd = "./" + file;
 
   try {
+    // Run and time the command
     const start_main = Date.now();
     const res = execSync(cmd, { stdio: "pipe", timeout: exec_timeout, encoding: "utf8" }).trim();
     const stop_main = Date.now();
     const time_main = stop_main - start_main;
 
+    // Return success if there is no expected output to compare against or if the program
+    // returns a type that we don't know how to print
     if (test.expected_output === undefined || test.output_type === SimpleType.Other) {
       return { type: "success", time: time_main };
     }
 
+    // Compare output against the expected output
     if (res !== test.expected_output) {
       return { type: "error", reason: "incorrect result", actual: res, expected: test.expected_output };
     }
@@ -62,10 +77,13 @@ function run_exec(file: string, test: TestCase): ExecResult {
 }
 
 
-function print_result(res: ExecResult, test: string) {
+// Print result of execution
+function print_result(res: ExecResult, test: string): boolean {
   switch (res.type) {
     case "error":
+      // Add failed test program to list of failed tests
       failed_tests.push(test);
+
       switch (res.reason) {
         case "incorrect result":
           print_line(`expected ${res.expected} but received ${res.actual}`);
@@ -88,6 +106,7 @@ function print_result(res: ExecResult, test: string) {
   }
 }
 
+// Deletes the file `f` from disk if `remove_output` is set
 function rm(f: PathLike) {
   if (!remove_output) return;
 
@@ -96,6 +115,7 @@ function rm(f: PathLike) {
   });
 }
 
+// Compile and run all `tests` test programs with the `lang` backend and `opts` compiler options
 async function run_tests(lang: Lang, opts: string, tests: TestCase[]) {
   print_line(`Running ${lang} tests with options "${opts}":`);
   switch (lang) {
@@ -106,14 +126,14 @@ async function run_tests(lang: Lang, opts: string, tests: TestCase[]) {
         // Compile lbox
         const f_mlf = compile_box(test.src, Lang.OCaml, "");
         if (typeof f_mlf !== "string") {
-          print_result(f_mlf);
+          print_result(f_mlf, test.src);
           continue;
         }
 
         // Compile C
         const f_exec = compile_ocaml(f_mlf, test, compile_timeout);
         if (typeof f_exec !== "string") {
-          print_result(f_exec);
+          print_result(f_exec, test.src);
           continue;
         }
 
@@ -207,6 +227,8 @@ var test_configurations: TestConfiguration[] = [
   // [Lang.Rust, ""],
   // [Lang.Elm ""],
 ];
+
+// List of programs to be tested
 var tests: TestCase[] = [
   // Exceeds stack size
   // { src: "agda/BigDemo.ast", main: "", output_type: { type: "list", a_t: SimpleType.Nat }, expected_output: "", parameters: [] },
@@ -238,10 +260,12 @@ var tests: TestCase[] = [
 ];
 
 async function main() {
+  // For each test configuration run all test programs
   for (var backend of test_configurations) {
     await run_tests(backend[0], backend[1], tests);
   }
 
+  // Report test suite result
   if (failed_tests.length == 0) {
     print_line("All tests passed");
     exit(0);

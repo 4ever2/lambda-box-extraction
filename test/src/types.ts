@@ -4,8 +4,12 @@ export type CompileError = { type: "error", reason: "compile error", compiler: s
 export type IncorrectResult = { type: "error", reason: "incorrect result", expected: string, actual: string };
 export type ExecFailure = Timeout | RuntimeError | CompileError | IncorrectResult;
 export type ExecSuccess = { type: "success", time: number }
+// Result of executing/compiling a test
 export type ExecResult = ExecFailure | ExecSuccess;
 
+
+// Type representing simple types in the test programs
+// Used to specify parameter and return types for the main function
 export enum SimpleType {
   Nat,
   Bool,
@@ -13,12 +17,18 @@ export enum SimpleType {
   Other /* For programs using types not in the list, when using this type the output won't be checked */
 }
 
-export type ProgramType =
-  SimpleType
-  | { type: "list", a_t: ProgramType }
-  | { type: "option", a_t: ProgramType }
-  | { type: "prod", a_t: ProgramType, b_t: ProgramType }
+// Complex types that have type variables
+type ComplexType =
+| { type: "list", a_t: ProgramType }
+| { type: "option", a_t: ProgramType }
+| { type: "prod", a_t: ProgramType, b_t: ProgramType }
 
+// Type representing types in the test programs
+// Used to specify parameter and return types for the main function
+export type ProgramType = SimpleType | ComplexType;
+
+
+// Languages support by the lambda box compiler
 export enum Lang {
   OCaml = "OCaml",
   C = "C",
@@ -28,11 +38,20 @@ export enum Lang {
 }
 
 export type TestCase = {
+  // Path to file containing the program lambda box source
   src: string,
+  // Name of the programs main function
+  // Only used for typed backends where there isn't an explicit main function
   main: string,
+  // The return type of the main function
+  // Used to generate printing function for the output
   output_type: ProgramType,
+  // The expected output
   expected_output?: string,
+  // Types of the main functions parameters
   parameters?: ProgramType[],
 }
 
+// Test configuration consisting of a target language and a set of options
+// for the lbox compiler
 export type TestConfiguration = [Lang, string]

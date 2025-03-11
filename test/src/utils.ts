@@ -1,6 +1,7 @@
 import path from "path";
 import { Lang } from "./types";
 
+// Replace extension of a filepath
 export function replace_ext(file: string, ext: string): string {
     return path.join(path.dirname(file), path.basename(file, path.extname(file)) + ext);
 }
@@ -9,6 +10,7 @@ export function print_line(s: string) {
   process.stdout.write(s + "\n");
 }
 
+// Convert Lang to target language argument for lbox compiler
 export function lang_to_lbox_arg(lang: Lang): string {
   switch (lang) {
     case Lang.OCaml:
@@ -24,6 +26,7 @@ export function lang_to_lbox_arg(lang: Lang): string {
   }
 }
 
+// File extensions for each language
 export function lang_to_ext(lang: Lang): string {
   switch (lang) {
     case Lang.OCaml:

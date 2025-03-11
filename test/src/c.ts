@@ -5,6 +5,9 @@ import { print_line, replace_ext } from "./utils";
 
 var counter = 0;
 
+// Generate printing function for a given type
+// Returns two elements, the first being a list of function and external declarations,
+// the second element is the name of the printing function
 function get_pp_fun(type: ProgramType): [string[], string] {
   switch (type) {
     case SimpleType.Bool:
@@ -72,6 +75,10 @@ function get_pp_fun(type: ProgramType): [string[], string] {
   }
 }
 
+// Generates a main file that
+// 1) sets up garbage collector;
+// 2) runs the program
+// 3) pretty prints the return value as S-expression
 function get_c_main(test: TestCase): string {
   counter = 0;
   const pp_fun = get_pp_fun(test.output_type);
@@ -100,13 +107,16 @@ int main(int argc, char *argv[]) {
   return content;
 }
 
+// Compile a C file using gcc
 export function compile_c(file: string, test: TestCase, timeout: number): string | ExecFailure {
   const f_out = replace_ext(file, ".o");
   const f_glue = "src/c/glue.c";
   const cmd = `gcc -o ${f_out} -w -Wno-everything -O2 -fomit-frame-pointer -I\${C_RUNTIME_PATH} \${C_RUNTIME_PATH}/gc_stack.c ${file} ${f_glue} -xc -`;
+  // Generate main file
   const main = get_c_main(test);
 
   try {
+    // Run gcc, main file is given through stdin
     execSync(cmd, { stdio: "pipe", timeout: timeout, input: main });
     return f_out;
   } catch (e) {
@@ -118,6 +128,7 @@ export function compile_c(file: string, test: TestCase, timeout: number): string
   }
 }
 
+// Set environment variables used when compiling C code
 export async function set_c_env(timeout) {
   const cmd = `coqc -where`;
 

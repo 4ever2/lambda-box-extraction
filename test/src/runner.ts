@@ -123,8 +123,8 @@ async function run_tests(lang: Lang, opts: string, tests: TestCase[]) {
           continue;
         }
 
-        // Compile C
-        const f_exec = compile_ocaml(f_mlf, test, compile_timeout);
+        // Compile OCaml
+        const f_exec = compile_ocaml(f_mlf, test, compile_timeout, tmpdir);
         if (typeof f_exec !== "string") {
           print_result(f_exec, test.src);
           continue;
@@ -199,9 +199,9 @@ async function run_tests(lang: Lang, opts: string, tests: TestCase[]) {
 /* (backend, lbox flags) pair configurations */
 var test_configurations: TestConfiguration[] = [
   [Lang.OCaml, ""],
-  // [Lang.C, "--cps"],
-  // [Lang.Wasm, "--cps"],
-  // [Lang.Wasm, ""],
+  [Lang.C, "--cps"],
+  [Lang.Wasm, "--cps"],
+  [Lang.Wasm, ""],
   // [Lang.Rust, ""],
   // [Lang.Elm ""],
 ];

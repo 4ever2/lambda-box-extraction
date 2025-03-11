@@ -16,6 +16,7 @@ let importObject = {
   }
 };
 
+// Print bool
 function pp_bool(val: number): string {
   if (val & 1) {
     switch (val >> 1) {
@@ -30,6 +31,7 @@ function pp_bool(val: number): string {
   }
 }
 
+// Print nat
 function pp_nat_sexp(val: number, dataView: any): string {
   if (val & 1) {
     switch (val >> 1) {
@@ -48,10 +50,12 @@ function pp_nat_sexp(val: number, dataView: any): string {
   }
 }
 
+// Print 63-bit integers
 function pp_uint63(val, dataView): string {
   return dataView.getBigUint64(val, true).toString();
 }
 
+// Print lists
 function pp_list_sexp(val, dataView, a_t): string {
   if (val & 1) {
     switch (val >> 1) {
@@ -74,6 +78,7 @@ function pp_list_sexp(val, dataView, a_t): string {
   }
 }
 
+// Print option type
 function pp_option(val, dataView, a_t): string {
   if (val & 1) {
     return "None";
@@ -86,6 +91,7 @@ function pp_option(val, dataView, a_t): string {
   }
 }
 
+// Print pairs
 function pp_prod(val, dataView, a_t, b_t): string {
   const a = dataView.getInt32(val + 4, true);
   const a_s = pp_wasm(a_t, a, dataView);
@@ -96,6 +102,7 @@ function pp_prod(val, dataView, a_t, b_t): string {
   return "(pair " + a_s + " " + b_s + ")";
 }
 
+// Pretty print a value `val` of type `type`
 function pp_wasm(type: ProgramType, val: number, dataView: any): string {
   switch (type) {
     case SimpleType.Bool:
@@ -119,18 +126,22 @@ function pp_wasm(type: ProgramType, val: number, dataView: any): string {
   }
 }
 
+// Runs the wasm code from `file`
 export async function run_wasm(file: string, test: TestCase): Promise<ExecResult> {
   try {
+    // Read code and initialize WebAssembly module
     const bytes = readFileSync(file);
     const obj = await WebAssembly.instantiate(
       new Uint8Array(bytes), importObject
     );
 
+    // Run the main function
     const start_main = Date.now();
     obj.instance.exports.main_function();
     const stop_main = Date.now();
     const time_main = stop_main - start_main;
 
+    // Get memory information and check for out of memoery exception
     var out_of_mem = obj.instance.exports.result_out_of_mem;
     var bytes_used = obj.instance.exports.bytes_used;
 
@@ -151,10 +162,13 @@ export async function run_wasm(file: string, test: TestCase): Promise<ExecResult
       return { type: "error", reason: "runtime error", error: "out of memory" };
     }
 
+    // We skip checking the output if there is no expected output specified
+    // or if the program returns a type that we don't have printers for
     if (test.expected_output === undefined || test.output_type === SimpleType.Other) {
       return { type: "success", time: time_main };
     }
 
+    // Pretty print output and check that it matches the expected output
     const res_value = obj.instance.exports.result.value;
     const memory = obj.instance.exports.memory;
     const dataView = new DataView(memory.buffer);

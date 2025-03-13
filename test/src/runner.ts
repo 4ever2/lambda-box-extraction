@@ -8,6 +8,7 @@ import { lang_to_ext, lang_to_lbox_arg, print_line, replace_ext } from "./utils"
 import { compile_c, set_c_env } from "./c";
 import { compile_types } from "./ocaml";
 import { compile_ocaml } from "./ocaml";
+import { compile_rust, prepare_cargo, run_rust } from "./rust";
 
 
 // Timeout used when executing the compiled code
@@ -27,8 +28,8 @@ var tmpdir = process.env.TMPDIR;
 // `lang` language that we compile to
 // `opts` compiler options
 // returns a string containing the location of the compiled code or an ExecFailure object
-function compile_box(file: string, lang: Lang, opts: string): string | ExecFailure {
-  const out_f = path.join(tmpdir, path.basename(replace_ext(file, lang_to_ext(lang))));
+function compile_box(file: string, outdir: string, lang: Lang, opts: string): string | ExecFailure {
+  const out_f = path.join(outdir, path.basename(replace_ext(file, lang_to_ext(lang))));
   const cmd = `dune exec --no-print-directory lbox -- ${lang_to_lbox_arg(lang)} ${file} -o ${out_f} ${opts}`;
 
   try {
@@ -114,10 +115,11 @@ async function run_tests(lang: Lang, opts: string, tests: TestCase[]) {
     case Lang.OCaml:
       compile_types(compile_timeout);
       for (var test of tests) {
+        if (test.src === undefined) continue;
         process.stdout.write(`  ${test.src}: `);
 
         // Compile lbox
-        const f_mlf = compile_box(test.src, Lang.OCaml, "");
+        const f_mlf = compile_box(test.src, tmpdir, Lang.OCaml, "");
         if (typeof f_mlf !== "string") {
           print_result(f_mlf, test.src);
           continue;
@@ -140,10 +142,11 @@ async function run_tests(lang: Lang, opts: string, tests: TestCase[]) {
     case Lang.C:
       await set_c_env(compile_timeout);
       for (var test of tests) {
+        if (test.src === undefined) continue;
         process.stdout.write(`  ${test.src}: `);
 
         // Compile lbox
-        const f_c = compile_box(test.src, Lang.C, opts);
+        const f_c = compile_box(test.src, tmpdir, Lang.C, opts);
         if (typeof f_c !== "string") {
           print_result(f_c, test.src);
           continue;
@@ -165,10 +168,11 @@ async function run_tests(lang: Lang, opts: string, tests: TestCase[]) {
       break;
     case Lang.Wasm:
       for (var test of tests) {
+        if (test.src === undefined) continue;
         process.stdout.write(`  ${test.src}: `);
 
         // Compile lbox
-        const f = compile_box(test.src, Lang.Wasm, opts);
+        const f = compile_box(test.src, tmpdir, Lang.Wasm, opts);
         if (typeof f !== "string") {
           print_result(f, test.src);
           continue;
@@ -182,6 +186,33 @@ async function run_tests(lang: Lang, opts: string, tests: TestCase[]) {
       }
       break;
     case Lang.Rust:
+      let otudir = prepare_cargo(tmpdir);
+      let cargodir = path.join(tmpdir, "rust/");
+
+      for (var test of tests) {
+        if (test.tsrc === undefined) continue;
+        process.stdout.write(`  ${test.tsrc}: `);
+
+        // Compile lbox
+        const f_rs = compile_box(test.tsrc, otudir, Lang.Rust, opts);
+        if (typeof f_rs !== "string") {
+          print_result(f_rs, test.tsrc);
+          continue;
+        }
+
+        // Compile Rust
+        const err = compile_rust(f_rs, cargodir, test, compile_timeout);
+        if (err !== undefined) {
+          print_result(err, test.tsrc);
+          continue;
+        }
+
+        // Run Rust
+        const res = run_rust(f_rs, cargodir, test, exec_timeout);
+
+        // Report result
+        print_result(res, test.tsrc);
+      }
       // TODO
       print_line("Not implemented yet");
       break;
@@ -196,13 +227,15 @@ async function run_tests(lang: Lang, opts: string, tests: TestCase[]) {
   }
 }
 
+
 /* (backend, lbox flags) pair configurations */
 var test_configurations: TestConfiguration[] = [
-  [Lang.OCaml, ""],
-  [Lang.C, ""],
-  [Lang.Wasm, "--cps"],
-  [Lang.Wasm, ""],
-  // [Lang.Rust, ""],
+  // [Lang.OCaml, ""],
+  // [Lang.C, "--cps"],
+  // [Lang.C, ""],
+  // [Lang.Wasm, "--cps"],
+  // [Lang.Wasm, ""],
+  [Lang.Rust, "--attr=\"#[derive(Debug, Clone, Serialize)]\" --top-preamble=\"use lexpr::{to_string}; use serde_derive::{Serialize}; use serde_lexpr::{to_value};\n\""],
   // [Lang.Elm ""],
 ];
 

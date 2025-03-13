@@ -52,12 +52,12 @@ Definition mk_preamble top program :=
    {|
       top_preamble :=
          match top with
-         | Some top => top :: (@top_preamble plugin_extract_preamble)
+         | Some top => (@top_preamble plugin_extract_preamble) ++ [top]
          | None => (@top_preamble plugin_extract_preamble)
          end;
       program_preamble :=
          match program with
-         | Some program => program :: (@program_preamble plugin_extract_preamble)
+         | Some program => (@program_preamble plugin_extract_preamble) ++ [program]
          | None => (@program_preamble plugin_extract_preamble)
          end;
    |}.

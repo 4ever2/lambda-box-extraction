@@ -48,8 +48,8 @@ Definition default_attrs : ind_attr_map := fun _ => "#[derive(Debug, Clone)]".
 
 Definition default_remaps : remaps := no_remaps.
 
-Definition box_to_rust (remaps : remaps) params (Σ : ExAst.global_env) : result (list string) string :=
+Definition box_to_rust (remaps : remaps) attrs params (Σ : ExAst.global_env) : result (list string) string :=
    Σ <- typed_transfoms params Σ;;
-   let p := print_program Σ remaps default_attrs in
+   let p := print_program Σ remaps attrs in
    '(_, s) <- MetaCoq.Erasure.Typed.Utils.timed "Printing" (fun _ => (finish_print_lines p));;
    Ok s.

@@ -178,10 +178,16 @@ let compile_ocaml opts eopts f =
   l_box_to_ocaml p |>
   write_ocaml_res opts f
 
-let compile_rust opts eopts f =
+let get_rust_attr e =
+  match e with
+  | None -> LambdaBoxToRust.default_attrs
+  | Some s -> fun _ -> bytestring_of_caml_string s
+
+let compile_rust opts eopts attr f =
+  let attr = get_rust_attr attr in
   let p = get_typed_ast opts f in
   print_endline "Compiling:";
-  let p = l_box_to_rust LambdaBoxToRust.default_remaps (mk_tparams eopts) p in
+  let p = l_box_to_rust LambdaBoxToRust.default_remaps attr (mk_tparams eopts) p in
   match p with
   | ResultMonad.Ok prg ->
     print_endline "Compiled successfully:";

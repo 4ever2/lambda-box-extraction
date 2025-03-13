@@ -62,11 +62,11 @@ let check_wf checker flags opts p =
     exit 1
   )
 
-let check_wf_untyped =
-  check_wf check_wf_program agda_eflags
+let check_wf_untyped flags =
+  check_wf check_wf_program flags
 
-let check_wf_typed =
-  check_wf CheckWfExAst.check_wf_typed_program agda_typed_eflags
+let check_wf_typed flags =
+  check_wf CheckWfExAst.check_wf_typed_program flags
 
 let read_file f =
   let c = open_in f in
@@ -90,18 +90,18 @@ let get_ast opts eopts f : program =
   match eopts.typed with
   | None ->
     let p = parse_ast program_of_string s in
-    check_wf_untyped opts p;
+    check_wf_untyped agda_eflags opts p;
     p
   | Some kn ->
     let p = parse_ast global_env_of_string s in
-    check_wf_typed opts p;
+    check_wf_typed agda_eflags opts p;
     convert_typed kn eopts.optimize p
 
 let get_typed_ast opts f : global_env =
   let s = read_file f in
   print_endline "Parsing AST:";
   let p = parse_ast global_env_of_string s in
-  check_wf_typed opts p;
+  check_wf_typed agda_typed_eflags opts p;
   p
 
 

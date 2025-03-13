@@ -75,7 +75,7 @@ Require compcert.cfrontend.Csyntax
         compcert.cfrontend.Clight.
 
 Separate Extraction Translations.l_box_to_wasm CertiCoqPipeline.show_IR CertiCoqPipeline.make_opts
-                    Translations.l_box_to_rust LambdaBoxToRust.default_remaps LambdaBoxToRust.default_attrs
+                    Translations.l_box_to_rust LambdaBoxToRust.default_remaps LambdaBoxToRust.default_attrs LambdaBoxToRust.mk_preamble
                     Translations.l_box_to_elm LambdaBoxToElm.default_remaps LambdaBoxToElm.default_preamble
                     Translations.l_box_to_c
                     Translations.l_box_to_ocaml

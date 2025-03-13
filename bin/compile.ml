@@ -183,11 +183,14 @@ let get_rust_attr e =
   | None -> LambdaBoxToRust.default_attrs
   | Some s -> fun _ -> bytestring_of_caml_string s
 
-let compile_rust opts eopts attr f =
+let compile_rust opts eopts top_pre prog_pre attr f =
+  let top_pre = Option.map bytestring_of_caml_string top_pre in
+  let prog_pre = Option.map bytestring_of_caml_string prog_pre in
+  let preamble = LambdaBoxToRust.mk_preamble top_pre prog_pre in
   let attr = get_rust_attr attr in
   let p = get_typed_ast opts f in
   print_endline "Compiling:";
-  let p = l_box_to_rust LambdaBoxToRust.default_remaps attr (mk_tparams eopts) p in
+  let p = l_box_to_rust LambdaBoxToRust.default_remaps preamble attr (mk_tparams eopts) p in
   match p with
   | ResultMonad.Ok prg ->
     print_endline "Compiled successfully:";

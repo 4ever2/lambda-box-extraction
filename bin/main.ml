@@ -202,6 +202,14 @@ let rust_cmd =
     let doc = "Type attributes, defaults to \"#[derive(Debug, Clone)]\"" in
     Arg.(value & opt (some string) None & info ["attr"] ~doc)
   in
+  let top_pre_arg =
+    let doc = "File preamble" in
+    Arg.(value & opt (some string) None & info ["top-preamble"] ~doc)
+  in
+  let prog_pre_arg =
+    let doc = "Program preamble" in
+    Arg.(value & opt (some string) None & info ["prog-preamble"] ~doc)
+  in
   let doc = "Compile lambda box to rust" in
   let man = [
     `S Manpage.s_description;
@@ -209,7 +217,7 @@ let rust_cmd =
     `Blocks help_secs; ]
   in
   let info = Cmd.info "rust" ~doc ~sdocs ~man in
-  Cmd.v info Term.(const compile_rust $ copts_t $ teopts_t $ attr_arg $ file)
+  Cmd.v info Term.(const compile_rust $ copts_t $ teopts_t $ top_pre_arg $ prog_pre_arg $ attr_arg $ file)
 
 let elm_cmd =
   let file =

@@ -23,7 +23,7 @@ Instance ElmBoxes : ElmPrintConfig :=
      type_box_symbol := "()"; (* unit type *)
      any_type_symbol := "()"; (* unit type *)
      false_elim_def := "false_rec ()"; (* predefined function *)
-     print_full_names := false (* short names for readability *)|}.
+     print_full_names := true (* short names for readability *)|}.
 
 Definition default_preamble : string := elm_false_rec.
 

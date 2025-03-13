@@ -173,8 +173,8 @@ export async function run_wasm(file: string, test: TestCase): Promise<ExecResult
     const memory = obj.instance.exports.memory;
     const dataView = new DataView(memory.buffer);
     const res = pp_wasm(test.output_type, res_value, dataView);
-    if (res !== test.expected_output) {
-      return { type: "error", reason: "incorrect result", expected: test.expected_output, actual: res };
+    if (res !== test.expected_output[0]) {
+      return { type: "error", reason: "incorrect result", expected: test.expected_output[0], actual: res };
     }
 
     return { type: "success", time: time_main };

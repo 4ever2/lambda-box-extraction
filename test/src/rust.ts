@@ -72,8 +72,8 @@ export function run_rust(file: string, tmpdir: string, test: TestCase, timeout: 
     }
 
     // Compare output against the expected output
-    if (res !== test.expected_output) {
-      return { type: "error", reason: "incorrect result", actual: res, expected: test.expected_output };
+    if (res !== test.expected_output[1]) {
+      return { type: "error", reason: "incorrect result", actual: res, expected: test.expected_output[1] };
     }
 
     return { type: "success", time: time_main };

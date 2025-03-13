@@ -49,7 +49,7 @@ export type TestCase = {
   // Used to generate printing function for the output
   output_type: ProgramType,
   // The expected output
-  expected_output?: string,
+  expected_output?: string[],
   // Types of the main functions parameters
   parameters?: ProgramType[],
 }

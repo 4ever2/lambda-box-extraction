@@ -9,6 +9,7 @@ import { compile_c, set_c_env } from "./c";
 import { compile_types } from "./ocaml";
 import { compile_ocaml } from "./ocaml";
 import { compile_rust, prepare_cargo, run_rust } from "./rust";
+import { prepare_elm_project, run_elm } from "./elm";
 
 
 // Timeout used when executing the compiled code
@@ -186,7 +187,7 @@ async function run_tests(lang: Lang, opts: string, tests: TestCase[]) {
       }
       break;
     case Lang.Rust:
-      let otudir = prepare_cargo(tmpdir);
+      var otudir = prepare_cargo(tmpdir);
       let cargodir = path.join(tmpdir, "rust/");
 
       for (var test of tests) {
@@ -213,16 +214,32 @@ async function run_tests(lang: Lang, opts: string, tests: TestCase[]) {
         // Report result
         print_result(res, test.tsrc);
       }
-      // TODO
-      print_line("Not implemented yet");
       break;
     case Lang.Elm:
-      // TODO
-      print_line("Not implemented yet");
+      var otudir = prepare_elm_project(tmpdir);
+      let elmdir = path.join(tmpdir, "elm/");
+
+      for (var test of tests) {
+        if (test.tsrc === undefined) continue;
+        process.stdout.write(`  ${test.tsrc}: `);
+
+        // Compile lbox
+        const f_elm = compile_box(test.tsrc, otudir, Lang.Elm, opts);
+        if (typeof f_elm !== "string") {
+          print_result(f_elm, test.tsrc);
+          continue;
+        }
+
+        // Run Elm
+        const res = run_elm(f_elm, elmdir, test, exec_timeout);
+
+        // Report result
+        print_result(res, test.tsrc);
+      }
       break;
 
     default:
-      print_line("Error: unkown backedn");
+      print_line("Error: unkown backend");
       exit(1);
   }
 }
@@ -231,12 +248,12 @@ async function run_tests(lang: Lang, opts: string, tests: TestCase[]) {
 /* (backend, lbox flags) pair configurations */
 var test_configurations: TestConfiguration[] = [
   [Lang.OCaml, ""],
-  // [Lang.C, "--cps"],
+  // [Lang.C, "--cps"], // TODO
   [Lang.C, ""],
   [Lang.Wasm, "--cps"],
   [Lang.Wasm, ""],
   // [Lang.Rust, "--attr=\"#[derive(Debug, Clone, Serialize)]\" --top-preamble=\"use lexpr::{to_string}; use serde_derive::{Serialize}; use serde_lexpr::{to_value};\n\""],
-  // [Lang.Elm ""],
+  // [Lang.Elm, "--top-preamble=\"import Test\nimport Html\nimport Expect exposing (Expectation)\""],
 ];
 
 // List of programs to be tested
@@ -245,7 +262,7 @@ var tests: TestCase[] = [
   // { src: "agda/BigDemo.ast", main: "", output_type: { type: "list", a_t: SimpleType.Nat }, expected_output: "", parameters: [] },
 
   // Not wellformed
-  // { src: "agda/Equality.ast", main: "", output_type: SimpleType.Nat, expected_output: "", parameters: [] },
+  // { src: "agda/Equality.ast", tsrc: undefined, main: "", output_type: SimpleType.Nat, expected_output: ["", ""], parameters: [] },
 
   // No main in program
   // { src: "agda/EtaCon.ast", main: "", output_type: SimpleType.Bool, expected_output: "???", parameters: [] },
@@ -260,7 +277,8 @@ var tests: TestCase[] = [
     output_type: { type: "list", a_t: SimpleType.Bool },
     expected_output: [
       "(cons true (cons false (cons true (cons false (cons true nil)))))",
-      "(Cons () (True) (Cons () (False) (Cons () (True) (Cons () (False) (Cons () (True) (Empty))))))"
+      "(Cons () (True) (Cons () (False) (Cons () (True) (Cons () (False) (Cons () (True) (Empty))))))",
+      "Cons True (Cons False (Cons True (Cons False (Cons True Empty))))"
     ],
     parameters: []
   },
@@ -271,6 +289,7 @@ var tests: TestCase[] = [
     output_type: { type: "list", a_t: { type: "list", a_t: SimpleType.Bool } },
     expected_output: [
       "(cons (cons true nil) (cons (cons false nil) nil))",
+      "",
       ""
     ],
     parameters: []
@@ -282,6 +301,7 @@ var tests: TestCase[] = [
     output_type: { type: "list", a_t: SimpleType.Nat },
     expected_output: [
       "(cons (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S O)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) (cons (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S O))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) (cons (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S O)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) (cons (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S O)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) (cons (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S O))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) (cons (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S O))))))))))))))))))))))))))))))))) nil))))))",
+      "",
       ""
     ],
     parameters: []
@@ -293,7 +313,9 @@ var tests: TestCase[] = [
     output_type: { type: "list", a_t: SimpleType.Nat },
     expected_output: [
       "(cons (S (S (S (S (S (S O)))))) nil)",
-      ""],
+      "",
+      ""
+    ],
     parameters: []
   },
   {
@@ -319,6 +341,7 @@ var tests: TestCase[] = [
     output_type: SimpleType.Nat,
     expected_output: [
       "(S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S O))))))))))))))))))))))))))))))))))))))))))",
+      "",
       ""
     ],
     parameters: []
@@ -330,6 +353,7 @@ var tests: TestCase[] = [
     output_type: { type: "list", a_t: SimpleType.Nat },
     expected_output: [
       "(cons (S (S O)) (cons (S (S (S (S (S (S O)))))) (cons (S (S (S (S (S (S (S (S (S (S O)))))))))) nil)))",
+      "",
       ""
     ],
     parameters: []
@@ -339,7 +363,7 @@ var tests: TestCase[] = [
     tsrc: "agda/Mutual.tast",
     main: "Mutual_test",
     output_type: SimpleType.Nat,
-    expected_output: ["(S O)", ""],
+    expected_output: ["(S O)", "", ""],
     parameters: []
   },
   {
@@ -347,7 +371,7 @@ var tests: TestCase[] = [
     tsrc: "agda/Nat.tast",
     main: "Nat_thing",
     output_type: SimpleType.Nat,
-    expected_output: ["(S (S (S O)))", ""],
+    expected_output: ["(S (S (S O)))", "", ""],
     parameters: []
   },
   {
@@ -355,7 +379,7 @@ var tests: TestCase[] = [
     tsrc: "agda/OddEven.tast",
     main: "OddEven_test",
     output_type: SimpleType.Bool,
-    expected_output: ["true", ""],
+    expected_output: ["true", "", ""],
     parameters: []
   },
   {
@@ -363,7 +387,7 @@ var tests: TestCase[] = [
     tsrc: "agda/PatternLambda.tast",
     main: "PatternLambda_test",
     output_type: SimpleType.Bool,
-    expected_output: ["false", ""],
+    expected_output: ["false", "", ""],
     parameters: []
   },
   {
@@ -371,7 +395,7 @@ var tests: TestCase[] = [
     tsrc: "agda/Proj.tast",
     main: "Proj_second",
     output_type: SimpleType.Bool,
-    expected_output: ["false", ""],
+    expected_output: ["false", "", ""],
     parameters: []
   },
   {
@@ -379,7 +403,7 @@ var tests: TestCase[] = [
     tsrc: "agda/STLC.tast",
     main: "STLC_test",
     output_type: SimpleType.Nat,
-    expected_output: ["(S (S O))", ""],
+    expected_output: ["(S (S O))", "", ""],
     parameters: []
   },
   {
@@ -387,7 +411,7 @@ var tests: TestCase[] = [
     tsrc: "agda/With.tast",
     main: "With_ys",
     output_type: { type: "list", a_t: SimpleType.Bool },
-    expected_output: ["(cons true nil)", ""],
+    expected_output: ["(cons true nil)", "", ""],
     parameters: []
   },
 ];
@@ -417,9 +441,3 @@ async function main() {
 }
 
 main();
-
-/* TODO
-* Implement Elm testing
-* Fix broken tests
-* Support direct translation in c tests
-*/

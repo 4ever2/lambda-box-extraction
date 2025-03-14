@@ -289,8 +289,8 @@ var tests: TestCase[] = [
     output_type: { type: "list", a_t: { type: "list", a_t: SimpleType.Bool } },
     expected_output: [
       "(cons (cons true nil) (cons (cons false nil) nil))",
-      "",
-      ""
+      "(Cons () (Cons () (True) (Empty)) (Cons () (Cons () (False) (Empty)) (Empty)))",
+      "Cons (Cons True Empty) (Cons (Cons False Empty) Empty)"
     ],
     parameters: []
   },

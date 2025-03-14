@@ -200,10 +200,12 @@ let compile_rust opts eopts top_pre prog_pre attr f =
     print_endline (caml_string_of_bytestring e);
     exit 1
 
-let compile_elm opts eopts f =
+let compile_elm opts eopts pre f =
+  let pre = Option.map bytestring_of_caml_string pre in
+  let mod_name = f |> Filename.basename |> Filename.chop_extension |> bytestring_of_caml_string in
   let p = get_typed_ast opts f in
   print_endline "Compiling:";
-  let p = l_box_to_elm LambdaBoxToElm.default_preamble LambdaBoxToElm.default_remaps (mk_tparams eopts) p in
+  let p = l_box_to_elm mod_name pre LambdaBoxToElm.default_remaps (mk_tparams eopts) p in
   match p with
   | ResultMonad.Ok prg ->
     print_endline "Compiled successfully:";

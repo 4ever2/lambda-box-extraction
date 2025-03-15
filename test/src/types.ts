@@ -55,9 +55,9 @@ export type TestCase = {
   // Arguments for main function call
   arguments?: string[],
   // Extra flags and args for compiling the test program
-  compiler_args: string,
+  compiler_args?: string,
 }
 
-// Test configuration consisting of a target language and a set of options
+// Test configuration consisting of a target language, testset name, and a set of options
 // for the lbox compiler
-export type TestConfiguration = [Lang, string]
+export type TestConfiguration = [Lang, string, string]

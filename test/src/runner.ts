@@ -110,8 +110,8 @@ function print_result(res: ExecResult, test: string): boolean {
 }
 
 // Compile and run all `tests` test programs with the `lang` backend and `opts` compiler options
-async function run_tests(lang: Lang, opts: string, tests: TestCase[]) {
-  print_line(`Running ${lang} tests with options "${opts}":`);
+async function run_tests(lang: Lang, n: string, opts: string, tests: TestCase[]) {
+  print_line(`Running ${lang}${n.length > 0 ? "-"+n : ""} tests:`);
   switch (lang) {
     case Lang.OCaml:
       compile_types(compile_timeout);
@@ -120,7 +120,7 @@ async function run_tests(lang: Lang, opts: string, tests: TestCase[]) {
         process.stdout.write(`  ${test.src}: `);
 
         // Compile lbox
-        const f_mlf = compile_box(test.src, tmpdir, Lang.OCaml, "");
+        const f_mlf = compile_box(test.src, tmpdir, Lang.OCaml, opts);
         if (typeof f_mlf !== "string") {
           print_result(f_mlf, test.src);
           continue;
@@ -247,13 +247,13 @@ async function run_tests(lang: Lang, opts: string, tests: TestCase[]) {
 
 /* (backend, lbox flags) pair configurations */
 var test_configurations: TestConfiguration[] = [
-  [Lang.OCaml, ""],
-  // [Lang.C, "--cps"], // TODO
-  [Lang.C, ""],
-  [Lang.Wasm, "--cps"],
-  [Lang.Wasm, ""],
-  // [Lang.Rust, "--attr=\"#[derive(Debug, Clone, Serialize)]\" --top-preamble=\"use lexpr::{to_string}; use serde_derive::{Serialize}; use serde_lexpr::{to_value};\n\""],
-  // [Lang.Elm, "--top-preamble=\"import Test\nimport Html\nimport Expect exposing (Expectation)\""],
+  [Lang.OCaml, "", ""],
+  // [Lang.C, "cps", "--cps"], // TODO
+  [Lang.C, "", ""],
+  [Lang.Wasm, "cps", "--cps"],
+  [Lang.Wasm, "", ""],
+  // [Lang.Rust, "", "--attr=\"#[derive(Debug, Clone, Serialize)]\" --top-preamble=\"use lexpr::{to_string}; use serde_derive::{Serialize}; use serde_lexpr::{to_value};\n\""],
+  // [Lang.Elm, "", "--top-preamble=\"import Test\nimport Html\nimport Expect exposing (Expectation)\""],
 ];
 
 // List of programs to be tested
@@ -432,7 +432,7 @@ async function main() {
 
   // For each test configuration run all test programs
   for (var backend of test_configurations) {
-    await run_tests(backend[0], backend[1], tests);
+    await run_tests(backend[0], backend[1], backend[2], tests);
   }
 
   // Report test suite result

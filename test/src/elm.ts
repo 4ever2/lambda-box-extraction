@@ -1,5 +1,5 @@
 import path from "path";
-import { ExecFailure, ExecResult, SimpleType, TestCase } from "./types";
+import { ExecResult, SimpleType, TestCase } from "./types";
 import { appendFileSync, copyFileSync, existsSync, mkdirSync, stat } from "fs";
 import { execSync } from "child_process";
 

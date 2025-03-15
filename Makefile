@@ -11,6 +11,11 @@ theory: CoqMakefile
 	+@make -f CoqMakefile
 .PHONY: theory
 
+test:
+	cd test
+	npm run test
+.PHONY: test
+
 mllib: theory
 	dune build
 .PHONY: mllib

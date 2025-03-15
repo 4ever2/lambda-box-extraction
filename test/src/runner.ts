@@ -261,9 +261,6 @@ var tests: TestCase[] = [
   // Exceeds stack size
   // { src: "agda/BigDemo.ast", main: "", output_type: { type: "list", a_t: SimpleType.Nat }, expected_output: "", parameters: [] },
 
-  // Not wellformed
-  // { src: "agda/Equality.ast", tsrc: undefined, main: "", output_type: SimpleType.Nat, expected_output: ["", ""], parameters: [] },
-
   // No main in program
   // { src: "agda/EtaCon.ast", main: "", output_type: SimpleType.Bool, expected_output: "???", parameters: [] },
   // { src: "agda/Test.ast", main: "", output_type: SimpleType.Bool, expected_output: "???", parameters: [] },
@@ -292,6 +289,14 @@ var tests: TestCase[] = [
       "(Cons () (Cons () (True) (Empty)) (Cons () (Cons () (False) (Empty)) (Empty)))",
       "Cons (Cons True Empty) (Cons (Cons False Empty) Empty)"
     ],
+    parameters: []
+  },
+  {
+    src: "agda/Equality.ast",
+    tsrc: "agda/Equality.tast",
+    main: "Equality_test",
+    output_type: SimpleType.Nat,
+    expected_output: ["(S (S O))", ""],
     parameters: []
   },
   {

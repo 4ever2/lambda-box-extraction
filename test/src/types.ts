@@ -52,6 +52,10 @@ export type TestCase = {
   expected_output?: string[],
   // Types of the main functions parameters
   parameters?: ProgramType[],
+  // Arguments for main function call
+  arguments?: string[],
+  // Extra flags and args for compiling the test program
+  compiler_args: string,
 }
 
 // Test configuration consisting of a target language and a set of options

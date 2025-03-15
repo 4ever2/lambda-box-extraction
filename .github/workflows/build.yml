@@ -21,6 +21,7 @@ permissions:
 env:
   OCAML_COMILER_VERSION: "4.14.2"
   JOBS: 4
+  TMPDIR: /tmp
 jobs:
   build:
     runs-on: ubuntu-22.04
@@ -61,3 +62,28 @@ jobs:
       - name: Build
         run: |
           opam exec -- make -j${{ env.JOBS }}
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: 1.85.0
+
+      - name: Set up Elm
+        run: |
+          curl -L -o elm.gz https://github.com/elm/compiler/releases/download/0.19.1/binary-for-linux-64-bit.gz
+          gunzip elm.gz
+          sudo chmod +x elm
+          sudo mv elm /usr/local/bin/
+      - name: Set up elm-test
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Set up elm-test
+        run: |
+          npm install -g elm-test@0.19.1-revision9
+
+      - name: Test extraction
+        run: |
+          echo "::group::Running tests"
+          eval $(opam env) && cd test && npm install && npm run test
+          echo "::endgroup::"

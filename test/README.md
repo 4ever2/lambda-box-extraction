@@ -3,7 +3,7 @@
 To run the tests suite run `npm run test`.
 
 The test suite depends on the following:
-* Node.js v18 or later
+* Node.js v22 or later
 * cargo and rust compiler
 * [elm compiler](https://elm-lang.org/)
 * elm-test (can be installed with npm)

@@ -1,4 +1,16 @@
-# Agda frontend tests
+# LBox tests
+
+To run the tests suite run `npm run test`.
+
+The test suite depends on the following:
+* Node.js v18 or later
+* cargo and rust compiler
+* [elm compiler](https://elm-lang.org/)
+* elm-test (can be installed with npm)
+* gcc
+
+
+## Agda frontend tests
 These tests are Agda programs compiled to $\lambda_\square$ with the [agda2lambox](https://github.com/agda/agda2lambox/tree/master) tool.
 The tests are from the [agda2lambox test suite](https://github.com/agda/agda2lambox/tree/master/test).
 

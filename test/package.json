@@ -1,0 +1,19 @@
+{
+  "name": "test-runner",
+  "version": "1.0.0",
+  "main": "dist/runner.js",
+  "scripts": {
+    "test": "tsc && node dist/runner.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "description": "",
+  "dependencies": {
+    "elm-test": "0.19.1-revision15"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "typescript": "^5.8.2"
+  }
+}

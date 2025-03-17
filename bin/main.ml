@@ -78,7 +78,7 @@ let certicoq_opts_t =
     let doc = "Use CPS translation pipeline." in
     Arg.(value & flag & info ["cps"] ~doc)
   in
-  Term.(const (fun x -> mk_certicoq_opts (not x)) $ cps_arg )
+  Term.(const (fun x -> mk_certicoq_opts x) $ cps_arg )
 
 let eopts_t =
   let typed_arg =
@@ -198,6 +198,18 @@ let rust_cmd =
     Arg.(required & pos 0 (some file) None  & info []
            ~docv:"FILE" ~doc)
   in
+  let attr_arg =
+    let doc = "Type attributes, defaults to \"#[derive(Debug, Clone)]\"" in
+    Arg.(value & opt (some string) None & info ["attr"] ~doc)
+  in
+  let top_pre_arg =
+    let doc = "File preamble" in
+    Arg.(value & opt (some string) None & info ["top-preamble"] ~doc)
+  in
+  let prog_pre_arg =
+    let doc = "Program preamble" in
+    Arg.(value & opt (some string) None & info ["prog-preamble"] ~doc)
+  in
   let doc = "Compile lambda box to rust" in
   let man = [
     `S Manpage.s_description;
@@ -205,13 +217,17 @@ let rust_cmd =
     `Blocks help_secs; ]
   in
   let info = Cmd.info "rust" ~doc ~sdocs ~man in
-  Cmd.v info Term.(const compile_rust $ copts_t $ teopts_t $ file)
+  Cmd.v info Term.(const compile_rust $ copts_t $ teopts_t $ top_pre_arg $ prog_pre_arg $ attr_arg $ file)
 
 let elm_cmd =
   let file =
     let doc = "lambda box typed environment" in
     Arg.(required & pos 0 (some file) None  & info []
            ~docv:"FILE" ~doc)
+  in
+  let top_pre_arg =
+    let doc = "File preamble" in
+    Arg.(value & opt (some string) None & info ["top-preamble"] ~doc)
   in
   let doc = "Compile lambda box to elm" in
   let man = [
@@ -220,7 +236,7 @@ let elm_cmd =
     `Blocks help_secs; ]
   in
   let info = Cmd.info "elm" ~doc ~sdocs ~man in
-  Cmd.v info Term.(const compile_elm $ copts_t $ teopts_t $ file)
+  Cmd.v info Term.(const compile_elm $ copts_t $ teopts_t $ top_pre_arg $ file)
 
 let main_cmd =
   let doc = "a compiler for lambda box to webassembly" in

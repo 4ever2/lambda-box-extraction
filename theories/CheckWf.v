@@ -57,7 +57,7 @@ Definition agda_typed_eflags : EEnvFlags :=
         ; has_tLazy_Force := true
         |};
      has_cstr_params := false;  (* Agda already drops constructor params *)
-     cstr_as_blocks  := true;   (* The backend fully applies ctors       *)
+     cstr_as_blocks  := false;
   |}.
 
 From MetaCoq.Erasure Require Import EGlobalEnv.

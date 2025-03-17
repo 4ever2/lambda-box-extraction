@@ -48,8 +48,22 @@ Definition default_attrs : ind_attr_map := fun _ => "#[derive(Debug, Clone)]".
 
 Definition default_remaps : remaps := no_remaps.
 
-Definition box_to_rust (remaps : remaps) params (Σ : ExAst.global_env) : result (list string) string :=
+Definition mk_preamble top program :=
+   {|
+      top_preamble :=
+         match top with
+         | Some top => (@top_preamble plugin_extract_preamble) ++ [top]
+         | None => (@top_preamble plugin_extract_preamble)
+         end;
+      program_preamble :=
+         match program with
+         | Some program => (@program_preamble plugin_extract_preamble) ++ [program]
+         | None => (@program_preamble plugin_extract_preamble)
+         end;
+   |}.
+
+Definition box_to_rust (remaps : remaps) preamble attrs params (Σ : ExAst.global_env) : result (list string) string :=
    Σ <- typed_transfoms params Σ;;
-   let p := print_program Σ remaps default_attrs in
+   let p := @print_program Σ remaps RustConfig attrs preamble in
    '(_, s) <- MetaCoq.Erasure.Typed.Utils.timed "Printing" (fun _ => (finish_print_lines p));;
    Ok s.

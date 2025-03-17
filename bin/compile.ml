@@ -62,11 +62,11 @@ let check_wf checker flags opts p =
     exit 1
   )
 
-let check_wf_untyped =
-  check_wf check_wf_program agda_eflags
+let check_wf_untyped flags =
+  check_wf check_wf_program flags
 
-let check_wf_typed =
-  check_wf CheckWfExAst.check_wf_typed_program agda_typed_eflags
+let check_wf_typed flags =
+  check_wf CheckWfExAst.check_wf_typed_program flags
 
 let read_file f =
   let c = open_in f in
@@ -90,18 +90,18 @@ let get_ast opts eopts f : program =
   match eopts.typed with
   | None ->
     let p = parse_ast program_of_string s in
-    check_wf_untyped opts p;
+    check_wf_untyped agda_eflags opts p;
     p
   | Some kn ->
     let p = parse_ast global_env_of_string s in
-    check_wf_typed opts p;
+    check_wf_typed agda_eflags opts p;
     convert_typed kn eopts.optimize p
 
 let get_typed_ast opts f : global_env =
   let s = read_file f in
   print_endline "Parsing AST:";
   let p = parse_ast global_env_of_string s in
-  check_wf_typed opts p;
+  check_wf_typed agda_typed_eflags opts p;
   p
 
 
@@ -178,10 +178,19 @@ let compile_ocaml opts eopts f =
   l_box_to_ocaml p |>
   write_ocaml_res opts f
 
-let compile_rust opts eopts f =
+let get_rust_attr e =
+  match e with
+  | None -> LambdaBoxToRust.default_attrs
+  | Some s -> fun _ -> bytestring_of_caml_string s
+
+let compile_rust opts eopts top_pre prog_pre attr f =
+  let top_pre = Option.map bytestring_of_caml_string top_pre in
+  let prog_pre = Option.map bytestring_of_caml_string prog_pre in
+  let preamble = LambdaBoxToRust.mk_preamble top_pre prog_pre in
+  let attr = get_rust_attr attr in
   let p = get_typed_ast opts f in
   print_endline "Compiling:";
-  let p = l_box_to_rust LambdaBoxToRust.default_remaps (mk_tparams eopts) p in
+  let p = l_box_to_rust LambdaBoxToRust.default_remaps preamble attr (mk_tparams eopts) p in
   match p with
   | ResultMonad.Ok prg ->
     print_endline "Compiled successfully:";
@@ -191,10 +200,12 @@ let compile_rust opts eopts f =
     print_endline (caml_string_of_bytestring e);
     exit 1
 
-let compile_elm opts eopts f =
+let compile_elm opts eopts pre f =
+  let pre = Option.map bytestring_of_caml_string pre in
+  let mod_name = f |> Filename.basename |> Filename.chop_extension |> bytestring_of_caml_string in
   let p = get_typed_ast opts f in
   print_endline "Compiling:";
-  let p = l_box_to_elm LambdaBoxToElm.default_preamble LambdaBoxToElm.default_remaps (mk_tparams eopts) p in
+  let p = l_box_to_elm mod_name pre LambdaBoxToElm.default_remaps (mk_tparams eopts) p in
   match p with
   | ResultMonad.Ok prg ->
     print_endline "Compiled successfully:";

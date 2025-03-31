@@ -56,4 +56,29 @@ Valid values for `TARGETLANGUAGE` are:
 
 The `wasm` and `c` targets also supports the `--cps` flag that uses verified cps translation during compilation instead of the unverified direct translation.
 
+### Debug commands
+These commands main purpose are for debugging $\lambda_\square$ programs and the compilation pipeline.
 
+#### $\lambda_\square$ evaluator
+This command evaluates $\lambda_\square$ programs, the `--anf` flag can be used to use an alternative evaluator which first translates the program to $\lambda_{ANF}$ before evaluating the program.
+```
+lbox eval FILE [-anf]
+```
+
+Also supports the `--cps, --opt, --typed` flags.
+
+#### $\lambda_\square$ validator
+```
+lbox validate FILE
+```
+Validates that the program in `FILE` can be parsed and is wellformed.
+
+Also supports the `--typed` flag.
+
+#### $\lambda_{ANF}$ compiler
+Compiles $\lambda_\square$ to $\lambda_{ANF}$, used for inspecting intermediate representations.
+```
+lbox anf FILE
+```
+
+Also supports the `--cps, --opt, --typed` flags.

@@ -1,9 +1,28 @@
-# Coq Extractions
+# Project structure
+* [theories/](/theories/) Coq sources defining the extraction pipeline
+* [theories/serialization](/theories/serialization/) Verified s-expression serialization of $\lambda_\square$ programs
+* [src/extraction/](/src/extraction/) Extracted OCaml code
+* [src/printC/](/src/printC/) OCaml library for printing Clight, from [CertiCoq](https://github.com/CertiCoq/certicoq/tree/master/plugin/static)
+* [bin/](/bin/) OCaml source files defining command line interface
+* [test/](/test/) Test suite and test runner
+* [test/agda](/test/agda/) Tests from the agda2lambox tool
 
+# Dev environment setup
+```bash
+git clone https://github.com/AU-COBRA/lambda-box-extraction.git
+cd lambda-box-extraction
+opam switch create . 4.14.2 --repositories default,coq-released=https://coq.inria.fr/opam/released
+eval $(opam env)
+opam install . --deps-only
+```
+
+The project can be built with `make`.
+Running the dev executable with `dune exec lbox`.
+
+
+# Coq Extractions
 ## Pipeline
 ![extraction](pipeline.png)
-
-
 
 ## Translations
 * Coq -> $\lambda_{CIC}$

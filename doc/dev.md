@@ -1,9 +1,20 @@
-# Coq Extractions
 
+# Dev environment setup
+```bash
+git clone https://github.com/AU-COBRA/lambda-box-extraction.git
+cd lambda-box-extraction
+opam switch create . 4.14.2 --repositories default,coq-released=https://coq.inria.fr/opam/released
+eval $(opam env)
+opam install . --deps-only
+```
+
+The project can be built with `make`.
+Running the dev executable with `dune exec lbox`.
+
+
+# Coq Extractions
 ## Pipeline
 ![extraction](pipeline.png)
-
-
 
 ## Translations
 * Coq -> $\lambda_{CIC}$

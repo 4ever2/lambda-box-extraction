@@ -1,3 +1,11 @@
+# Project structure
+* [theories/](/theories/) Coq sources defining the extraction pipeline
+* [theories/serialization](/theories/serialization/) Verified s-expression serialization of $\lambda_\square$ programs
+* [src/extraction/](/src/extraction/) Extracted OCaml code
+* [src/printC/](/src/printC/) OCaml library for printing Clight, from [CertiCoq](https://github.com/CertiCoq/certicoq/tree/master/plugin/static)
+* [bin/](/bin/) OCaml source files defining command line interface
+* [test/](/test/) Test suite and test runner
+* [test/agda](/test/agda/) Tests from the agda2lambox tool
 
 # Dev environment setup
 ```bash

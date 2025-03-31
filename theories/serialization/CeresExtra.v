@@ -124,6 +124,17 @@ Proof.
     reflexivity.
 Qed.
 
+Lemma bytestring_sound : forall s,
+  bytestring.String.to_string (bytestring.String.of_string s) = s.
+Proof.
+  induction s.
+  - reflexivity.
+  - cbn.
+    rewrite IHs.
+    rewrite Ascii.ascii_of_byte_of_ascii.
+    reflexivity.
+Qed.
+
 Lemma complete_class_list_all {A : Type} {H : Serialize A} {H0 : Deserialize A} :
   forall (a xs : list A) (n : nat) (l : loc),
     All_Forall.All

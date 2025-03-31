@@ -16,23 +16,26 @@ eval $(opam env)
 opam install .
 ```
 
-You can then build the project by running `make`.
-
 ## Usage
-For local development the tool can be called with:
 ```
-dune exec lbox -- TARGETLANGUAGE FILE [--outfile FILE]
+lbox TARGETLANGUAGE FILE [-o FILE]
 ```
-E.g.
+E.g. compiling `prog.ast` file to WebAssembly.
 ```
-dune exec lbox -- wasm prog.box --outfile prog.wasm
+lbox wasm prog.ast -o prog.wasm
+```
+Valid values for `TARGETLANGUAGE` are:
+* `wasm`
+* `c`
+* `ocaml`
+* `rust`
+* `elm`
+
+For detailed usage on all commands and flags see [here](#command-line-arguments) or use `lbox --help`.
+
+
+
+```
 ```
 
-For general usage, the tool can be install with `make install`
-```
-lbox TARGETLANGUAGE FILE [--outfile FILE]
-```
 
-## Target languages
-
-TODO

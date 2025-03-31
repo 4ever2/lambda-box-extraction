@@ -1,16 +1,16 @@
 # lambda-box-extraction
-A backend for compiling $\lambda_\square$ (LambdaBox) and $\lambda_\square^T$ (LambdaBox-typed) to webassembly, Rust and other languages. The compilation phases have been verified in the Coq proof assistant.
+A backend for compiling $\lambda_\square$ (LambdaBox) and $\lambda_\square^T$ (LambdaBox-typed) to WebAssembly, C, Rust, OCaml and Elm. The compilation phases have been verified in the Coq proof assistant.
 
 ## Setup
-The backend requires OCaml 4.13 or later to run. The development also depends on Coq 8.19, and developer builds of MetaCoq and CertiCoq.
+The backend requires OCaml 4.13 or later to run. The development also depends on Coq 8.19, and developer builds of CertiCoq.
 
-To set up a development environment run:
+The backend can be installed using [Opam](https://opam.ocaml.org/doc/Install.html) with:
 ```bash
 git clone https://github.com/AU-COBRA/lambda-box-extraction.git
 cd lambda-box-extraction
 opam switch create . 4.14.2 --repositories default,coq-released=https://coq.inria.fr/opam/released
 eval $(opam env)
-opam install . --deps-only
+opam install .
 ```
 
 You can then build the project by running `make`.

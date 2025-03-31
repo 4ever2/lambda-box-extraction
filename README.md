@@ -65,6 +65,15 @@ A verified compiler to Clight is implemented in [CertiCoq](https://github.com/Ce
 ##### Compiling Clight
 Clight can be compiled using [CompCert](https://compcert.org/) or any ordinary C compiler (GCC, clang, ...).
 The generated C code must be linked with the garbage collector and glue code as described [here](https://github.com/CertiCoq/certicoq/wiki/The-CertiCoq-plugin#compiling-the-generated-c-code).
+
+
+#### OCaml (malfunction)
+https://github.com/yforster/coq-verified-extraction implements verified extraction to OCaml or more specifically [Malfunction](https://github.com/stedolan/malfunction) which is an internal language used in the OCaml compiler.
+
+For more details see the paper [Verified Extraction from Coq to OCaml](https://dl.acm.org/doi/10.1145/3656379).
+
+##### Compiling Malfunction
+Malfunction can compiled using the [malfunction](https://github.com/stedolan/malfunction) tool.
 ### Frontends
 The lbox tool compiles $\lambda_\square$ and $\lambda_\square^T$ to various languages, the $\lambda_\square$ programs can be obtained from either Coq or Agda using the frontends described here.
 

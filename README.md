@@ -35,6 +35,13 @@ For detailed usage on all commands and flags see [here](#command-line-arguments)
 
 
 
+## Command Line Interface
+### Common arguments
+* `-o FILE` output file for extracted program
+* `--bypass-wf` bypass wellformedness check on input programs, note that the correctness guarantees of proofs don't apply when bypassing these checks
+* `--quiet`, `--verbose`, `--debug` controls the level of feedback from the program
+* `--typed=MAIN_FUNCTION` attempts to parse the input program as a $\lambda_\square^T$ program rather than $\lambda_\square$, only available for untyped extraction targets
+* `--opt` enable extra optimizations
 ```
 ```
 

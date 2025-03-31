@@ -56,6 +56,12 @@ or to $\lambda_\square^T$ using
 agda2lambox --typed --no-block FILE
 ```
 
+#### Coq (MetaCoq)
+[MetaCoq](https://github.com/MetaRocq/metarocq) is a project formalizing Coq in Coq and providing tools for manipulating Coq terms and developing certified plugins (i.e. translations, compilers or tactics) in Coq. It can be used to translate Coq programs into $\lambda_\square$ and $\lambda_\square^T$ using [CoqToLambdaBox.v](theories/CoqToLambdaBox.v).
+
+For extracting Coq programs it is recommended to use the respective extraction backends in Coq rather than using the standalone lbox tool.
+
+
 ## Command Line Interface
 ### Common arguments
 * `-o FILE` output file for extracted program

@@ -42,6 +42,19 @@ $\lambda_\square$ and $\lambda_\square^T$ are intermediate languages used in the
 
 ![](/doc/pipeline.png)
 
+### Supported Languages (backends)
+The tool currently supports extracting $\lambda_\square$ to WebAssembly, C and OCaml, and $\lambda_\square^T$ to Rust and Elm.
+
+#### WebAssembly
+Verified extraction to WebAssembly is implemented in [CertiCoq-Wasm](https://github.com/womeier/certicoqwasm).
+It extends on the CertiCoq with an additional translation from $\lambda_{ANF}$ to WebAssembly.
+More information can be found in the [paper](https://womeier.de/files/certicoqwasm-cpp25-paper.pdf).
+##### Running the extracted Wasm code
+Extracted Wasm code can be run using any WebAssembly engine supporting the [tail call extension](https://webassembly.org/features/) of WebAssembly.
+
+Examples of how to run Wasm in [browsers](https://developer.mozilla.org/en-US/docs/WebAssembly/Guides/Loading_and_running), [Node.js](https://nodejs.org/en/learn/getting-started/nodejs-with-webassembly), [Wasmtime](https://docs.wasmtime.dev/lang.html).
+
+The program main function will be exported as `main_function` in extracted Wasm module.
 
 ### Frontends
 The lbox tool compiles $\lambda_\square$ and $\lambda_\square^T$ to various languages, the $\lambda_\square$ programs can be obtained from either Coq or Agda using the frontends described here.

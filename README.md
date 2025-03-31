@@ -42,7 +42,18 @@ For detailed usage on all commands and flags see [here](#command-line-arguments)
 * `--quiet`, `--verbose`, `--debug` controls the level of feedback from the program
 * `--typed=MAIN_FUNCTION` attempts to parse the input program as a $\lambda_\square^T$ program rather than $\lambda_\square$, only available for untyped extraction targets
 * `--opt` enable extra optimizations
+
+### Extraction commands
 ```
+lbox TARGETLANGUAGE FILE [-o FILE]
 ```
+Valid values for `TARGETLANGUAGE` are:
+* `wasm`
+* `c`
+* `ocaml`
+* `rust`
+* `elm`
+
+The `wasm` and `c` targets also supports the `--cps` flag that uses verified cps translation during compilation instead of the unverified direct translation.
 
 

@@ -31,11 +31,20 @@ Valid values for `TARGETLANGUAGE` are:
 * `rust`
 * `elm`
 
-For detailed usage on all commands and flags see [here](#command-line-arguments) or use `lbox --help`.
+For detailed usage on all commands and flags see [here](#command-line-interface) or use `lbox --help`.
+
+
+## Pipeline
+$\lambda_\square$ is an untyped lambda-calculus with inductive types, explicit fixpoint combinator, case expressions, and $\square$ box terms which represent erased computationally irrelevant terms.
+$\lambda_\square^T$ is an extension of $\lambda_\square$ which contains typing information.
+
+$\lambda_\square$ and $\lambda_\square^T$ are intermediate languages used in the [MetaCoq](https://github.com/MetaRocq/metarocq) framework. Several other frameworks built on top of MetaCoq and implement verified extraction. MetaCoq implements quoting and verified erasure of Coq terms to $\lambda_\square$ terms, it also includes verified optimizations.
+
+![](/doc/pipeline.png)
 
 
 ### Frontends
-The lbox tool compiles $\lambda_\square$ and $\lambda_\square^T$ to various langauges, the $\lambda_\square$ programs can be obtained from either Coq or Agda using the frontends described here.
+The lbox tool compiles $\lambda_\square$ and $\lambda_\square^T$ to various languages, the $\lambda_\square$ programs can be obtained from either Coq or Agda using the frontends described here.
 
 #### Agda (Agda2lambox)
 [Agda2lambox](https://github.com/agda/agda2lambox) is a backend for [Agda](https://github.com/agda/agda) translating Agda programs into $\lambda_\square$ and $\lambda_\square^T$.

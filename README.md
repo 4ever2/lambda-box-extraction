@@ -74,6 +74,14 @@ For more details see the paper [Verified Extraction from Coq to OCaml](https://d
 
 ##### Compiling Malfunction
 Malfunction can compiled using the [malfunction](https://github.com/stedolan/malfunction) tool.
+
+
+#### Rust
+The Rust extraction uses the certified typed erasure of MetaCoq to extracted programs to $\lambda_\square^T$ which is printed to Rust, the printing step is unverified.
+For more details see the paper [Extracting functional programs from Coq, in Coq](https://www.cambridge.org/core/journals/journal-of-functional-programming/article/extracting-functional-programs-from-coq-in-coq/ACA1A3F43DD4EA96646F705BC2F8E370).
+##### Compiling extracted Rust code
+Extracted Rust code depends on [bumpalo](https://docs.rs/bumpalo/latest/bumpalo/) v3 or later.
+
 ### Frontends
 The lbox tool compiles $\lambda_\square$ and $\lambda_\square^T$ to various languages, the $\lambda_\square$ programs can be obtained from either Coq or Agda using the frontends described here.
 

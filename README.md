@@ -56,6 +56,15 @@ Examples of how to run Wasm in [browsers](https://developer.mozilla.org/en-US/do
 
 The program main function will be exported as `main_function` in extracted Wasm module.
 
+
+#### C (Clight)
+[Clight](https://link.springer.com/article/10.1007/s10817-009-9148-3) is a subset of C used by the verified [CompCert](https://compcert.org/) compiler.
+Clight includes pointer arithmetic, struct and union types, loops, and structured switch statements.
+
+A verified compiler to Clight is implemented in [CertiCoq](https://github.com/CertiCoq/certicoq).
+##### Compiling Clight
+Clight can be compiled using [CompCert](https://compcert.org/) or any ordinary C compiler (GCC, clang, ...).
+The generated C code must be linked with the garbage collector and glue code as described [here](https://github.com/CertiCoq/certicoq/wiki/The-CertiCoq-plugin#compiling-the-generated-c-code).
 ### Frontends
 The lbox tool compiles $\lambda_\square$ and $\lambda_\square^T$ to various languages, the $\lambda_\square$ programs can be obtained from either Coq or Agda using the frontends described here.
 

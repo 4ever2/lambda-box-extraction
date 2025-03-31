@@ -16,9 +16,7 @@ From Coq Require PrimFloat.
 
 (* TODO: validate axioms *)
 Axiom prim_int_ser_complete : forall x, (prim_int_of_string (string_of_prim_int x)) = x.
-Axiom prim_int_ser_sound : forall x, (string_of_prim_int (prim_int_of_string x)) = x.
 Axiom prim_float_ser_complete : forall x, (prim_float_of_string (string_of_prim_float x)) = x.
-Axiom prim_float_ser_sound : forall x, (string_of_prim_float (prim_float_of_string x)) = x.
 
 
 

@@ -34,6 +34,27 @@ Valid values for `TARGETLANGUAGE` are:
 For detailed usage on all commands and flags see [here](#command-line-arguments) or use `lbox --help`.
 
 
+### Frontends
+The lbox tool compiles $\lambda_\square$ and $\lambda_\square^T$ to various langauges, the $\lambda_\square$ programs can be obtained from either Coq or Agda using the frontends described here.
+
+#### Agda (Agda2lambox)
+[Agda2lambox](https://github.com/agda/agda2lambox) is a backend for [Agda](https://github.com/agda/agda) translating Agda programs into $\lambda_\square$ and $\lambda_\square^T$.
+
+To use the Agda2lambox frontend you should first annotate the definition you wish to translate with `{-# COMPILE AGDA2LAMBOX DEF_NAME #-}`.
+For example
+```
+test = ...
+{-# COMPILE AGDA2LAMBOX test #-}
+```
+
+The program can then be translated to $\lambda_\square$ using
+```
+agda2lambox FILE
+```
+or to $\lambda_\square^T$ using
+```
+agda2lambox --typed --no-block FILE
+```
 
 ## Command Line Interface
 ### Common arguments

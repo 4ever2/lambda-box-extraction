@@ -60,7 +60,7 @@ function get_pp_fun(type: ProgramType): string {
         case "prod":
           var pp_a = get_pp_fun(type.a_t);
           var pp_b = get_pp_fun(type.b_t);
-          return `Types.pp_option (${pp_a}) (${pp_b})`;
+          return `Types.pp_prod (${pp_a}) (${pp_b})`;
         default:
           break;
       }
